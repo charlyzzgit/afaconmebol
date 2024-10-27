@@ -8,7 +8,6 @@
       cursor: pointer;
       font-size: 50px;
     }
-    
 
     .btn-system i{
       font-size: 100px;
