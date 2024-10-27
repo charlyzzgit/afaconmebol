@@ -1,0 +1,257 @@
+Documentación Plugin de Formulario dinámico
+
+INSTALACION:
+------------
+
+IMPORTANTE:
+
+antes de invocar las librerias del plugin
+se deben invocar las siguientes:
+jquery
+bootstrap
+JQuery.select2
+JQuery.mask
+JQuery.numeric
+bootstrap.toggle
+bootstrap.colorpicker
+bootstrap.datepicker
+bootstrap.timepicker
+bootstrap.datetimepicker
+bootstrap.rangepicker
+moment.js //para manejo de fechas
+
+
+CSS:
+
+<link rel="stylesheet" href="{{ asset('plugins/Form/form.css') }}">
+
+
+JS:
+
+<script src="{{ asset('plugins/Form/form.js') }}"></script>
+
+
+IMPLEMENTACION:
+
+HTML:
+<form id="my-form"></form>
+
+JS:
+
+configuración básica:
+
+$('#my-form').form({
+	url: "{{ route('my_route_name') }}",
+	token: '{{ csrf_token() }}',
+	inputs: [] //al menos un elemento
+})
+
+WARNINGS:
+
+Este plugin arroja un warning cuando
+
+1- el atributo url no existe
+2- el atributo token no existe
+3- el atributo inputs no existe
+3.1 - el atributo inputs existe, pero esta sin elementos
+4 - en el array inputs no existe un elemento de tipo 'submit' (salvo que se declare submit:false)
+5 - en el array inputs existe mas de un elemento de tipo submit
+
+CONFIGURACION GENERAL DEL FORMULARIO:
+-------------------------------------
+options:
+
+url: Ruta donde se envia el formulario
+token: Token de seguridad csrf
+method: POST o GET - si no existe, asume POST,
+target. _self o _blank - opcional (si se establece en _blank, tener en cuenta que redireciona a otra ruta, no se recomendable para envio de archivos),
+inputs: array de elementos Input (cada elemento representa los diferentes campos de formulario del form),
+before: recibe una funcion que se ejecuta antes del envio (util para mostrar una precarga (showpleasewait()) - opcional
+success:recibe una funcion que se ejecuta cuando la respuesta del envio es exitosa (aca podemos mostrar un mensaje de exito o ejecutar otras acciones) - opcional,
+error: recibe una funcion que se ejecuta cuando la respuesta del envio es fallida (aca podemos mostrar un mensaje de error) - opcional,
+demo: Flag para activar la ayuda en linea, si se declara se muestra un helper (arriba a la derecha del formulario que abre la ayuda en linea)
+submit:por defecto esta en true, si se cambia a false, el formulario no se envia (ideal si solo se necesita obtener los campos del formulario. ej en queryparams de una grilla)
+
+
+CONFIGURACION GENERAL DE LOS INPUTS:
+-------------------------------------
+
+options:
+
+type: tipo de campo - OBLIGATORIO
+name: nombre de referencia del campo - OBLIGATORIO. (en base al name se crea el id)
+label: texto que se muestra en el label del campo. Para el caso de los botones (button y submit) el texto se muestra en el boton. - Opcional (si no se especifica, no se muestra)
+placeholder: texto que se muestra dentro del campo cuando esta vacío - opcional (Sólo para TEXT, TEXTAREA, PASSWORD y NUMERIC).
+required: { // objeto de validacion
+	value: valor a comparar con el valor del campo (si coincide activa el error),
+	range: { //rango de valores a comparar (para validar valores numericos) - opcional
+		min: 'valor mínimo a comparar',
+		max: 'valor máximo a comparar'
+
+	},
+	exp: este atributo es opcional y recibe una expresion regular para validar el valor del campo,
+	message: texto a mostrar debajo del campo en rojo cuando se activa el error. Por defecto 'Campo inválido'
+},
+show: flag para habilitar el ojo de ver contraseña (solo para type PASSWORD),
+options: [ //array de items para select o radio button
+	{
+		text: texto a mostrar en la lista del combo, o en la etiqueta del radio button,
+		value: valor del item
+	}
+],
+optionDefault: establece el texto por defecto de los combos (excepto los de tipo 'multiple'), si no se especifica, asume 'Seleccionar'
+value: valor asignado al campo. Opcional (para el caso de un select o un radio button, si se asigna un valor y el mismo coincide con alguno de los elementos, el mismo se establece como 'selected' o 'checked' segun corresponda)
+default:'Valor por defecto que toma el input cuando se limpia el formulario. Opcional (por defecto restablece los campos da la forma convencional)'
+checked: flag para cargar activado un campo de tipo checkbox o toggle,
+startDate: 'Fecha inicial para rangepicker',
+endDate: 'Fecha final para rangepicker',
+minDate: 'Fecha inicial a partir de la cual se puede seleccionar en un campo de fecha (datepicker, datetimepicker, y rangepicker)',
+maxDate: 'Fecha final hasta la cual se puede seleccionar en un campo de fecha (datepicker, datetimepicker, y rangepicker)',
+icon: { //Icono lateral del campo (Izquierdo, derecho o ambos)
+	left: icono izquierdo, //ambos trabajan con las clases de awesome fonts. ej fa fa-user
+	right: icono derecho
+	
+},
+max:  'Valor máximo permitido (numerico) - opcional',
+exclude: Flag para habilitar un checkbox a los combos de tipo multiple. El name de este checkbox tiene esta estructura: select-name + '_exclude'. ej: 'sucursal_id_exclude'
+readonly: Deshabilita la escritura en el campo (Solo aplica a los campos de texto y fechas) - opcional,
+disabled: Deshabilita cualquier accion dentro del campo - opcional,
+min: valor mínimo que permite el type range (si se establece),
+max: valor máximo que permite el type range (si se establece),
+step: unidad de incremento para el type range. por defecto es 1,
+image: Flag para mostrar una vista previa de carga de imágenes (funciona con el type FILE),
+accept: Array de extensiones de archivos para controlar la subida de los mismos. Si no se especifica un elemento, se permite cualquier extensión,
+align: Alineación para botones (BUTTON y SUBMIT)
+size: 'Ancho de la caja contenedora del campo valores soportados: (desde 1 hasta 12, donde 12 es el ancho total del form)',
+className: nombre de clase o clases CSS adicional a aplicar a un elemento de tipo button o submit: ej btn-primary
+
+
+
+TIPOS SOPORTADOS:
+-----------------
+
+HIDDEN: campo oculto
+TEXT: campo de texto
+PASSWORD: campo de contraseña
+NUMERIC: campo numerico
+TEXTAREA: area de texto
+SELECT: combo de seleccion
+SELECT2: combo de seleccion con buscador
+MULTIPLE: combo de seleccion multiple con buscador
+DATEPICKER: campo de fecha
+TIMEPICKER: campo de hora
+RANGEPICKER: campo de rango de fechas
+RADIO: boton de seleccion
+CHECKBOX: casilla de verificacion
+TOGGLE: boton de 2 estados
+RANGE: campo de seleccion de valor de entre a y b
+COLORPICKER: campo de seleccion de color
+FILE: campo para subida de archivos
+BUTTON: boton de accion
+RESET: boton para limpiar el formulario
+SUBMIT: boton de envio de formulario
+
+SEPARATOR: separador o salto de linea, permite organizar mejor la distribucion de los campos
+
+
+
+
+FUNCIONES AUXILIARES:
+---------------------
+JQ = $(el)
+
+var input = $('#my-input');
+
+
+var form = getForm(input); 
+
+-recibe un JQ input
+-devuelve el formulario padre
+
+ej de uso
+
+en la callback del campo :
+
+callback: function(input){
+	var form = getForm(input); 
+}
+
+----------------------------------------------------
+
+var otro_input = getInputByName(form, name) 
+
+-recibe un JQ formulario y el nombre del campo a buscar
+-devuelve el JQ input
+
+
+---------------------------------------------------------
+var checkbox = getExclude(select) 
+
+-recibe un JQ select(multiple)
+-devuelve el checkbox de excluir
+
+ej:
+
+var e = getExclude($select) 
+
+var checked = e.prop('checked')
+
+--------------------------------------------------
+
+loadFormSelect(select, options, selected?)
+
+-recibe un JQ select, un array de tipo option: {text:'', value:''}, y un valor de comparacion(opcional)
+-carga el combo con los options proporcionados
+
+ej:
+
+var select = $('#ny-select')
+var options = [{text:'opcion 1', value: 1},{text:'opcion 2', value: 2},{text:'opcion 3', value: 3}]
+
+loadFormSelect(select, options) //carga el combo mostrando el 'Seleccionar'
+loadFormSelect(select, options, 2) //carga el combo mostrando el option 2
+--------------------------------------------------------------------------------------------
+
+
+selectOptions(array, text, value)
+
+-recibe un array (objects) simple, una clave de campo para el texto visible, y una clave de campo para el value
+-devuelve el array options para pasarselo a un input de tipo select, select2 o multiple, y tambien sirve para radio button
+
+
+ej:
+
+selectOptions({!! $sucursales !!}, 'descripcion', 'id')
+y me crea los options con:
+  '<option value="{{ $sucursal->descripcion}}">{{ $sucursal->id}}</option>'
+-------------------------------------------------------------------------------------------
+
+selectPreload(select, pre)
+
+-recibe un JQ input, y un flag (opcional)
+-si el flag existe, coloca un icono animado simulando una carga
+-si el flag no existe (undefined), quita el icono
+
+ej: cargar un combo
+selectPreload(select, true) //muestra la precarga
+
+carga el combo
+selectPreload(select) // quita la precarga
+
+--------------------------------------------------------
+
+getDate(format, value?)
+
+-recibe un formato de fecha ej: (DD/MM/YYYY), y un valor de tipo fecha opcional
+-si existe el valor devuelve la fecha formateada con el formato proporcionado
+-si no existe el valor, devuelve la fecha actual con dicho formato
+
+
+-----------------------------------------------------------------
+
+clearForm($('#formulario'))
+
+-recibe un JQ formulario 
+-restablece los campos a su valor por defecto, salvo aquellos que tengan confugurado su default value (en cuyo caso le asigna ese valor)
+
+

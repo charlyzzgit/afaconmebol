@@ -1,0 +1,44 @@
+function puntoEnPoligono($punto, $poligono) {
+    $numVertices = count($poligono);
+
+    if ($numVertices < 3) {
+        // El polígono debe tener al menos 3 vértices
+        return false;
+    }
+
+    $x = $punto[0];
+    $y = $punto[1];
+
+    $dentro = false;
+
+    for ($i = 0, $j = $numVertices - 1; $i < $numVertices; $j = $i++) {
+        $xi = $poligono[$i][0];
+        $yi = $poligono[$i][1];
+        $xj = $poligono[$j][0];
+        $yj = $poligono[$j][1];
+
+        $intersecta = (($yi > $y) != ($yj > $y)) &&
+            ($x < ($xj - $xi) * ($y - $yi) / ($yj - $yi) + $xi);
+
+        if ($intersecta) {
+            $dentro = !$dentro;
+        }
+    }
+
+    return $dentro;
+}
+
+// Ejemplo de uso:
+$coordenadaPunto = array(4, 5);  // Coordenada del punto a verificar
+$coordenadasPoligono = array(
+    array(1, 1),
+    array(1, 7),
+    array(7, 7),
+    array(7, 1)
+);
+
+if (puntoEnPoligono($coordenadaPunto, $coordenadasPoligono)) {
+    echo "El punto está dentro del polígono.";
+} else {
+    echo "El punto está fuera del polígono.";
+}

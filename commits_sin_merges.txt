@@ -1,0 +1,125 @@
+723c3dd - Charly, 14/12/2023 : boedo
+
+7da3beb - Charly, 12/12/2023 : zonas
+
+ea6db10 - Charly, 12/12/2023 : martes
+
+2b01923 - Charly, 10/12/2023 : correccion
+
+18065dc - Charly, 10/12/2023 : ip
+
+e5621fb - Charly, 09/12/2023 : import masivo
+
+0f6028a - Charly, 08/12/2023 : x
+
+0cec1c6 - Charly, 08/12/2023 : getline
+
+0879998 - Charly, 08/12/2023 : rutas
+
+0544c7e - Charly, 08/12/2023 : remoto
+
+e797696 - Charly, 08/12/2023 : dic8
+
+8ab6eec - Charly, 07/12/2023 : remote
+
+79ed4fe - Charly, 07/12/2023 : hoy
+
+9bd0635 - Charly, 06/12/2023 : pruebas remotas
+
+483201f - Charly, 06/12/2023 : ultimo
+
+cb27309 - Charly, 06/12/2023 : dic 2023
+
+453184d - Charly, 26/08/2023 : faltante
+
+2ade91d - Charly, 25/08/2023 : buenos aires
+
+e1b5ba3 - Charly, 03/08/2023 : jueves pc
+
+b015d32 - Charly, 03/08/2023 : jueves
+
+46bc566 - Charly, 02/08/2023 : miercoles pc
+
+d99038e - Charly, 02/08/2023 : mier
+
+828b9ac - Charly, 01/08/2023 : animation full ok
+
+cf72fe6 - Charly, 31/07/2023 : finde pc
+
+c3b96b0 - Charly, 28/07/2023 : polygon note
+
+31e5cb6 - Charly, 27/07/2023 : jueves note
+
+0136622 - Charly, 26/07/2023 : ajuste filtros
+
+66a1adb - Charly, 26/07/2023 : miercoles pc
+
+694ca44 - Charly, 26/07/2023 : notebook miercoles
+
+2c682c1 - Charly, 25/07/2023 : martes pc
+
+24f6cef - Charly, 25/07/2023 : martes
+
+e7ed858 - Charly, 24/07/2023 : lunes pc
+
+1df1193 - Charly, 21/07/2023 : viernes note
+
+65b7ca6 - Charly, 20/07/2023 : jueves pc
+
+96a8f21 - Charly, 20/07/2023 : jueves note
+
+be95022 - Charly, 19/07/2023 : miercoles pc
+
+1169c5c - Charly, 18/07/2023 : martes pc
+
+5a67856 - Charly, 18/07/2023 : martes_note
+
+c43729b - Charly, 17/07/2023 : lunes
+
+5daf764 - Charly, 16/07/2023 : DB
+
+8005708 - Charly, 16/07/2023 : dom
+
+9be52e8 - Charly, 14/07/2023 : hoy
+
+ede18cb - Charly, 14/07/2023 : viernes_db
+
+9cc024c - Charly, 14/07/2023 : viernes_notebook
+
+a411511 - Charly, 13/07/2023 : jueves_note
+
+d0c1a1a - Charly, 12/07/2023 : MIERCOLES PC
+
+bcb0108 - Charly, 12/07/2023 : miercoles
+
+2c41c4d - Charly, 11/07/2023 : martes
+
+e638c82 - Charly, 10/07/2023 : lunes pc
+
+0f966f9 - Charly, 10/07/2023 : lunes
+
+ccfc965 - Charly, 09/07/2023 : dom
+
+8592d41 - Charly, 09/07/2023 : domingo 9 julio
+
+b9a1684 - Charly, 06/07/2023 : jueves
+
+4a6bc7c - Charly, 06/07/2023 : hoy
+
+c8e74b9 - Charly, 05/07/2023 : miercoles 5
+
+5e56084 - Charly, 05/07/2023 : modal reorder
+
+1053920 - Charly, 04/07/2023 : db
+
+426a237 - Charly, 04/07/2023 : correcciones
+
+4cdd64a - Charly, 03/07/2023 : lunespc
+
+5e424b3 - Charly, 03/07/2023 : lunes
+
+4a6cbe8 - Charly, 02/07/2023 : dom-2-7-2023
+
+de5fb30 - Charly, 01/07/2023 : pcgrande
+
+403ea39 - Charly, 20/06/2023 : inicio

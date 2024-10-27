@@ -1,0 +1,435 @@
+@font-face {
+    font-family: 'bebas_neueregular';
+    src: url('font/bebasneue-regular-webfont.woff2') format('woff2'),
+         url('font/bebasneue-regular-webfont.woff') format('woff'),
+         url('font/bebasneue-regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+  *{
+    font-family:bebas_neueregular;
+  }
+
+
+@keyframes girar {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+     }
+
+    @keyframes girar_reversa {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(-360deg);
+        }
+    }
+
+    @keyframes select-preload{
+            0% {
+              transform: rotate(0deg);
+            }
+
+            25% {
+              transform: rotate(90deg);
+            }
+
+            50%{
+             transform: rotate(180deg);
+            }
+
+            75% {
+              transform: rotate(270deg);
+            }
+
+            100%{
+              transform: rotate(360deg);
+            }
+        }
+
+    .bootstrap-table{
+      width: 100%;
+    }
+
+    .bootstrap-table table > thead > tr > th, .bootstrap-table table > tbody > tr > td{   /*ajusta col al contenido*/
+      white-space: nowrap;
+    }
+
+
+    .select2-container .select2-selection--single, 
+    .select2-container--default .select2-selection--single .select2-selection__arrow{
+       height: 38px;
+    }
+
+    a{
+      color: rgb(220, 53, 69);
+    }
+
+    a:hover{
+       color:#B71020
+    }
+
+
+    #preload{
+          position: fixed;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          background: rgba(0,0,0, .8);
+          z-index: 100000000;
+          display: none;
+          
+
+    }
+
+    .custom-inner-loading{
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .custom-preloader {
+      width: 300px;
+      height: 300px;
+      border: 20px solid red;
+      border-top: 20px solid white;
+      border-radius: 50%;
+      animation-name: girar;
+      animation-duration: .5s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+
+    .preloader-ball{
+      width: 150px;
+      height: auto;
+      animation-name: select-preload;
+      animation-duration: .5s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+
+    .custom-preloader-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      border: 10px solid gray;
+      border-top: 10px solid white;
+      border-radius: 100%;
+     /* animation-name: girar_reversa;
+      animation-duration: 1s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;*/
+    }
+
+
+  .swal2-icon{
+    font-size: 1em !important;
+  }
+
+  .swal2-container {
+    z-index: 9999999 !important;
+  }
+
+  /* Aumentar el z-index del cuadro de diálogo modal */
+  .swal2-popup {
+    z-index: 10000000 !important;
+  }
+
+  /* Aumentar el z-index del ícono del cuadro de diálogo */
+  .swal2-icon {
+     z-index: 10000001 !important;
+  }
+
+
+  .swal2-title {
+     z-index: 10000009 !important;
+  }
+
+  .div-footer{
+      width: 100%;
+      border-top: solid thin lightgray
+  }
+
+  .colectivo{
+      width: 368px;
+       position: relative;
+      padding-bottom: 18px;
+      filter: ;
+    }
+
+    .colectivo .aire{
+      width: 40px;
+      height: 5px;
+      border-radius: 2px 5px 0 0;
+      background: gray;
+    
+    }
+
+    .colectivo .techo{
+      width: 100%;
+      height: 10px;
+      border-radius: 0px 5px 0 0;
+      background: gray;
+    
+    }
+
+    .colectivo .body{
+      height: 70px;
+      background: black;
+
+    }
+
+    .colectivo .part{
+      width: 50px;
+      height: 100%;
+      position: relative;
+    }
+
+    .colectivo .part-p{
+      width: 40px;
+      height: 100%;
+    }
+
+    .colectivo .part-vt{
+      width: 20px;
+      height: 100%;
+    }
+
+    .colectivo .part-vd{
+      width: 10px;
+      height: 100%;
+    }
+
+    .colectivo .ventana{
+      width: 100%;
+      height: 30px;
+      position: relative;
+    }
+    .colectivo .ventana div{
+      width: 100%;
+      height: 100%;
+      background: lightgray;
+      border-radius: 2px;
+      position: absolute;
+      z-index: 100;
+    }
+
+    .colectivo .vp{
+      width: 100%;
+      height: 50px;
+      background: lightgray;
+      border-radius: 2px;
+    }
+
+    .colectivo .puerta{
+      padding: 2px;
+      position: absolute;
+      width: 40px;
+      z-index: 100;
+    }
+
+    .colectivo .s-puerta{
+      padding: 0 2px;
+    }
+
+    
+    .colectivo .part, .colectivo .part-p, .colectivo .part-vt{
+      padding: 2px;
+      position: relative;
+    }
+
+    .colectivo .vd{
+      width: 100%;
+      height: 50px;
+      position: relative;
+    }
+
+    .colectivo .vd div{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 5px 0 0 10px;
+      background: lightgray;
+      z-index: 100;
+    }
+
+    .colectivo .rueda{
+      position: absolute;
+      bottom: 0;
+      width: 36px;
+      height: 36px;
+      background: black;
+      border-radius: 100%;
+    }
+
+    .colectivo .taza{
+      background: lightgray;
+      border-radius: 100%;
+      width: 100%;
+      height: 100%;
+    }
+
+    .colectivo .box-raya{
+      width: 100%;
+      position: absolute;
+      top:15px;
+    }
+
+    .colectivo .franja{
+      width: 100%;
+      height: 35px;
+      background: yellow;
+    }
+
+    .colectivo .raya-a{
+      width: 100%;
+      height: 5px;
+      background: gray;
+    }
+
+    .colectivo .raya-b{
+      width: 100%;
+      height: 3px;
+      background: lightgray;
+    }
+
+    .colectivo .rueda-t{
+      left:80px;
+    }
+
+    .colectivo .rueda-r{
+      left:280px;
+    }
+
+    .icon-enabled{
+      font-size: 25px;
+    }
+
+  .btn-form{
+    margin-top: 30px;
+  }
+
+  .hand{
+    cursor: pointer;
+  }
+
+  .filter-1{
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, .5));
+}
+
+.filter-2{
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, .5));
+}
+
+.filter-3{
+    filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, .5));
+}
+
+.filter-4{
+    filter: drop-shadow(10px 10px 20px rgba(0, 0, 0, .5));
+}
+
+.filter-5{
+    filter: drop-shadow(20px 20px 40px rgba(0, 0, 0, .5));
+}
+
+.swal2-popup .swal2-actions .swal2-cancel {
+  order: 1;
+}
+
+/* Alinea el botón de "Confirmación" a la derecha */
+.swal2-popup .swal2-actions .swal2-confirm {
+  order: 2;
+}
+
+.filter-1{
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, .5));
+}
+
+.filter-2{
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, .5));
+}
+
+.filter-3{
+    filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, .5));
+}
+
+.filter-4{
+    filter: drop-shadow(10px 10px 20px rgba(0, 0, 0, .5));
+}
+
+.filter-5{
+    filter: drop-shadow(20px 20px 40px rgba(0, 0, 0, .5));
+}
+
+.color-mu{
+  width: 30px;
+  height: 100%;
+  background: lightgray;
+  padding: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.mu-color-list{
+  position: absolute;
+  top:70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 290px;
+  z-index: 10000000000;
+  border-radius: 0 0 5px 5px;
+  border:solid thin lightgray;
+}
+
+.mu-lr{
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  border:solid thin lightgray;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.mu-left, .mu-right, .color-mu-l, .color-mu-r{
+  width: 50%;
+  height: 100%;
+  background: gray;
+}
+
+
+.row-color{
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  border: solid thin lightgray;
+  overflow: hidden;
+}
+
+.row-color-left, .row-color-right{
+  width: 50%;
+  height: 100%;
+}
+
+
+
+  @media (min-width: 1024px) {
+    .modal-full{
+        width: 96%;
+        min-width: 96%;
+    }
+  }
+
+  

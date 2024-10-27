@@ -1,0 +1,43 @@
+Para calcular cuántos píxeles ocuparía un mapa de **Leaflet** con zoom 15 que muestre toda la ciudad de Buenos Aires, podemos usar algunos datos aproximados sobre Leaflet y las relaciones entre zoom, tamaño del mapa y geografía.
+
+1. **Zoom 15 en Leaflet**: Cada nivel de zoom en Leaflet sigue un patrón de escalamiento que se duplica por cada nivel de zoom. A **zoom 15**, el nivel de detalle es considerable, pero también el área cubierta es más pequeña. En este nivel, cada pixel suele representar aproximadamente **4.77 metros** en el mundo real.
+
+2. **Dimensiones de Buenos Aires**: Buenos Aires tiene aproximadamente **21 km de largo y 18 km de ancho**.
+
+### Cálculo de píxeles
+
+- **Largo de Buenos Aires (21 km):**
+  - A 4.77 metros por píxel, serían:
+    - \[ 21,000 metros ÷ 4.77 metros/píxel ≈ 4,403 píxeles \]
+  
+- **Ancho de Buenos Aires (18 km):**
+  - A 4.77 metros por píxel, serían:
+    - \[ 18,000 metros ÷ 4.77 metros/píxel ≈ 3,774 píxeles \]
+
+### Resultado
+Para mostrar toda la ciudad de Buenos Aires en **Leaflet con zoom 15**, necesitarías un mapa de aproximadamente:
+
+- **4,403 píxeles de largo** por **3,774 píxeles de ancho**.
+
+Este es un cálculo aproximado, ya que puede variar según las proyecciones y el área específica que estés cubriendo. Además, la relación entre el zoom y la escala puede tener pequeñas variaciones dependiendo de la configuración de Leaflet o el proveedor de mapas.
+
+
+
+
+
+CARGAR MAPA: SIGUIENTE FOTOGRAMA:
+
+// Obtener el centro y los límites del mapa actual
+var center = map.getCenter();
+var bounds = map.getBounds();
+
+// Calcular el desplazamiento del ancho del mapa
+var east = bounds.getEast(); // Longitud del borde derecho
+var west = bounds.getWest(); // Longitud del borde izquierdo
+var deltaLong = east - west; // Diferencia en longitud (ancho del mapa)
+
+// Nueva posición centrada a la derecha de la pantalla actual
+var newCenter = L.latLng(center.lat, center.lng + deltaLong);
+
+// Almacenar esta nueva posición para cargar en la nueva pestaña o reubicar el mapa
+window.open('your-map-url.html?lat=' + newCenter.lat + '&lng=' + newCenter.lng + '&zoom=' + map.getZoom(), '_blank');
