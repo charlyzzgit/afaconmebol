@@ -35,6 +35,11 @@
     .icon{
       height: 50px;
     }
+
+    .img-cup{
+      display: none;
+      height: 80px;
+    }
   </style>
 
   <div class="col-12 box-content flex-col-start-center p-2">
@@ -43,11 +48,25 @@
     </div>
     
     <div id="footer" class="col-12 flex-col-start-center pb-1 pl-1 pr-1 pt-2">
-      <div id="new-temporada" class="footer col-12 flex-col-center-center">
-        <img src="{{ asset('resources/default/conmebol.png') }}" height="60%">
-        <h2><b class="title"></b></h2>
+      
+          <div id="new-temporada" class="footer col-12 flex-col-center-center">
+            <img src="{{ asset('resources/default/conmebol.png') }}" height="60%">
+            <h2><b class="title"></b></h2>
+          </div>
         
-      </div>
+          <div id="sorteo" class="footer col-12 flex-row-around-center flex-wrap">
+            <img id="afa-c" class="img-cup m-1" src="{{ asset('resources/default/afac.png') }}">
+            <img id="afa-b" class="img-cup m-1" src="{{ asset('resources/default/afab.png') }}">
+            <img id="afa-a" class="img-cup m-1" src="{{ asset('resources/default/afaa.png') }}">
+            <img id="argentina" class="img-cup m-1" src="{{ asset('resources/default/argentina.png') }}">
+            <img id="recopa" class="img-cup m-1" src="{{ asset('resources/default/recopa.png') }}">
+            <img id="sudamericana" class="img-cup m-1" src="{{ asset('resources/default/sudamericana.png') }}">
+            <img id="libertadores" class="img-cup m-1" src="{{ asset('resources/default/libertadores.png') }}">
+            <div class="col-12 flex-row-center-center mt-3">
+              <h2><b class="title">sorteo</b></h2>
+            </div>
+          </div>
+        
     </div>
   </div>
 
@@ -156,6 +175,25 @@
 
    $(function(){
 
+      $('.footer').hide()
+
+    switch(MAIN.action){
+      case 'INICIO':
+        $('#new-temporada').show()
+      break
+      case 'SORTEO':
+        $.each(MAIN.copas, function(i, c){
+          $('#' + c).show()
+        })
+        setCristal($('#sorteo'), 'negro')
+        $('#sorteo').show()
+      break
+      case 'FECHA':
+        $('#fecha').show()
+      break
+    }
+    
+
      $('#menu').append(getItem('ligas'))
      $('#menu').append(getItem('afa a'))
      $('#menu').append(getItem('afa b'))
@@ -175,6 +213,17 @@
         preload(true)
           sendPostRequest("{{ route('main.new-temporada') }}", null, function(data){
             swalResponse('nueva temporada', data, function(){
+              location.reload()
+            })
+          })
+       })
+     })
+
+     $('#sorteo').click(function(){
+       swalSiNo('sorteo copas', '¿sortear ' + (MAIN.copas).join(' - ') + '?', function(){
+        preload(true)
+          sendPostRequest("{{ route('main.new-temporada') }}", null, function(data){
+            swalResponse('sorteo', data, function(){
               location.reload()
             })
           })
