@@ -49,7 +49,7 @@ class GrupoController extends Controller
 
       return $grupo->fase + 1;
     }
-
+    
 
 
     public function create($g, $equipos, $copa, $fase, $zona = null){

@@ -18,7 +18,7 @@ class CopaController extends Controller
 
    public function newFase(Request $request){
      return processTransaction(function() use($request){
-       $m = getMain();
+      
        $copa = $request->copa;
        $fase = (new GrupoController())->getNextFase($copa);
        $s = new Sorteo($copa, $fase);
@@ -27,6 +27,7 @@ class CopaController extends Controller
           $grupo_id = (new GrupoController())->create($g + 1, $grupo, $copa, $fase);
           (new PartidoController())->create($grupo_id);
        }
+       (new PartidoController())->cronograma($copa, $fase);
 
      }, 'Copa '.$copa.' sorteada', 'Error de sorteo');
 
