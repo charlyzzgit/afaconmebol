@@ -9,4 +9,13 @@ class Grupo extends Model
 {
     use HasFactory;
     protected $table = 'grupos';
+
+
+    public function equiposDefault(){
+      return $this->hasMany('EquipoGrupo')->orderBy('order');
+    }
+
+    public function equiposPosition(){
+      return $this->hasMany('EquipoGrupo')->orderBy('pos');
+    }
 }
