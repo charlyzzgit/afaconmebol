@@ -179,11 +179,14 @@
         if(data.result == 'OK'){
             INDEX++
             if(INDEX == MAIN.copas.length){
-              preload()
-              Swal.fire('sorteo', 'Sorteo finalizado', 'success')
-              return
+              finSorteo()
+              //return
+            }else{
+              sortear()  
             }
-            sortear()    
+            
+          
+          
         }else{
           preload()
           Swal.fire('sorteo', data.message, 'error')
@@ -191,6 +194,20 @@
       })
    }
 
+   function finSorteo(){
+      sendPostRequest("{{ route('main.sorteo') }}", {fin: true}, function(data){
+        preload()
+        Swal.fire('FIN SORTEO', 'Sorteo finalizado', 'success').then(function(){
+          location.reload()
+        })
+        // swalResponse('sorteo', data, function(){
+        //   location.reload()
+        // })
+
+      })
+   }
+
+   
 
    $(function(){
 

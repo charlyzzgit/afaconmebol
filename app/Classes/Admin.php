@@ -20,6 +20,11 @@ class Admin{
       $this->main = Main::first();
     }
 
+    public function processed(){
+      $this->calendar->procesado = true;
+      $this->calendar->save();
+    }
+
 
     public function getData(){
       return [

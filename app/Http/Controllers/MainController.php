@@ -26,6 +26,7 @@ class MainController extends Controller
 
     public function restore(){
       set_time_limit(0);
+
         $system = new System();
         if(!$system->getBackup('calendar')) return getResponse(false, 'Error Restore Calendario');
         if(!$system->getBackup('cupos_afa')) return getResponse(false, 'Error Restore Cupos Afa');
@@ -40,7 +41,7 @@ class MainController extends Controller
     }
 
   public function setSystem(Request $request){
-      return $request->restore ? $this->restore() : $this->backup();
+      return $request->action == 'restore' ? $this->restore() : $this->backup();
     }
 
   private function nextCalendar(){

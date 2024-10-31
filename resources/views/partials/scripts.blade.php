@@ -326,8 +326,8 @@
   }
 
   function swalResponse(title, response, callback){
-    Swal.fire(title, data.message, data.result == 'OK' ? 'success' : 'error').then(function(){
-         if(data.result == 'OK'){
+    Swal.fire(title, response.message, response.result == 'OK' ? 'success' : 'error').then(function(){
+         if(response.result == 'OK'){
             try{
                 window.callback = function(data){
                   callback()
