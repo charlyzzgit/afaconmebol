@@ -34,13 +34,18 @@ class Sorteo{
     }
 
     private function getEquipo($id){
-      return Equipo::select('id', 'liga_id', 'clasico_id', 'name')->find($id);
+      $eq = Equipo::select('id', 'liga_id', 'clasico_id', 'name')->find($id);
+      return $eq->toArray();
     }
 
 
     private function sorteoRecopa(){
-      $this->grupos[] = $this->getEquipo($this->main->lib);
-      $this->grupos[] = $this->getEquipo($this->main->sud);
+      $this->grupos[] = [
+                            $this->getEquipo($this->main->lib),
+                            $this->getEquipo($this->main->sud)
+                          ];
       return $this->grupos;
     }
   }
+
+

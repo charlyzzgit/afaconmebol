@@ -56,8 +56,10 @@ Route::prefix('equipos')->group(function(){
 });
 
 Route::prefix('main')->group(function(){
-  Route::post('set-system', [App\Http\Controllers\HomeController::class, 'setSystem'])->name('main.set-system');
+  Route::post('set-system', [App\Http\Controllers\MainController::class, 'setSystem'])->name('main.set-system');
   Route::post('new-temporada', [App\Http\Controllers\MainController::class, 'newTemporada'])->name('main.new-temporada');
+  Route::post('sorteo', [App\Http\Controllers\CopaController::class, 'newFase'])->name('main.sorteo');
+
 });
 
 Route::prefix('home')->group(function(){

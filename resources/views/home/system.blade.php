@@ -53,7 +53,7 @@
             text = (action == 'backup' ? '¿Hacer copia de seguridad?' : '¿restaurar sistema?')
         swalSiNo(title, text, function(){
           preload(true)
-          sendPostRequest("{{ route('home.set-system') }}", {action: action}, function(data){
+          sendPostRequest("{{ route('main.set-system') }}", {action: action}, function(data){
             preload()
             Swal.fire(title, data.message, data.result == 'OK' ? 'success' : 'error').then(function(){
               if(action == 'restore'){

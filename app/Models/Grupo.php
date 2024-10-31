@@ -12,10 +12,10 @@ class Grupo extends Model
 
 
     public function equiposDefault(){
-      return $this->hasMany('EquipoGrupo')->orderBy('order');
+      return $this->hasMany('App\Models\EquipoGrupo')->orderBy('order');
     }
 
     public function equiposPosition(){
-      return $this->hasMany('EquipoGrupo')->orderBy('pos');
+      return $this->hasMany('App\Models\EquipoGrupo')->orderBy('pos');
     }
 }

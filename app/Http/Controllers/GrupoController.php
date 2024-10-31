@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Grupo;
 use App\Models\EquipoGrupo;
+use App\Models\Liga;
 class GrupoController extends Controller
 {
     public function getLastFase($copa, $anio, $zona = null){
@@ -21,9 +22,9 @@ class GrupoController extends Controller
       return $grupo ? $grupo->fase : null;
     }
 
-    public function getNextFase($copa, $anio, $zona = null){
-      
-      $grupo = Grupo::where('anio', $anio)
+    public function getNextFase($copa, $zona = null){
+      $m = getMain();
+      $grupo = Grupo::where('anio', $m->anio)
                     ->where('copa', $copa);
       if($zona){
         $grupo = $grupo->where('zona', $zona);
@@ -39,7 +40,7 @@ class GrupoController extends Controller
               case 'B': return -1;
               default: return 0;
             }
-          case 'argentina': retun 1;
+          case 'argentina': return 1;
           case 'sudamericana': return 0;
           case 'libertadores': return 0;
           default: return 5;
@@ -70,20 +71,25 @@ class GrupoController extends Controller
 
     private function addEquipos($grupo_id, $equipos){
       $grupo = Grupo::find($grupo_id);
-      foreach($equipos as $n => $e){
+      $order = 1;
+      foreach($equipos as $e){
         $eg = new EquipoGrupo();
-        $e->grupo_id = $grupo_id;
-        $e->equipo_id = $e['id'];
-        $e->equipo = $e['name'];
-        $e->order = $n + 1;
-        $e->nivel = isset($e['nivel']) ? $e['nivel'] : $this->getNivel($e['liga_id']);
-        $e->save();
+        $eg->grupo_id = $grupo_id;
+        $eg->equipo_id = $e['id'];
+        $eg->equipo = $e['name'];
+        $eg->order = $order++;
+        $eg->nivel = isset($e['nivel']) ? $e['nivel'] : $this->getNivel($e['liga_id']);
+        $eg->save();
         
       }
     }
 
     private function getNivel($liga_id){
       $liga = Liga::find($liga_id);
+      if(!$liga){
+        throw new \Exception('No se econtro la liga con id: '.$liga_id);
+        
+      }
       switch($liga->name){
         case 'brasil': return 10;
         case 'argentina': return 9;

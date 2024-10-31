@@ -26,16 +26,16 @@ class PartidoController extends Controller
 
 
     public function create($grupo_id){
-      $grupo = Grupo::with('equipos_default')->find($grupo_id);
-      $fix = $this->getFixture(count($grupo->equipos_default));
+      $grupo = Grupo::with('equiposDefault')->find($grupo_id);
+      $fix = $this->getFixture(count($grupo->equiposDefault));
       foreach($fix as $f => $fecha){
         foreach($fecha as $p){
-          $loc = $grupo->equipos_default[$p['loc']];
-          $vis = $grupo->equipos_default[$p['vis']];
+          $loc = $grupo->equiposDefault[$p['loc']];
+          $vis = $grupo->equiposDefault[$p['vis']];
           $partido = new Partido();
           $partido->grupo_id = $grupo->id;
           $partido->loc_id = $loc->equipo_id;
-          $partido->vis_id = $vis->equipo_id
+          $partido->vis_id = $vis->equipo_id;
           $partido->local = $loc->equipo;
           $partido->visitante = $vis->equipo;
           $partido->anio = $grupo->anio;
@@ -46,6 +46,28 @@ class PartidoController extends Controller
           $partido->relevancia = $loc->nivel + $vis->nivel;
           $partido->save();  
         }
+      }
+    }
+
+
+    public function cronograma($copa, $fase, $zona = null){
+      $m = getMain();
+      $partidos = Partido::where('anio', $m->anio)
+                         ->where('copa', $copa)
+                         ->where('fase', $fase);
+      if($zona){
+        $partidos = $partidos->where('zona', $zona);
+      }
+
+      $partidos = $partidos->get();
+      switch($copa){
+        case 'recopa':
+          foreach($partidos as $p){
+            $p->dia = 2;
+            $p->hora = 21;
+            $p->save();
+          }
+        break;
       }
     }
 }

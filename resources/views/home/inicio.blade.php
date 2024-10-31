@@ -71,6 +71,7 @@
   </div>
 
  <script>
+  var INDEX = 0
    function getItem(action){
      var c = $('<div class="col-6 menu-item p-1">\
                 <div class="inner col-12 flex-col-start-center p-1">\
@@ -172,6 +173,24 @@
      return c
    }
 
+   function sortear(){
+    var copa = MAIN.copas[INDEX]
+     sendPostRequest("{{ route('main.sorteo') }}", {copa: copa}, function(data){
+        if(data.result == 'OK'){
+            INDEX++
+            if(INDEX == MAIN.copas.length){
+              preload()
+              Swal.fire('sorteo', 'Sorteo finalizado', 'success')
+              return
+            }
+            sortear()    
+        }else{
+          preload()
+          Swal.fire('sorteo', data.message, 'error')
+        }
+      })
+   }
+
 
    $(function(){
 
@@ -222,11 +241,7 @@
      $('#sorteo').click(function(){
        swalSiNo('sorteo copas', '¿sortear ' + (MAIN.copas).join(' - ') + '?', function(){
         preload(true)
-          sendPostRequest("{{ route('main.new-temporada') }}", null, function(data){
-            swalResponse('sorteo', data, function(){
-              location.reload()
-            })
-          })
+          sortear()
        })
      })
 

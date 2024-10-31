@@ -29,7 +29,7 @@ class CopaController extends Controller
        }
        (new PartidoController())->cronograma($copa, $fase);
 
-     }, 'Copa '.$copa.' sorteada', 'Error de sorteo');
+     }, 'Copa '. $request->copa.' sorteada', 'Error de sorteo');
 
    }
 }
