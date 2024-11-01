@@ -40,6 +40,14 @@
       display: none;
       height: 80px;
     }
+
+    #fecha .copa{
+      font-size: 30px;
+    }
+
+    #fecha .fase-fecha{
+      font-size: 25px;
+    }
   </style>
 
   <div class="col-12 box-content flex-col-start-center p-2">
@@ -65,6 +73,12 @@
             <div class="col-12 flex-row-center-center mt-3">
               <h2><b class="title">sorteo</b></h2>
             </div>
+          </div>
+
+          <div id="fecha" class="footer col-12 flex-col-center-center">
+              <b class="copa"></b>
+              <img class="cup mt-2 mb-2" height="150px">
+              <b class="fase-fecha"></b>
           </div>
         
     </div>
@@ -215,6 +229,8 @@
 
     switch(MAIN.action){
       case 'INICIO':
+        setCristal($('#new-temporada'), 'negro')
+        $('#new-temporada .title').html('temporada ' + (MAIN.anio + 1))
         $('#new-temporada').show()
       break
       case 'SORTEO':
@@ -225,7 +241,17 @@
         $('#sorteo').show()
       break
       case 'FECHA':
-        $('#fecha').show()
+        if(MAIN.iniciada){
+
+        }else{
+          setCristal($('#fecha'), MAIN.colorcopa.a)
+          colBorde($('#fecha'), MAIN.colorcopa.b)
+          $('#fecha .copa').html(MAIN.namecopa)
+          $('#fecha .fase-fecha').html([MAIN.namefase, MAIN.namefecha].join(' - '))
+          $('#fecha .cup').prop('src', ASSET + MAIN.imagecopa)
+          $('#fecha').show()
+        }
+        
       break
     }
     
@@ -242,8 +268,7 @@
      $('#menu').append(getItem('system'))
 
 
-     setCristal($('#new-temporada'), 'negro')
-     $('#new-temporada .title').html('temporada ' + (MAIN.anio + 1))
+     
      $('#new-temporada').click(function(){
        swalSiNo('nueva temporada', '¿iniciar temporada ' + (MAIN.anio + 1) + '?', function(){
         preload(true)
