@@ -74,6 +74,7 @@
             background-size: cover;
             background-repeat: no-repeat;
             background-image: url("{{ asset('resources/fondos/'.$fondo) }}");
+            overflow: hidden;
         }
 
         .box-content{

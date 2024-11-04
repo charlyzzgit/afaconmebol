@@ -32,7 +32,7 @@
    $(function(){
       preload()
       footer.empty()
-      footer.append(getBtnFooter('gris', null, 'fas fa-home text-white', function(){
+      footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
         nextPage("{{ route('home') }}", ['home', 'inicio'])
       }))
 

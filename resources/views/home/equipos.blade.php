@@ -75,14 +75,14 @@
 
    $(function(){
     footer.empty()
-      footer.append(getBtnFooter('gris', null, 'fas fa-home text-white', function(){
+      footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
         nextPage("{{ route('home') }}", ['home', 'inicio'])
       }))
-      footer.append(getBtnFooter('negro', null, 'fas fa-angle-left text-white', function(){
+      footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
         nextPage("{{ route('home') }}", ['home', 'ligas'], true)
       }))
 
-      footer.append(getBtnFooter('verde', null, 'fas fa-bars text-white', function(){
+      footer.append(getBtnFooter('verde', null, 'fas fa-bars', function(){
         listar()
       }))
 

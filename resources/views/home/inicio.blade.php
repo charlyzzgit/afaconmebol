@@ -189,7 +189,8 @@
      bg = 'gris',
      isIcon = false,
      page = null,
-     params = ['home']
+     params = ['home'],
+     getvars = []
      switch(action){
       case 'ligas':
         icon = 'conmebol.png'
@@ -201,36 +202,51 @@
         icon = 'afaa.png'
         label = 'afa a'
         bg = 'rojo'
+        page = 'copa'
+        getvars = ['afa-a', '::']
         break
       case 'afa b':
         icon = 'afab.png'
         label = 'afa b'
         bg = 'azul'
+        page = 'copa'
+        getvars = ['afa-b', '::']
         break
       case 'afa c':
         icon = 'afac.png'
         label = 'afa c'
         bg = 'verde'
+        page = 'copa'
+        getvars = ['afa-c', '::']
         break
       case 'argentina':
         icon = 'argentina.png'
         label = 'argentina'
         bg = 'celeste'
+        page = 'copa'
+        getvars = ['argentina', '::']
         break
       case 'recopa':
         icon = 'recopa.png'
         label = 'recopa'
         bg = 'verde'
+        page = 'copa'
+        getvars = ['recopa', '::']
+
         break
       case 'sudamericana':
         icon = 'sudamericana.png'
         label = 'sudamericana'
         bg = 'azul'
+        page = 'copa'
+        getvars = ['sudamericana', '::']
         break
       case 'libertadores':
         icon = 'libertadores.png'
         label = 'libertadores'
         bg = 'rojo'
+        page = 'copa'
+        getvars = ['libertadores', '::']
         break
       case 'calendar':
         isIcon = true
@@ -263,6 +279,12 @@
 
      if(page != null){
        params.push(page)
+     }
+
+     if(getvars.length != 0){
+      $.each(getvars, function(i, gv){
+        params.push(gv)
+      })
      }
      
     c.data('params', params.join('.'))

@@ -832,11 +832,13 @@ function parseColor(color){
 function getBtnFooter(color, src, icon, callback){
   var btn = $('<div></div>')
   btn.css({
-    width:'40px',
-    height: '40px',
-    borderRadius:'100%',
+    width:'50px',
+    height: '50px',
+    //borderRadius:'100%',
     cursor:'pointer',
-    background: getRgb(parseColor(color).rgb)
+    color: getRgb(parseColor(color).rgb),
+    fontSize: '25px'
+    //background: getRgb(parseColor(color).rgb)
   }).addClass('flex-row-center-center ml-1 mr-1')
   if(src !== null){
     var img = $('<img>')
