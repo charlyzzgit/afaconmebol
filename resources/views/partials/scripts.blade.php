@@ -388,6 +388,7 @@
     if(params != null){
       url += '/' + params.join('/')
     }
+    log('url', [url])
     LAST_URL = url
      preload(true)
      $('#content').load(url)
@@ -615,6 +616,15 @@ function setBg(obj, col){
   
 }
 
+function bg(obj, rgb){
+  if(rgb != null){
+    $(obj).css('background', 'rgb(' + rgb + ')')
+  }else{
+    $(obj).css('background', 'transparent')
+  }
+  
+}
+
 function bgCristal(obj, col){
   $(obj).css('background', 'rgba(' + col.r + ', ' + col.g + ', ' + col.b + ', .5)')
 }
@@ -624,6 +634,24 @@ function setCristalDuo(obj, cola, colb){
   var rgbaA = [cola.r, cola.g, cola.b, .5],
     rgbaB = [colb.r, colb.g, colb.b, .5]
   $(obj).css('background', 'linear-gradient(0deg, rgba(' + rgbaA.join(', ') + '), rgba(' + rgbaB.join(', ') + '))')
+}
+
+function toRGBA(rgb, alpha){
+  var chanels = rgb.split(',')
+  chanels.push(alpha)
+  return chanels.join(',')
+}
+
+function setCristalRGB(obj, cola, colb){
+
+  var rgbaA = toRGBA(cola.rgb, .5),
+      rgbaB = colb !== undefined ? toRGBA(colb.rgb, .5) : null
+  if(rgbaB != null){
+    $(obj).css('background', 'linear-gradient(0deg, rgba(' + rgbaA + '), rgba(' + rgbaB + '))')
+  }else{
+    $(obj).css('background', 'rgba(' + rgbaA + ')')
+  }
+  
 }
 
 function setBackDuo(obj, cola, colb){
@@ -671,6 +699,27 @@ function textColor(obj, a, b, borde){
   $(obj).css('text-stroke-width', borde + 'px');
 }
 
+function setText(obj, a, b, borde){
+  $(obj).css('text-fill-color', getRgb(a.rgb));
+
+  $(obj).css('text-fill-color', getRgb(a.rgb));
+  $(obj).css('text-stroke-color', getRgb(b.rgb));
+  $(obj).css('text-stroke-width', borde + 'px');
+}
+
+function multiText(els, a, b, border){
+  $.each(els, function(i, el){
+    setText(el, a, b, border)
+  })
+}
+
+function parseALT(eq, apply, compare, alternative){
+  if(eq['color_' + apply].rgb == eq['color_' + compare].rgb){
+    return eq['color_' + alternative]
+  }
+  return eq['color_' + apply]
+}
+
 function colBorde(obj, col){
   if(col != null){
     $(obj).css('border-color', getRgb(parseColor(col).rgb));
@@ -699,13 +748,18 @@ function setImage(obj, dir, image){
   obj.prop('src', dir + '/' + image)
 }
 
-function setEquipoUI(el, eq){
+function setEquipoUI(el, eq, stroke){
   var a = eq.color_a.rgb,
       b = eq.color_b.rgb,
-      c = eq.color_c.rgb
+      c = eq.color_c.rgb,
+      stk = stroke !== undefined ? stroke : .2
+
   setGradient(el, 180, [b, a, a, c], [0, 20, 80, 100])
-  textColorUI(el.find('.name'), b, c, .2)
-  textColorUI(el.find('.pts'), b, c, .2)
+  if(b == c){
+    c = a
+  }
+  textColorUI(el.find('.name'), b, c, stk)
+  textColorUI(el.find('.pts'), b, c, stk)
   colBordeUI(el, b)
 }
 
@@ -829,6 +883,139 @@ function getColorGrupo(g){
     b:null
   }
 }
+
+
+function getEl(parent, reference, id){
+  var prefix = id !== undefined ? '#' : '.'
+  return parent.find(prefix + reference)
+}
+
+function setImageCopa(img, copa){
+  img.prop('src', ASSET + 'default/' + copa + '.png')
+}
+
+function setImageFlag(img, src){
+  img.prop('src', ASSET + src)
+}
+
+
+function getNameFase(copa, fase, zona){
+  switch(fase){
+    case -2: return 'fase preliminar';
+    case -1: return '1ª fase';
+    case 0:
+    switch(copa){
+        case 'afa': return '2ª fase';
+        default: return 'fase de grupos';
+    }
+    case 1:
+      switch(copa){
+        case 'afa': return '3ª fase';
+        default: return 'dieciseisavos de final';
+    }
+    case 2: return 'octavos de final';
+    case 3: return 'cuartos de final';
+    case 4: return 'semifinales';
+    default: return 'final';
+  }
+}
+
+function getNameFecha(fase, fecha){
+  if(fase < 1){
+    return fecha + 'ª fecha';
+  }
+
+  return fecha == 1 ? 'partido de ida' : 'partido de vuelta';
+}
+
+function getTableCell(text, isheader, first){
+ // log('cell', [text])
+  var cell = $('<div class="table-cell p-1"></div>')
+  if(first === undefined){
+    cell.css({borderLeft: 'solid thin ' + getRgb(text.b.rgb) })
+  }
+  
+    if(isheader){
+      cell.addClass('flex-row-center-center')
+      if(text.column == 'estado'){
+        var icon = $('<img>')
+        icon.css({height: '20px'}).prop('src', ASSET + 'default/logo.png')
+        cell.append(icon)
+      }else{
+        cell.html(text.column)
+      }
+      
+    }else{
+      cell.addClass('flex-row-center-center')
+      cell.html(text.value)
+    }
+  
+
+  
+  setText(cell, text.a, text.b, .5)
+  cell.css({width: '10%'})
+  return cell
+}
+
+function getTableRow(items, rgb, isheader){
+    var row = $('<div class="col-12 flex-row-start-center"></div>')
+    $.each(items, function(i, it){
+      
+      if(i == 0){
+        row.append(getTableCell(it, isheader, true))
+      }else{
+        row.append(getTableCell(it, isheader))
+      }
+      
+    })
+
+    if(isheader){
+      row.css({borderBottom: 'solid thin ' + getRgb(rgb)})
+    }
+
+    return row
+}
+
+function getTableItem(eg, column){
+  var it =  {
+              a:eg.equipo.color_b,
+              b:eg.equipo.color_c,
+              value: eg[column],
+              column: column
+            }
+
+  // if(it.a.name == it.b.name){
+  //   it.b = eg.equipo.color_a
+  // }
+
+  return it
+}
+
+function getTable(eq){
+  var table = $('<div class="equipo-table col-12 flex-col-start-center mt-1"></div>'),
+      items = []
+  table.css({border: 'solid thin ' + getRgb(eq.equipo.color_b.rgb)})
+  items.push(getTableItem(eq, 'j'))
+  items.push(getTableItem(eq, 'g'))
+  items.push(getTableItem(eq, 'e'))
+  items.push(getTableItem(eq, 'p'))
+  items.push(getTableItem(eq, 'gf'))
+  items.push(getTableItem(eq, 'gc'))
+  items.push(getTableItem(eq, 'd'))
+  items.push(getTableItem(eq, 'pts'))
+  items.push(getTableItem(eq, 'pos'))
+  items.push(getTableItem(eq, 'estado'))
+
+  table.append(getTableRow(items, eq.equipo.color_b.rgb, true))
+
+
+  table.append(getTableRow(items, eq.equipo.color_b.rgb, false))
+
+  return table
+}
+
+
+
 
   
 </script>

@@ -9,4 +9,8 @@ class EquipoGrupo extends Model
 {
     use HasFactory;
     protected $table = 'equipos_grupo';
+
+    public function equipo(){
+        return $this->belongsTo('App\Models\Equipo');
+    }
 }

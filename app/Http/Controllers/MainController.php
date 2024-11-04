@@ -61,4 +61,14 @@ class MainController extends Controller
         $this->nextCalendar();
     }, 'Temporada iniciada', 'error al iniciar');
   }
+
+  public function initFecha(Request $request){
+    return processTransaction(function() use($request){
+        $calendar = Calendar::where('procesado', 0)->first();
+        $calendar->iniciada = true;
+        $calendar->save();
+    }, 'Fecha iniciada', 'error al iniciar');
+
+
+  }
 }

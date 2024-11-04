@@ -59,6 +59,8 @@ Route::prefix('main')->group(function(){
   Route::post('set-system', [App\Http\Controllers\MainController::class, 'setSystem'])->name('main.set-system');
   Route::post('new-temporada', [App\Http\Controllers\MainController::class, 'newTemporada'])->name('main.new-temporada');
   Route::post('sorteo', [App\Http\Controllers\CopaController::class, 'newFase'])->name('main.sorteo');
+  Route::post('init-fecha', [App\Http\Controllers\MainController::class, 'initFecha'])->name('main.init-fecha');
+  
 
 });
 
@@ -70,7 +72,7 @@ Route::prefix('home')->group(function(){
    Route::get('ligas', [App\Http\Controllers\LigaController::class, 'index'])->name('home.ligas');
    Route::get('equipos/{liga_id}', [App\Http\Controllers\LigaController::class, 'equipos'])->name('home.equipos');
 
-   
+   Route::get('copa/{copa_zona}/{fase}/{id?}', [App\Http\Controllers\CopaController::class, 'index'])->name('home.copa');
 });
 
 

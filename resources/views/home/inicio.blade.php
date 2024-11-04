@@ -1,5 +1,14 @@
 
   <style>
+
+    @keyframes estadio {
+        from {
+            transform: rotate(360deg);
+        }
+        to {
+            transform: rotate(0deg);
+        }
+    }
     .menu-item{
 /*      height: 100px;*/
     }
@@ -46,7 +55,49 @@
     }
 
     #fecha .fase-fecha{
-      font-size: 25px;
+      font-size: 20px;
+    }
+
+    #partido .cup{
+      height: 30px;
+    }
+
+    #partido .flag{
+      height: 30px;
+    }
+
+    #partido .header{
+      line-height: 1;
+    }
+
+    #partido .names{
+      font-size: 30px;
+      line-height: 1;
+      height: 60px;
+    }
+
+    #partido .name-vis{
+      text-align: right;
+    }
+
+    #partido .jugador{
+      height: 150px;
+      width: 50px;
+      object-fit: cover;
+    }
+
+    #partido .escudo{
+      height: 50px;
+    }
+
+    #partido .estadio{
+      height: 60px;
+      animation: estadio 20s linear infinite;
+    }
+
+    #partido .line{
+      height: 1px;
+      background: white;
     }
   </style>
 
@@ -80,9 +131,48 @@
               <img class="cup mt-2 mb-2" height="150px">
               <b class="fase-fecha"></b>
           </div>
-        
+
+          <div id="partido" class="footer col-12 flex-col-start-center p-2">
+            <div class="col-12 flex-row-between-center">
+              <img class="cup" src="{{ asset('resources/default/recopa.png') }}">
+              <div class="header flex-col-start-center">
+                <b class="copa-fase">copa - fase</b>
+                <b class="grupo-fecha mt-1"> grupo - fecha</b>
+              </div>
+              <img class="flag" src="{{ asset('resources/ligas/argentina/bandera.png') }}">
+            </div>
+            <div class="line col-12 mb-1"></div>
+            <div class="names col-12 flex-row-between-start">
+              <b class="name-loc">independiente rivadavia</b>
+              <b class="name-vis">independiente rivadavia</b>
+            </div>
+            <div class="col-12 flex-row-between-center">
+              <img class="local jugador" src="{{ asset('resources/default/jugador.png') }}" >
+              <div class="col-8 flex-col-start-center">
+                <div class="col-12 flex-row-between-center">
+                  <img class="esc-loc escudo" src="{{ asset('resources/default/escudo.png') }}">
+                  <img class="esc-vis escudo" src="{{ asset('resources/default/escudo.png') }}">
+                </div>
+                  <b class="name-estadio">estadio independiente rivadavia</b>
+                  <!-- <div class="col-12 flex-row-between-center"> -->
+                    
+                    <img class="estadio" src="{{ asset('resources/default/estadio.png') }}">
+                    
+                  <!-- </div> -->
+                  <b class="dia-hora">miercoles - 21 hs.</b>
+              </div>
+              <img class="visitante jugador" src="{{ asset('resources/default/jugador.png') }}" >
+            </div>
+          </div>
+      
     </div>
   </div>
+
+
+
+
+
+
 
  <script>
   var INDEX = 0
@@ -221,6 +311,65 @@
       })
    }
 
+   function setPartido(p){
+      var footer = $('#partido'),
+          header = getEl(footer, 'header'),
+          copa = getEl(footer, 'cup'),
+          copafase = getEl(footer, 'copa-fase'),
+          grupofecha = getEl(footer, 'grupo-fecha'),
+          flag = getEl(footer, 'flag'),
+          line = getEl(footer, 'line'),
+          nameloc = getEl(footer, 'name-loc'),
+          namevis = getEl(footer, 'name-vis'),
+          local = getEl(footer, 'local'),
+          visitante = getEl(footer, 'visitante'),
+          escloc = getEl(footer, 'esc-loc'),
+          escvis = getEl(footer, 'esc-vis'),
+          nameestadio = getEl(footer, 'name-estadio'),
+          estadio = getEl(footer, 'estadio'),
+          diahora = getEl(footer, 'dia-hora'),
+          eloc = p.local,
+          evis = p.visitante
+
+      setCristalRGB(footer, eloc.color_a)
+
+      nameloc.html(eloc.name)
+      namevis.html(evis.name)
+
+      bg(line, eloc.color_b.rgb)
+
+      copafase.html([p.copa, getNameFase(p.copa, p.fase)].join(' - '))
+      if(p.is_final){
+        grupofecha.html(getNameFecha(p.fase, p.fecha))
+      }else{
+        grupofecha.html([(p.is_define ? 'llave ' : 'grupo ') + p.grupo.grupo, getNameFecha(p.fase, p.fecha)].join(' - '))
+      }
+      
+
+      multiText([copafase, grupofecha, nameestadio, diahora], eloc.color_b, parseALT(eloc, 'c', 'b', 'a'), .05)
+
+      setText(nameloc, eloc.color_b, parseALT(eloc, 'c', 'b', 'a'), .5)
+      setText(namevis, evis.color_a, evis.color_b, .5)
+
+      setImageCopa(copa, p.copa)
+
+      setImageFlag(flag, eloc.liga.bandera)
+
+      setImageEquipo(local, eloc, 'local')
+      setImageEquipo(escloc, eloc, 'escudo')
+
+      setImageEquipo(visitante, evis, 'local')
+      setImageEquipo(escvis, evis, 'escudo')
+
+      setImageEquipo(estadio, eloc, 'estadio')
+
+      header.click(function(){
+        nextPage("{{ route('home') }}", ['home', 'copa', p.copa, p.fase, p.grupo_id], true)
+      })
+
+
+   }
+
    
 
    $(function(){
@@ -242,7 +391,8 @@
       break
       case 'FECHA':
         if(MAIN.iniciada){
-
+          setPartido(MAIN.partido)
+          $('#partido').show()
         }else{
           setCristal($('#fecha'), MAIN.colorcopa.a)
           colBorde($('#fecha'), MAIN.colorcopa.b)
@@ -285,6 +435,15 @@
         preload(true)
           sortear()
        })
+     })
+
+     $('#fecha').click(function(){
+      preload(true)
+       sendPostRequest("{{ route('main.init-fecha') }}", null, function(data){
+        
+        location.reload()
+
+      })
      })
 
     preload()

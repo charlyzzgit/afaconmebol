@@ -13,8 +13,12 @@ class CopaController extends Controller
     //
 
 
-   public function index($copa){
-     return view('home.copa');
+   public function index($copa_zona, $fase, $grupo_id = null){
+    $m = getMain();
+    $copa = copaZona($copa_zona, 0);
+    $zona = copaZona($copa_zona, 1);
+    $grupos = (new GrupoController())->getGrupos($m->anio, $copa, $fase, $zona);
+    return view('home.copa', compact('copa', 'fase', 'zona', 'grupos'));
    }
 
    public function newFase(Request $request){

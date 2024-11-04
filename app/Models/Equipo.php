@@ -21,4 +21,8 @@ class Equipo extends Model
     public function colorC(){
       return $this->belongsTo('App\Models\Color', 'c', 'id');
     }
+
+    public function liga(){
+      return $this->belongsTo('App\Models\Liga');
+    }
 }

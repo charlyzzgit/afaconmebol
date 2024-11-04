@@ -413,3 +413,7 @@ function getMain(){
   return \App\Models\Main::first();
 }
 
+function copaZona($str, $index){
+  $p = explode('-', $str);
+  return isset($p[$index]) ? $p[$index] : null;
+}

@@ -48,4 +48,6 @@ class Liga extends Model
       return $this->hasMany('App\Models\Equipo')->where('copa', 'sudamericana')->orderBy('pos_clasificacion');//->orderBy('pts', 'desc')->orderBy('id');
     }
 
+    
+
 }

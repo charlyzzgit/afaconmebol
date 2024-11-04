@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Main;
 use App\Models\Calendar;
 use DB;
+use App\Http\Controllers\PartidoController;
 
 
 
@@ -44,7 +45,7 @@ class Admin{
                 'procesada' => $this->calendar->procesado ? true : false,
                 'mes' =>$this->calendar->mes,
                 'semana' => $this->calendar->semana,
-                'partido' => null
+                'partido' => (new PartidoController())->nextPartido($this->main->anio, $namecopa, $this->calendar->fase, $this->calendar->fecha, null) //zona = getZona(copa)
 
       ];
     }

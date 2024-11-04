@@ -28,6 +28,7 @@ class PartidoController extends Controller
     public function create($grupo_id){
       $grupo = Grupo::with('equiposDefault')->find($grupo_id);
       $fix = $this->getFixture(count($grupo->equiposDefault));
+      $count = count($grupo->equiposDefault);
       foreach($fix as $f => $fecha){
         foreach($fecha as $p){
           $loc = $grupo->equiposDefault[$p['loc']];
@@ -43,6 +44,9 @@ class PartidoController extends Controller
           $partido->fase = $grupo->fase;
           $partido->fecha = $f + 1;
           $partido->zona = $grupo->zona;
+          $partido->is_define = $count == 2 && ($f + 1) == 2 ? true : false;
+          $partido->is_vuelta = $count == 2 && ($f + 1) == 2 || $count == 4 && ($f + 1) > 3 ? true : false;
+          $partido->is_final = $grupo->fase == 5 ? true : false;
           $partido->relevancia = $loc->nivel + $vis->nivel;
           $partido->save();  
         }
@@ -69,5 +73,31 @@ class PartidoController extends Controller
           }
         break;
       }
+    }
+
+    public function nextPartido($anio, $copa, $fase, $fecha, $zona = null){
+      $p = Partido::with([
+                            'grupo',
+                            'local.colorA',
+                            'local.colorB',
+                            'local.colorC',
+                            'local.liga',
+                            'visitante.colorA',
+                            'visitante.colorB',
+                            'visitante.colorC'
+                        ])
+                        ->where('anio', $anio)
+                        ->where('copa', $copa)
+                        ->where('fase', $fase)
+                        ->where('fecha', $fecha);
+      if($zona){
+        $p = $p->where('zona', $zona);
+      }
+
+      $p = $p->where('is_jugado', false)
+             ->orderBy('dia')
+             ->orderBy('hora')
+             ->first();
+      return $p;
     }
 }
