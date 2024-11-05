@@ -30,7 +30,7 @@
 <script>
   var COLORS = [],
       LAST_URL = null,
-      BACK_URL = null
+      PAGES = []
   @isset($colors)
     COLORS = {!! $colors !!}
   @endisset
@@ -385,12 +385,19 @@
   }
 
   function nextPage(url, params, footer){
-    //log('antes', [url, params])
-    BACK_URL = LAST_URL
+    var p = params.join(',')
+    if(p == 'home,inicio'){
+      PAGES = []
+    }
+    PAGES.push({
+      url: url,
+      params:params,
+      footer:footer
+    })
     if(params != null){
       url += '/' + params.join('/')
     }
-    log('url', [url])
+    log('pages', [PAGES])
     LAST_URL = url
      preload(true)
      $('#content').load(url)
@@ -413,7 +420,12 @@
            $('#content').css({height: '100vh'})
            $('footer').hide()
          }
-        $('#content').load(BACK_URL)
+         PAGES.pop()
+         if(PAGES.length == 0){
+          return
+         }
+         var prev = PAGES[PAGES.length - 1]
+         nextPage(prev.url, prev.params, prev.footer)
     }
 
    
@@ -606,9 +618,10 @@ function setGradient(obj, angle, colores, I){
   $(obj).css('background', bg)
 }
 
-function setBgGradient(obj, colors){
-  setGradient(obj, 180, [colors[1], colors[0], colors[0], colors[2]], [0, 20, 80, 100])
-}
+// function setBgGradient(obj, colors){
+//   log('GRADIENTS', [colors])
+//   setGradient(obj, 180, [colors[1], colors[0], colors[0], colors[2]], [0, 20, 80, 100])
+// }
 
 function getRowColor(col_a, col_b){
   var mu = $('<div class="row-color flex-row-between-center m-auto">\
@@ -957,6 +970,10 @@ function getColorCopa(copa){
     case 'libertadores': return 'rojo'
     default: return 'verde' 
   }
+}
+
+function grupoKey(isdefine){
+  return isdefine ? 'llave' : 'grupo'
 }
 
 function getTableCell(text, isheader, first){

@@ -44,7 +44,7 @@ class PartidoController extends Controller
           $partido->fase = $grupo->fase;
           $partido->fecha = $f + 1;
           $partido->zona = $grupo->zona;
-          $partido->is_define = $count == 2 && ($f + 1) == 2 ? true : false;
+          $partido->is_define = $count == 2 ? true : false;
           $partido->is_vuelta = $count == 2 && ($f + 1) == 2 || $count == 4 && ($f + 1) > 3 ? true : false;
           $partido->is_final = $grupo->fase == 5 ? true : false;
           $partido->relevancia = $loc->nivel + $vis->nivel;
@@ -109,7 +109,7 @@ class PartidoController extends Controller
 
     $partidos = Partido::with([
                                 'grupo',
-                                'local',
+                                'local.liga',
                                 'visitante'
                               ])
                               ->where('anio', $m->anio)
@@ -123,7 +123,13 @@ class PartidoController extends Controller
     $partidos = $partidos->orderBy('fecha')
                          ->orderBy('dia')
                          ->orderBy('hora')
-                         ->get();
+                         ->get()
+                         ->map(function($row){
+                            $colors = colorGrupo($row->grupo->grupo);
+                            $row->a = $colors['a'];
+                            $row->b = $colors['b'];
+                            return $row;
+                         });
 
 
     return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos'));

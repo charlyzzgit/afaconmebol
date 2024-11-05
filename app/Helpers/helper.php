@@ -1,5 +1,5 @@
 <?php 
-
+use App\Models\Color;
 
 
 function str_replace_array($search, array $replace, $subject)
@@ -417,3 +417,25 @@ function copaZona($str, $index){
   $p = explode('-', $str);
   return isset($p[$index]) ? $p[$index] : null;
 }
+
+function colorGrupo($gp){
+      switch($gp){
+        case 1: return [ 'a' => Color::where('name', 'rojo')->first(), 'b' => Color::where('name', 'naranja')->first()];
+        case 2: return [ 'a' => Color::where('name', 'azul')->first(), 'b' => Color::where('name', 'celeste')->first()];
+        case 3: return [ 'a' => Color::where('name', 'verde')->first(), 'b' => Color::where('name', 'verdeclaro')->first()];
+        case 4: return [ 'a' => Color::where('name', 'amarillo')->first(), 'b' => Color::where('name', 'crema')->first()];
+        case 5: return [ 'a' => Color::where('name', 'naranja')->first(), 'b' => Color::where('name', 'amarillo')->first()];
+        case 6: return [ 'a' => Color::where('name', 'celeste')->first(), 'b' => Color::where('name', 'cielo')->first()];
+        case 7: return [ 'a' => Color::where('name', 'verdeclaro')->first(), 'b' => Color::where('name', 'amarillo')->first()];
+        case 8: return [ 'a' => Color::where('name', 'crema')->first(), 'b' => Color::where('name', 'marronclaro')->first()];
+        case 9: return [ 'a' => Color::where('name', 'bordo')->first(), 'b' => Color::where('name', 'rojo')->first()];
+        case 10: return [ 'a' => Color::where('name', 'azuloscuro')->first(), 'b' => Color::where('name', 'azul')->first()];
+        case 11: return [ 'a' => Color::where('name', 'verdeoscuro')->first(), 'b' => Color::where('name', 'verde')->first()];
+        case 12: return [ 'a' => Color::where('name', 'marronclaro')->first(), 'b' => Color::where('name', 'amarillo')->first()];
+        case 13: return [ 'a' => Color::where('name', 'grana')->first(), 'b' => Color::where('name', 'rosa')->first()];
+        case 14: return [ 'a' => Color::where('name', 'violeta')->first(), 'b' => Color::where('name', 'violetaclaro')->first()];
+        case 15: return [ 'a' => Color::where('name', 'turquesa')->first(), 'b' => Color::where('name', 'celeste')->first()];
+        case 16: return [ 'a' => Color::where('name', 'marron')->first(), 'b' => Color::where('name', 'marronclaro')->first()];
+        default: return ['a' => null, 'b' => null];
+      }
+    }
