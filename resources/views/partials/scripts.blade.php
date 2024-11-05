@@ -29,7 +29,8 @@
 </style>
 <script>
   var COLORS = [],
-      LAST_URL = null
+      LAST_URL = null,
+      BACK_URL = null
   @isset($colors)
     COLORS = {!! $colors !!}
   @endisset
@@ -385,6 +386,7 @@
 
   function nextPage(url, params, footer){
     //log('antes', [url, params])
+    BACK_URL = LAST_URL
     if(params != null){
       url += '/' + params.join('/')
     }
@@ -401,6 +403,18 @@
      }
 
   }
+
+  function goBack(footer){
+        $('#content').empty()
+        if(footer !== undefined){
+           $('#content').css({height: 'calc(100vh - 56px)'})
+           $('footer').show()
+         }else{
+           $('#content').css({height: '100vh'})
+           $('footer').hide()
+         }
+        $('#content').load(BACK_URL)
+    }
 
    
   function route(url, params, redirect){
@@ -687,8 +701,12 @@ function parseRGB(rgb){
 
 function radialGradient(obj, a, b){
    var bg = 'radial-gradient(circle,'
-     
-  bg += 'rgba(' + b.r + ', ' + b.g + ', ' + b.b + ' , 1) 0%, rgba(' + a.r + ', ' + a.g + ', ' + a.b + ' , 1) 80%)'
+    a = parseColor(a)
+    b = parseColor(b)
+  if(a == null || b == null){
+    return
+  }
+  bg += 'rgba(' + b.rgb + ' , 1) 0%, rgba(' + a.rgb + ' , 1) 80%)'
 
   $(obj).css('background', bg)
 }
@@ -918,7 +936,8 @@ function getNameFase(copa, fase, zona){
     case 2: return 'octavos de final';
     case 3: return 'cuartos de final';
     case 4: return 'semifinales';
-    default: return 'final';
+    case 5: return 'final';
+    default: return 'a definir';
   }
 }
 
@@ -928,6 +947,16 @@ function getNameFecha(fase, fecha){
   }
 
   return fecha == 1 ? 'partido de ida' : 'partido de vuelta';
+}
+
+function getColorCopa(copa){
+  switch(copa){
+    case 'afa': return 'azuloscuro'
+    case 'argentina': return 'celeste'
+    case 'sudamericana': return 'azul'
+    case 'libertadores': return 'rojo'
+    default: return 'verde' 
+  }
 }
 
 function getTableCell(text, isheader, first){

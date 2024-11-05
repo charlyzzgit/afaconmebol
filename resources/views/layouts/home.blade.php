@@ -219,7 +219,7 @@
         MAIN = {!! getData() !!},
         footer = $('footer')
 
-
+    
 
 
     log('main', [MAIN])

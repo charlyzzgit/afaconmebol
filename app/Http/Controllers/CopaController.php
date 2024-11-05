@@ -20,6 +20,7 @@ class CopaController extends Controller
     if($fase == '::'){
       $fase = (new GrupoController())->getLastFase($copa, $m->anio, $zona);
     }
+    
     $grupos = (new GrupoController())->getGrupos($m->anio, $copa, $fase, $zona);
     return view('home.copa', compact('copa', 'fase', 'zona', 'grupos'));
    }

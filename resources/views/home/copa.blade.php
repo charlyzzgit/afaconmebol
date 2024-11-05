@@ -33,6 +33,7 @@
        border:solid 2px white;
        border-radius: 10px;
        background: rgba(255,255,255,.5);
+       font-size: 20px;
     }
 
     .icon{
@@ -54,43 +55,43 @@
     <div class="menu-item col-6 p-3" data-option="partidos">
       <div class="inner col-12 flex-col-center-center p-2">
         <img src="{{ asset('resources/default/logo.png') }}" height="50">
-        <b class="mt-2">partidos</b>
+        <b class="lbl mt-2">partidos</b>
       </div>
     </div>
     <div class="menu-item col-6 p-3" data-option="goleadores">
       <div class="inner col-12 flex-col-center-center p-2">
         <img src="{{ asset('resources/default/jugador.png') }}" height="50">
-        <b class="mt-2">goleadores</b>
+        <b class="lbl mt-2">goleadores</b>
       </div>
     </div>
     <div class="menu-item col-6 p-3" data-option="candidatos">
       <div class="inner col-12 flex-col-center-center p-2">
         <i class="icon fa fa-list-ol"></i>
-        <b class="mt-2">candidatos</b>
+        <b class="lbl mt-2">candidatos</b>
       </div>
     </div>
     <div class="menu-item col-6 p-3" data-option="competencia">
       <div class="inner col-12 flex-col-center-center p-2">
         <i class="icon fa fa-line-chart"></i>
-        <b class="mt-2">en competencia</b>
+        <b class="lbl mt-2">en competencia</b>
       </div>
     </div>
     <div class="menu-item col-8 pt-3 pb-3 pl-5 pr-5" data-option="historial">
       <div class="inner col-12 flex-col-center-center p-2">
         <i class="icon fa-solid fa-clock-rotate-left"></i>
-        <b class="mt-2">historial</b>
+        <b class="lbl mt-2">historial</b>
       </div>
     </div>
     <div class="menu-item col-6 p-3" data-option="ranking">
       <div class="inner col-12 flex-col-center-center p-2">
         <i class="icon fa fa-list-ul"></i>
-        <b class="mt-2">ranking</b>
+        <b class="lbl mt-2">ranking</b>
       </div>
     </div>
     <div class="menu-item col-6 p-3" data-option="records">
       <div class="inner col-12 flex-col-center-center p-2">
         <i class="icon fa fa-list-ul"></i>
-        <b class="mt-2">records</b>
+        <b class="lbl mt-2">records</b>
       </div>
     </div>
   </div>
@@ -101,11 +102,15 @@
   //copa, fase, zona, grupos
   var grupos = {!! $grupos !!},
       copa = '{{ $copa }}',
-      fase = '{{ $fase }}',
+      fase = parseInt('{{ $fase }}'),
       zona = '{{ $zona }}',
       ul = $('#list'),
       src_copa = 'default/' + copa + '.png'
   log('grupos', [grupos])
+
+
+
+  
   function getLiGrupo(g){
     var li = $('<li class="grupo col-12 flex-col-start-center">\
                   <div class="bar col-12 flex-row-center-center"></div>\
@@ -155,6 +160,57 @@
     return li
   }
 
+  function setMenu(){
+    $('#menu-copa').find('.menu-item').each(function(){
+      var el = $(this),
+          option = el.data('option'),
+          a = '',
+          b = ''
+      switch(option){
+        case 'partidos':
+          a = 'verde'
+          b = 'verdeclaro'
+        break
+        case 'goleadores':
+          a = 'celeste'
+          b = 'cielo'
+        break
+        case 'candidatos':
+          a = 'violeta'
+          b = 'rosa'
+        break
+        case 'competencia':
+          a = 'marron'
+          b = 'marronclaro'
+        break
+        case 'historial':
+          a = 'verdeoscuro'
+          b = 'verde'
+        break
+        case 'ranking':
+          a = 'azul'
+          b = 'celeste'
+        break
+        case 'records':
+          a = 'amarillo'
+          b = 'crema'
+        break
+      }
+
+      //setCristal(getEl($(this), 'inner'), color)
+
+      radialGradient(getEl(el, 'inner'), a, b)
+
+      textColor(getEl(el, 'lbl'), 'blanco', a, .2)
+
+      getEl(el, 'inner').click(function(){
+        nextPage("{{ route('home') }}", ['home', 'partidos', copa, fase], true)
+      })
+
+      
+    })
+  }
+
   function listar(){
     ul.empty()
     $.each(grupos, function(i, g){
@@ -162,8 +218,8 @@
     })
   }
    $(function(){
-    setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), 'verde')
-
+    setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'grupos')
+    setMenu()
     footer.empty()
     footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
         nextPage("{{ route('home') }}", ['home', 'inicio'])
