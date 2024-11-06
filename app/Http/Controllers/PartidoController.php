@@ -143,4 +143,23 @@ class PartidoController extends Controller
 
     return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos'));
   }
+
+  public function estadio($partido_id){
+    $partido = Partido::with([
+                                'grupo',
+                                'local.colorA',
+                                'local.colorB',
+                                'local.colorC',
+                                'local.liga',
+                                'local.camiseta',
+                                'local.alternativa',
+                                'visitante.colorA',
+                                'visitante.colorB',
+                                'visitante.colorC',
+                                'visitante.camiseta',
+                                'visitante.alternativa'
+                              ])
+                              ->find($partido_id);
+    return view('home.estadio', compact('partido'));
+  }
 }

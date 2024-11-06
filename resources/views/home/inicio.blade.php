@@ -389,6 +389,10 @@
         nextPage("{{ route('home') }}", ['home', 'copa', p.copa, p.fase, p.grupo_id], true)
       })
 
+      estadio.click(function(){
+        nextPage("{{ route('home') }}", ['home', 'estadio', p.id])
+      })
+
 
    }
 

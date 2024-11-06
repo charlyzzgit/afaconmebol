@@ -759,6 +759,11 @@ function colBorde(obj, col){
   }
 }
 
+function borderColor(el, rgb, stroke){
+  var stk = stroke !== undefined ? stroke + 'px ' : 'thin '
+  el.css({border: 'solid ' + stk + 'rgb(' + rgb + ')'})
+}
+
 function getImg(eq, name){
   return 'img/equipos/' + eq.dir + '/' + name + '.png'
 }

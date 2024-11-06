@@ -52,6 +52,10 @@
     .partido .estadio{
       height: 70px;
     }
+
+    .partido .body{
+       border-radius: 0 0 10px 10px;
+    }
 </style>
 <div class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
@@ -176,7 +180,7 @@
         vs = getEl(li, 'vs'),
         cola = p.a,
         colb = p.b,
-        change = cambiar(p.local, p.visitante)
+        change = p.is_jugado ? cambiar(p.local, p.visitante) : p.visitante.visitante
 
     setBgGradient(header, cola.rgb, colb.rgb, cola.rgb)
     setImageCopa(copa, p.copa)
@@ -213,6 +217,8 @@
     textColorUI(gv, p.visitante.color_a.rgb, p.visitante.color_b.rgb, .5)
 
     setImageEquipo(estadio, p.local, 'estadio')
+
+    borderColor(body, p.local.color_b.rgb, 1)
 
     if(p.is_judado){
       vs.css({visibility: 'hidden'})
