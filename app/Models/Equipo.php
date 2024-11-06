@@ -22,6 +22,14 @@ class Equipo extends Model
       return $this->belongsTo('App\Models\Color', 'c', 'id');
     }
 
+    public function camiseta(){
+      return $this->belongsTo('App\Models\Color', 'combinado', 'id');
+    }
+
+    public function alternativa(){
+      return $this->belongsTo('App\Models\Color', 'alternativo', 'id');
+    }
+
     public function liga(){
       return $this->belongsTo('App\Models\Liga');
     }

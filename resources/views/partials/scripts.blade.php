@@ -1062,6 +1062,54 @@ function getTable(eq){
   return table
 }
 
+function getDia(d){
+  switch(d){
+    case 1: return 'martes'
+    case 2: return 'miercoles'
+    case 3: return 'jueves'
+    case 4: return 'viernes'
+    case 5: return 'sabado'
+    case 6: return 'domingo'
+    default: return 'lunes'
+  }
+}
+
+function equalColor(a, b){
+  if(a.id == b.id){
+    return true
+  }
+  return false
+}
+
+function similColor(a, b){
+  var similares = JSON.parse(a.similares)
+  return similares.includes(b.id)
+}
+
+function cambiar(loc, vis){
+  if(equalColor(loc.camiseta, vis.camiseta)){
+    log('cambio', ['equal'])
+    return true
+  }
+
+  if(similColor(loc.camiseta, vis.camiseta)){
+    if(equalColor(loc.camiseta, vis.alternativa)){
+      log('cambio', ['equal-alt'])
+      return false
+    }
+
+    if(similColor(loc.camiseta, vis.alternativa)){
+      log('cambio', ['simil-alt'])
+      return false
+    }
+
+  }
+  log('cambio', ['distinta'])
+
+  return true
+  
+}
+
 
 
 

@@ -109,8 +109,17 @@ class PartidoController extends Controller
 
     $partidos = Partido::with([
                                 'grupo',
+                                'local.colorA',
+                                'local.colorB',
+                                'local.colorC',
                                 'local.liga',
-                                'visitante'
+                                'local.camiseta',
+                                'local.alternativa',
+                                'visitante.colorA',
+                                'visitante.colorB',
+                                'visitante.colorC',
+                                'visitante.camiseta',
+                                'visitante.alternativa'
                               ])
                               ->where('anio', $m->anio)
                               ->where('copa', $copa)

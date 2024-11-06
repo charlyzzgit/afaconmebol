@@ -36,7 +36,7 @@
     }
 
     .partido .flag, .partido .copa{
-      height: 90%;
+      height: 40px;
     }
 
     .partido .jugador{
@@ -114,19 +114,23 @@
    log('partidos', [partidos])
 
   function getLiPartido(p){
-    var li = $('<li class="partido col-12 flex-col-start-center mb-1">\
+    var li = $('<li class="partido col-12 flex-col-start-center mb-2">\
                   <div class="header col-12 flex-row-between-center p-1">\
-                    <img class="copa">\
-                    <div class="flex-col-start-center">\
+                    <div class="col-2 flex-row-start-center">\
+                      <img class="copa">\
+                    </div>\
+                    <div class="col-8 flex-col-start-center">\
                       <b class="copa-fase">copa - fase</b>\
                       <b class="grupo-fecha">grupo 10 - partido de vuelta</b>\
                     </div>\
-                    <img class="flag">\
+                    <div class="col-2 flex-row-end-center">\
+                      <img class="flag">\
+                    </div>\
                   </div>\
                   <div class="body col-12 flex-col-start-center p-1">\
                     <div class="names col-12 flex-row-between-start">\
-                      <b class="nameloc">independiente medellin</b>\
-                      <b class="namevis text-right">independiente medellin</b>\
+                      <b class="nameloc col-6">independiente medellin</b>\
+                      <b class="namevis col-6 text-right">independiente medellin</b>\
                     </div>\
                     <div class="flex-row-between-center">\
                       <img class="jugador local">\
@@ -162,7 +166,7 @@
         visitante = getEl(li, 'visitante'),
         eloc = getEl(li, 'e-loc'),
         evis = getEl(li, 'e-vis'),
-        namestadio = getEl(li, 'name-estadio'),
+        nameestadio = getEl(li, 'name-estadio'),
         estadio = getEl(li, 'estadio'),
         diahora = getEl(li, 'dia-hora'),
         gl = getEl(li, 'gl'),
@@ -171,7 +175,8 @@
         pb = getEl(li, 'pb'),
         vs = getEl(li, 'vs'),
         cola = p.a,
-        colb = p.b
+        colb = p.b,
+        change = cambiar(p.local, p.visitante)
 
     setBgGradient(header, cola.rgb, colb.rgb, cola.rgb)
     setImageCopa(copa, p.copa)
@@ -180,6 +185,43 @@
     grupofecha.html([grupoKey(p.is_define) + ' ' + p.grupo.grupo, getNameFecha(p.fase, p.fecha)].join(' - '))
     textColor(copafase, 'blanco', colb.name, .1)
     textColor(grupofecha, 'blanco', colb.name, .1)
+
+    setCristalRGB(body, p.local.color_a)
+
+    nameloc.html(p.local.name)
+    namevis.html(p.visitante.name)
+
+    nameestadio.html('estadio ' + p.local.name)
+    diahora.html([getDia(p.dia), p.hora + 'hs.'].join(' - '))
+
+    textColorUI(nameloc, p.local.color_b.rgb, parseALT(p.local, 'c', 'b', 'a').rgb, .5)
+    textColorUI(namevis, p.visitante.color_a.rgb, p.visitante.color_b.rgb, .5)
+
+    multiText([nameestadio, diahora], p.local.color_b, parseALT(p.local, 'c', 'b', 'a'), .05)
+
+    setImageEquipo(local, p.local, 'local')
+    setImageEquipo(eloc, p.local, 'escudo')
+
+    setImageEquipo(visitante, p.visitante, change ? 'visitante' : 'local')
+    setImageEquipo(evis, p.visitante, 'escudo')
+
+    textColorUI(gl, p.local.color_b.rgb, parseALT(p.local, 'c', 'b', 'a').rgb, .5)
+    textColorUI(pa, p.local.color_b.rgb, parseALT(p.local, 'c', 'b', 'a').rgb, .25)
+    textColorUI(vs, p.local.color_b.rgb, parseALT(p.local, 'c', 'b', 'a').rgb, .4)
+
+    textColorUI(pb, p.visitante.color_a.rgb, p.visitante.color_b.rgb, .25)
+    textColorUI(gv, p.visitante.color_a.rgb, p.visitante.color_b.rgb, .5)
+
+    setImageEquipo(estadio, p.local, 'estadio')
+
+    if(p.is_judado){
+      vs.css({visibility: 'hidden'})
+    }else{
+      gl.css({visibility: 'hidden'})
+      gv.css({visibility: 'hidden'})
+      pa.css({visibility: 'hidden'})
+      pb.css({visibility: 'hidden'})
+    }
 
     return li
   }
