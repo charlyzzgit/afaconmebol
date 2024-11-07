@@ -45,14 +45,35 @@
     }
 
     .header{
-      height: 290px;
+      height: 280px;
       border-radius: 10px;
       line-height: 1;
     }
 
     #names{
-      font-size: 35px;
+      font-size: 30px;
       line-height: 1;
+    }
+
+    .name-copa, .anio{
+      font-size: 25px;
+    }
+
+    .gl, .gv{
+      font-size: 50px;
+    }
+
+    .pa, .pb{
+      font-size: 35px;
+    }
+
+    #reloj{
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .box-time{
+      background: gray;
     }
 </style>
 <div id="fondo" class="col-12 box-content p-1">
@@ -60,7 +81,7 @@
     <div class="col-12 flex-row-between-start">
       <div class="col-5 flex-col-start-start">
         <b class="name-copa">sudamericana</b>
-        <div class="flex-row-start-center">
+        <div class="flex-row-start-center mt-1">
           <img src="{{ asset('resources/default/estadio.png') }}" height="50">
           <div class="flex-col-start-start ml-2">
             <b>estadio</b>
@@ -73,7 +94,7 @@
       </div>
       <div class="col-5 flex-col-start-end">
         <b class="anio">2000</b>
-        <div class="flex-row-start-center">
+        <div class="flex-row-start-center mt-1">
           <div class="flex-col-start-start mr-2">
             <b>miercoles</b>
             <div class="flex-row-start-center">
@@ -89,6 +110,36 @@
     <div id="names" class="col-12 flex-row-between-start">
       <b class="name-loc">independiente medellin</b>
       <b class="name-vis text-right">independiente medellin</b>
+    </div>
+    <div class="col-12 flex-row-between-end">
+      <div class="col-3 flex-row-start-center">
+        <img class="mb-2" src="{{ asset('resources/default/escudo.png') }}" height="80">
+      </div>
+      <div class="col-6 flex-row-between-start">
+        <div class="col-3 flex-row-start-center">
+          <b class="gl mt-5">88</b>
+        </div>
+        <div class="col-6 flex-col-center-center">
+          <div id="reloj" class="col-9 flex-col-start-center">
+            <div class="box-time col-12 flex-row-center-center p-1">
+              <small class="time">2º tiempo</small>
+            </div>
+            <div class="box-cronometro col-12 flex-row-center-center p-2 cristal"> 
+               <b class="cronometro">45</b>
+            </div>
+          </div>
+          <div class="col-12 flex-row-between-center">
+            <b class="pa mt-1">(5)</b>
+            <b class="pb mt-1">(4)</b>
+          </div>
+        </div>
+        <div class="col-3 flex-row-end-center">
+          <b class="gv mt-5">88</b>
+        </div>
+      </div>
+      <div class="col-3 flex-row-end-center">
+        <img class="mb-2" src="{{ asset('resources/default/escudo.png') }}" height="80">
+      </div>
     </div>
   </div>
   <div id="cesped" class="col-12"></div>
