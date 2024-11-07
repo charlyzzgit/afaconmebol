@@ -922,6 +922,19 @@ function getColorGrupo(g){
   }
 }
 
+function rdm(d, h){
+    var f = 0;
+    
+    //h++
+    while(f == 0){
+      var r = Math.floor(Math.random() * h) + d;
+      if(r >= d && r <= h){
+        break;
+      }
+    }
+    return r;
+}
+
 
 function getEl(parent, reference, id){
   var prefix = id !== undefined ? '#' : '.'

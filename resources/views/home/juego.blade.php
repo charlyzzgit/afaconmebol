@@ -69,23 +69,12 @@
       PAUSE = true,
       time = 0,
       seconds = 0
-  function rd(d, h){
-    var f = 0;
-    
-    //h++
-    while(f == 0){
-      var r = Math.floor(Math.random() * h) + d;
-      if(r >= d && r <= h){
-        break;
-      }
-    }
-    return r;
-  }
+  
 
   function getPower(eq, isloc){
     var level = parseInt(eq.data('level')),
-        p = rd(0, level),
-        f = rd(0, MAX),
+        p = rdm(0, level),
+        f = rdm(0, MAX),
         limit = isloc ? 5 : 5,
         result = 0
     // if(rd(0, 10) < limit){
@@ -93,9 +82,9 @@
     // }
     // return p + f
     for(var i = 0; i < level; i++){
-      result+= rd(0,1)
+      result+= rdm(0,1)
     }
-    return result + rd(1, 50)
+    return result + rdm(1, 50)
   }
 
   function juego(){
