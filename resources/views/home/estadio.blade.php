@@ -118,19 +118,51 @@
     }
 
     #f-center{
-      top:350px;
+      top:220px;
       left: 50%;
       transform: translateX(-50%);
     }
 
     #f-left{
       left:20px;
-      top:220px;
+      top:350px;
     }
 
     #f-right{
       right:20px;
-      top:220px;
+      top:350px;
+    }
+
+    .mini-jugador{
+      height: 100px;
+      position: absolute;
+      bottom: 300px;
+      z-index: 200;
+    }
+
+    #j-left{
+      left: -10px
+    }
+
+    #j-center{
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #j-right{
+      right: -10px
+    }
+
+    .cronometro{
+      font-size: 20px;
+    }
+
+    .gota{
+      width: 1px;
+      height: 1px;
+      background: white;
+      position: absolute;
+      z-index: 20000000;
     }
 
 
@@ -195,7 +227,7 @@
               <div class="box-time col-12 flex-row-center-center p-1">
                 <small class="time">2º tiempo</small>
               </div>
-              <div class="col-12 flex-row-center-center p-2"> 
+              <div class="col-12 flex-row-center-center p-1"> 
                  <b class="cronometro">45</b>
               </div>
             </div>
@@ -215,6 +247,9 @@
     </div>
   </div>
   <div id="cesped" class="col-12"></div>
+  <img id="j-left" class="mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <img id="j-center" class="mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <img id="j-right" class="mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
   <img id="local" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
   <img id="balon" src="{{ asset('resources/default/logo.png') }}">
   <img id="visitante" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
@@ -250,6 +285,7 @@
        gv = getEl(fondo, 'gv'),
        pa = getEl(fondo, 'pa'),
        pb = getEl(fondo, 'pb'),
+       eflag = getEl(fondo, 'e-flag'),
        local = getEl(fondo, 'local', true),
        visitante = getEl(fondo, 'visitante', true),
        cesped = getEl(fondo, 'cesped', true),
@@ -257,7 +293,13 @@
        vis = partido.visitante,
        cola = loc.color_a,
        colb = loc.color_b,
-       colc = loc.color_c
+       colc = loc.color_c,
+       loc1 = getEl(fondo, 'j-left', true),
+       loc2 = getEl(fondo, 'j-center', true),
+       vis1 = getEl(fondo, 'j-right', true),
+       change = cambiar(loc, vis),
+       timer,
+       par = true
 
   log('partido', [partido])
 
@@ -267,6 +309,19 @@
       return rain ? 'day_rain.png' : 'day_fine.png'
     }else{
       return rain ? 'night_rain.png' : 'night_fine.png'
+    }
+  }
+
+  function rain(){
+    var l = par ? 0 : 1
+    for(var i = 0; i < 192; i++){
+      var gota = $('<div class="gota"></div>')
+      gota.css({left: l + 'px', top:0})
+      gota.animate({top: 1000}, 3000, function(){
+        $(this).remove()
+      })
+      fondo.append(gota)
+      l+=2
     }
   }
        
@@ -283,6 +338,7 @@
       hora.html(partido.hora + ' hs.')
       setImage(clima, ASSET + 'clima/', getClima(hora))
       setImageFlag(flag, loc.liga.bandera)
+      setImageEquipo(eflag, loc, 'bandera')
 
       nameloc.html(loc.name)
       namevis.html(vis.name)
@@ -292,14 +348,30 @@
 
       multiText([namevis, gv, pb], vis.color_a, vis.color_b, .01)
 
+      bg(boxtime, colb.rgb)
+      setText(time, cola, colb, .01)
+      setText(cronometro, cola, colb, .005)
+      setCristalRGB(reloj, colb)
+
       pa.hide()
       pb.hide()
+
+      setImageEquipo(local, loc, 'local')
+      setImageEquipo(loc1, loc, 'local')
+      setImageEquipo(loc2, loc, 'local')
+
+      setImageEquipo(visitante, vis, change ? 'visitante' : 'local')
+      setImageEquipo(vis1, vis, change ? 'visitante' : 'local')
    }    
    
 
 
    $(function(){
     set()
+    timer = setInterval(function(){
+      rain()
+      par = !par
+    }, 10)
     preload()
    })
 </script>
