@@ -30,7 +30,9 @@
 <script>
   var COLORS = [],
       LAST_URL = null,
-      PAGES = []
+      PAGES = [],
+      RAIN = null,
+      PAPELITOS = null
   @isset($colors)
     COLORS = {!! $colors !!}
   @endisset
@@ -40,6 +42,13 @@
       $('#preload').fadeIn(150)
     }else{
       $('#preload').fadeOut(150)
+    }
+  }
+
+  function stopTimer(T){
+    log('stop timer', [])
+    if(T != null){
+      clearInterval(T)
     }
   }
 
@@ -386,6 +395,8 @@
 
   function nextPage(url, params, footer){
     var p = params.join(',')
+    stopTimer(RAIN)
+    stopTimer(PAPELITOS)
     if(p == 'home,inicio'){
       PAGES = []
     }

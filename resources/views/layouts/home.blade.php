@@ -219,6 +219,7 @@
         MAIN = {!! getData() !!},
         footer = $('footer')
 
+
     
 
 

@@ -1,4 +1,10 @@
 <style>
+
+  @keyframes fall {
+    0% { top: -10px; opacity: 1; }
+    100% { top: 100vh; opacity: 0; }
+  }
+
     #fondo{
       background-repeat: no-repeat;
       background-position: center bottom;
@@ -158,11 +164,12 @@
     }
 
     .gota{
-      width: 1px;
-      height: 1px;
-      background: white;
+      width: 2px;
+      height: 5px;
+      background: rgba(255,255,255,.5);
       position: absolute;
-      z-index: 20000000;
+      z-index: 20000000000;
+      animation: fall linear;
     }
 
 
@@ -299,12 +306,13 @@
        vis1 = getEl(fondo, 'j-right', true),
        change = cambiar(loc, vis),
        timer,
-       par = true
+       par = true,
+       rain = rdm(0, 10) > 7 ? true : false
 
   log('partido', [partido])
 
   function getClima(hora){
-    var rain = rdm(0, 10) > 7 ? true : false
+    
     if(hora < 20){
       return rain ? 'day_rain.png' : 'day_fine.png'
     }else{
@@ -312,16 +320,30 @@
     }
   }
 
-  function rain(){
-    var l = par ? 0 : 1
-    for(var i = 0; i < 192; i++){
-      var gota = $('<div class="gota"></div>')
-      gota.css({left: l + 'px', top:0})
-      gota.animate({top: 1000}, 3000, function(){
-        $(this).remove()
-      })
-      fondo.append(gota)
-      l+=2
+  function getGota(){
+    const $raindrop = $('<div class="gota"></div>');
+  
+    // Posición horizontal aleatoria
+    $raindrop.css('left', `${Math.random() * 100}vw`);
+    
+    // Duración y velocidad aleatoria para la caída
+    const duration = Math.random() * 3 + 2;
+    $raindrop.css('animation-duration', `${duration}s`);
+
+    return $raindrop
+  }
+
+  function llover(I){
+    for(var i = 0; i < I; i++){
+      var gota = getGota()
+      
+      // Añadir el div al body
+      fondo.append(gota);
+      
+      // Remover el div cuando termine la animación
+      gota.on('animationend', function() {
+        $(this).remove();
+      });
     }
   }
        
@@ -368,10 +390,12 @@
 
    $(function(){
     set()
-    timer = setInterval(function(){
-      rain()
-      par = !par
-    }, 10)
+    stopTimer(RAIN)
+    if(rain){
+      RAIN = setInterval(function(){
+        llover(20)}, 1);
+    }
+    
     preload()
    })
 </script>
