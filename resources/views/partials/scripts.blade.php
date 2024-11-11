@@ -1174,6 +1174,27 @@ function setBuzo(img, src){
   img.prop('src', ASSET + 'arqueros/' + src)
 }
 
+function getFranjaHoraria(hora){
+  if(hora < 17){
+    return 'day'
+  }
+
+  if(hora >= 17 && hora < 20){
+    return 'afternoon'
+  }
+
+  return 'night'
+}
+
+function getEstadio(eq, hora, israin){
+  var params = [eq.estructura, israin ? 'rain' : 'fine', getFranjaHoraria(hora)]
+  return params.join('_') + '.png'
+}
+
+function getCesped(eq){
+  return eq.cesped + '.png'
+}
+
 
 
 

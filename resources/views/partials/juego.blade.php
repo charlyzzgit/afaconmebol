@@ -7,6 +7,9 @@
      this.gv = 0
      this.timer = null
      this.pause = true
+     this.tiempo = 1
+     this.alargue = false
+     this.penales = false
      this.time = 0
      this.seconds = 0
      this.loc = loc 
@@ -22,13 +25,17 @@
      this.center = parseInt(this.duelo.css('left').split('px')[0])
      this.goal = getEl(el, 'gol', true)
      this.cronometro = getEl(el, 'cronometro')
+     this.lbltiempo = getEl(el, 'time')
      this.endTime = false
      this.gol = false
-     this.arco = 30
-     this.maxRight = this.width - this.arco
-     this.minLeft = this.arco
+     this.arco = 20
+     this.maxRight = 355
+     this.minLeft = 15
+     this.maxTime = 0
+     this.aditionalTime = getEl(el, 'add')
 
 
+     
      this.localia = function(isloc){
      	 if(isloc){
      	 	 return loc.liga_id == vis.liga_id ? 1 : 2
@@ -87,7 +94,8 @@
 	          this.gl++
 	          this.gol = true
 	          this.goal.animate({left: '-400px'}, 0)
-	          this.duelo.animate({left: (parent.width/2 - parent.duelo.width()/2) + 'px'}, parent.vel, parent.endAnimation.bind(this))
+            parent.endAnimation()
+	          //this.duelo.animate({left: (parent.width/2 - parent.duelo.width()/2) + 'px'}, parent.vel, parent.endAnimation.bind(this))
 	        }else{
 	        	
 	          this.duelo.animate({left: (left + l) + 'px'}, parent.vel, parent.endAnimation.bind(this))
@@ -103,7 +111,8 @@
 	          this.gv++
 	          this.gol = true
 	          this.goal.animate({left: '400px'}, 0)
-	          this.duelo.animate({left: (parent.width/2 - parent.duelo.width()/2) + 'px'}, parent.vel, parent.endAnimation.bind(this))
+            parent.endAnimation()
+	          //this.duelo.animate({left: (parent.width/2 - parent.duelo.width()/2) + 'px'}, parent.vel, parent.endAnimation.bind(this))
 	        }else{
 	        	
 	          this.duelo.animate({left: (left - v) + 'px'}, parent.vel, parent.endAnimation.bind(this))
@@ -144,11 +153,14 @@
 	    parent.gloc.html(this.gl)
 	    parent.gvis.html(this.gv)
 	    //parent.pause = true
-	    parent.duelo.animate({left: parent.center + 'px'}, 2000)
+	    
 	    parent.goal.animate({left:0, opacity:1}, 150)
-
+      setTimeout(function(){
+        parent.duelo.animate({left: parent.center + 'px'}, 2000)
+      }, 2000)
 	    setTimeout(function(){
 	            PAUSE = false
+              
 	            parent.goal.animate({opacity:0}, 150)
 	     }, 3000)
   	}else{
@@ -158,11 +170,34 @@
   	
   }
 
+  this.setTiempo = function(){
+    var supl = this.alargue ? ' s' : ''
+    this.lbltiempo.html(this.tiempo + '° tiempo' + supl)
+  }
+
+  this.halfTime = function(){
+    var parent = this,
+    j = getEl(parent.el, 'jugador')
+    j.fadeOut(150)
+    parent.duelo.animate({left: parent.center + 'px'}, 2000)
+    setTimeout(function(){
+      j.fadeIn(150)
+      parent.endTime = false
+      parent.tiempo = 2
+      parent.jugar()
+    }, 2000)
+  }
+
   this.jugar = function(){
   	log('center', [this.center])
-    var parent = this
+    var parent = this,
+        add = rdm(0, 10)
     PAUSE = false
     parent.time = 0
+    parent.aditionalTime.html(add)
+    parent.aditionalTime.hide()
+    parent.maxTime = 45 + add
+    parent.setTiempo()
     if(parent.timer != null){
     	clearInterval(parent.timer)
     }
@@ -177,12 +212,18 @@
 	        parent.seconds = 0
 	        parent.time++
 	        parent.cronometro.html(parent.time)
-	        
 	        if(parent.time > 45){
+            parent.aditionalTime.show()
+          }
+	        if(parent.time > parent.maxTime){
 	        	//log('fin', [parent.time])
 	        	parent.endTime = true
-	        	parent.duelo.stop(true, true)
+	        	parent.duelo.stop(true, false)
 	          clearInterval(parent.timer)
+            if(parent.tiempo == 1){
+              
+              parent.halfTime()
+            }
 	        }
 	      }
 	    

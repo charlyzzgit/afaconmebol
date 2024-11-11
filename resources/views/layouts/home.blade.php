@@ -32,7 +32,7 @@
 
   <link rel="stylesheet" href="{{ asset('css/estilos.css').refreshCache() }}">
 
-
+  <link rel="stylesheet" href="{{ asset('plugins/jquery-ui/jquery-ui.min.css').refreshCache() }}">
 
   <!-- ****************************libraries************************************** -->
   <link rel="stylesheet" href="{{ asset('plugins/Libraries/json-viewer/jquery.json-viewer.css') }}">

@@ -9,7 +9,7 @@
       background-repeat: no-repeat;
       background-position: center bottom;
       background-size: cover;
-      background-image: url("{{ asset('resources/estadios/grande_fine_night.png') }}");
+/*      background-image: url("{{ asset('resources/estadios/grande_fine_night.png') }}");*/
     }
 
     #cesped{
@@ -21,7 +21,7 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
-      background-image: url("{{ asset('resources/cesped/rayada.png') }}");
+/*      background-image: url("{{ asset('resources/cesped/rayada.png') }}");*/
     }
 
     .jugador{
@@ -244,6 +244,25 @@
       border-radius: 10px;
     }
 
+    .add{
+      border-radius: 100%;
+      font-size: 12px;
+    }
+
+    #clasifica{
+      position: absolute;
+      top:42%;
+      left: 50%;
+      transform: translate(-50%, -42%);
+      z-index: 100;
+      border-radius: 10px;
+    }
+
+    #clasifica img{
+      height: 50px;
+
+    }
+
 
 </style>
 <div id="fondo" class="col-12 box-content p-1">
@@ -298,13 +317,14 @@
           <img class="e-loc escudo mb-2" src="{{ asset('resources/default/escudo.png') }}">
         </div>
         <div class="col-6 flex-row-between-start">
-          <div class="col-3 flex-row-start-center">
+          <div class="col-2 flex-row-start-center">
             <b class="gl mt-5">0</b>
           </div>
-          <div class="col-6 flex-col-center-center">
+          <div class="col-7 flex-col-center-center">
             <div class="reloj col-9 flex-col-start-center">
               <div class="box-time col-12 flex-row-center-center p-1">
                 <small class="time">2º tiempo</small>
+                <div class="add ml-2 p-1">10</div>
               </div>
               <div class="col-12 flex-row-center-center p-1"> 
                  <b class="cronometro">45</b>
@@ -315,7 +335,7 @@
               <b class="pb mt-1">(0)</b>
             </div>
           </div>
-          <div class="col-3 flex-row-end-center">
+          <div class="col-2 flex-row-end-center">
             <b class="gv mt-5">0</b>
           </div>
         </div>
@@ -330,6 +350,9 @@
   <img id="j-center" class="mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
   <img id="j-right" class="mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
   <img id="local" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <div id="clasifica" class="p-2 cristal">
+    <img src="{{ asset('resources/default/escudo.png') }}">
+  </div>
   <img id="balon" src="{{ asset('resources/default/logo.png') }}">
   <img id="visitante" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
   <div id="gol" class="col-12 flex-row-center-center p-2">
@@ -405,6 +428,7 @@
        boxtime = getEl(fondo, 'box-time'),
        time = getEl(fondo, 'time'),
        cronometro = getEl(fondo, 'cronometro'),
+       add = getEl(fondo, 'add'),
        gl = getEl(fondo, 'gl'),
        gv = getEl(fondo, 'gv'),
        pa = getEl(fondo, 'pa'),
@@ -425,6 +449,7 @@
        avis = getEl(fondo, 'a-vis', true),
        microloc = getEl(fondo, 'micro-local'),
        microvis = getEl(fondo, 'micro-visitante'),
+       clasifica = getEl(fondo, 'clasifica', true),
        change = cambiar(loc, vis),
        camvis = change ? 'visitante' : 'local',
        timer,
@@ -470,7 +495,7 @@
   }
        
    function set(){
-      setText(header, colb, cola, .01)
+      setText(header, colb, cola, .1)
       setCristalRGB(header, cola)
       namecopa.html(partido.copa)
       anio.html(partido.anio)
@@ -490,11 +515,11 @@
       setImageEquipo(eloc, loc, 'escudo')
       setImageEquipo(evis, vis, 'escudo')
 
-      multiText([namevis, gv, pb], vis.color_a, vis.color_b, .01)
+      multiText([namevis, gv, pb], vis.color_a, vis.color_b, .1)
 
       bg(boxtime, colb.rgb)
-      setText(time, cola, colb, .01)
-      setText(cronometro, cola, colb, .005)
+      setText(time, cola, colb, .1)
+      setText(cronometro, cola, colb, .05)
       setCristalRGB(reloj, colb)
 
       pa.hide()
@@ -512,6 +537,19 @@
 
       setImageEquipo(visitante, vis, camvis)
       setImageEquipo(vis1, vis, camvis)
+
+      setText(add, colb, cola, .1)
+      bg(add, cola.rgb)
+
+      add.hide()
+
+      fondo.css({backgroundImage: 'url(' + ASSET + 'estadios/' + getEstadio(loc, partido.hora, rain) + ')'})
+      cesped.css({backgroundImage: 'url(' + ASSET + 'cesped/' + getCesped(loc) + ')'})
+
+
+      if(!(partido.is_vuelta == 1 && partido.is_define == 1)){
+        clasifica.hide()
+      }
    }    
    
 
@@ -523,6 +561,13 @@
       RAIN = setInterval(function(){
         llover(20)}, 1);
     }
+
+    // $('#duelo').draggable({
+    //     drag: function(event, ui) {
+    //       log('balon', [$('.micro-balon').offset().left])
+    //     }
+
+    //   })
 
 
     $('#balon').click(function(){
