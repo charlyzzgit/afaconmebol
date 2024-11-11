@@ -172,6 +172,78 @@
       animation: fall linear;
     }
 
+    #footer-partido{
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+    }
+
+    .footer-inner{
+      height: 170px;
+      border-radius: 5px;
+    }
+
+    .juego{
+      height: 50px;
+      background: #669900;
+    }
+
+    .micro-jugador{
+      width: 20px;
+      height: 50px;
+      object-fit: cover;
+    }
+
+    .micro-balon{
+      height: 15px;
+    }
+
+    .micro-arquero{
+      width: 20px;
+      height: 50px;
+      position: relative;
+    }
+
+    .micro-arquero .arquero{
+      position: absolute;
+      top:0;
+      left: 0;
+      z-index: 100;
+    }
+
+    .palo{
+      width: 4px;
+      height: 50px;
+      object-fit: cover;
+    }
+
+    .goles{
+      height: 70px;
+      overflow-x:hidden;
+      overflow-y: auto;
+    }
+
+    #duelo{
+      position: absolute;
+      top:0;
+      left: 50%;
+      width: 55px;
+      transform: translateX(-50%);
+    }
+
+    #gol{
+      position: absolute;
+      left: 0;
+      bottom:300px;
+      z-index: 100000;
+      opacity: 0;
+    }
+
+    #gol .inner{
+      border-radius: 10px;
+    }
+
 
 </style>
 <div id="fondo" class="col-12 box-content p-1">
@@ -260,11 +332,56 @@
   <img id="local" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
   <img id="balon" src="{{ asset('resources/default/logo.png') }}">
   <img id="visitante" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <div id="gol" class="col-12 flex-row-center-center p-2">
+    <div class="inner flex-row-center-center cristal p-2">
+      <img src="{{ asset('resources/default/escudo.png') }}" height="50">
+      <b class="ml-2 ml-2">gol de xxxxxxxx</b>
+      <img src="{{ asset('resources/default/jugador.png') }}" height="50">
+    </div>
+  </div>
+  <div id="footer-partido" class="col-12 p-1">
+    <div class="footer-inner flex-col-start-center p-2 cristal">
+      <div class="juego col-12 flex-row-between-center">
+        <div class="flex-row-start-center">
+          <img class="palo ml-3" src="{{ asset('resources/default/palo.png') }}">
+          <div class="micro-arquero">
+            <img id="a-loc" class="arquero micro-jugador" src="{{ asset('resources/arqueros/amarillo.png') }}">
+            <img class="micro-local micro-jugador" src="{{ asset('resources/default/jugador.png') }}">
+          </div>
+        </div>
+        
+        <div id="duelo" class="flex-row-start-end">
+          <img class="micro-local micro-jugador" src="{{ asset('resources/default/jugador.png') }}">
+          <img class="micro-balon" src="{{ asset('resources/default/logo.png') }}">
+          <img class="micro-visitante micro-jugador" src="{{ asset('resources/default/jugador.png') }}">
+        </div>
+        <div class="flex-row-start-center">
+          <div class="micro-arquero">
+            <img id="a-vis" class="arquero micro-jugador" src="{{ asset('resources/arqueros/amarillo.png') }}">
+            <img class="micro-visitante micro-jugador" src="{{ asset('resources/default/jugador.png') }}">
+          </div>
+          <img class="palo mr-3" src="{{ asset('resources/default/palo.png') }}">
+        </div>
+      </div>
+      <div class="col-12 flex-row-between-start">
+        <div class="col-6 flex-col-start-center pr-1">
+          <b>1º tiempo</b>
+          <ul class="goles col-12 p-0 mt-1 cristal"></ul>
+        </div>
+        <div class="col-6 flex-col-start-center pl-1">
+          <b>2º tiempo</b>
+          <ul class="goles col-12 p-0 mt-1 cristal"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-
+@include('partials.juego')
 <script>
+  
    var partido = {!! $partido !!},
+       JUEGO = null,
       fondo = $('#fondo'),
        header = getEl(fondo, 'header'),
        namecopa = getEl(fondo, 'name-copa'),
@@ -304,7 +421,12 @@
        loc1 = getEl(fondo, 'j-left', true),
        loc2 = getEl(fondo, 'j-center', true),
        vis1 = getEl(fondo, 'j-right', true),
+       aloc = getEl(fondo, 'a-loc', true),
+       avis = getEl(fondo, 'a-vis', true),
+       microloc = getEl(fondo, 'micro-local'),
+       microvis = getEl(fondo, 'micro-visitante'),
        change = cambiar(loc, vis),
+       camvis = change ? 'visitante' : 'local',
        timer,
        par = true,
        rain = rdm(0, 10) > 7 ? true : false
@@ -382,8 +504,14 @@
       setImageEquipo(loc1, loc, 'local')
       setImageEquipo(loc2, loc, 'local')
 
-      setImageEquipo(visitante, vis, change ? 'visitante' : 'local')
-      setImageEquipo(vis1, vis, change ? 'visitante' : 'local')
+      setBuzo(aloc, getBuzo(loc.camiseta, camvis))
+
+      setImageEquipo(microloc, loc, 'local')
+
+      setImageEquipo(microvis, vis, camvis)
+
+      setImageEquipo(visitante, vis, camvis)
+      setImageEquipo(vis1, vis, camvis)
    }    
    
 
@@ -395,6 +523,12 @@
       RAIN = setInterval(function(){
         llover(20)}, 1);
     }
+
+
+    $('#balon').click(function(){
+      JUEGO = new Juego(fondo, loc, vis)
+      JUEGO.jugar()
+    })
     
     preload()
    })

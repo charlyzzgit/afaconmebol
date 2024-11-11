@@ -934,16 +934,17 @@ function getColorGrupo(g){
 }
 
 function rdm(d, h){
-    var f = 0;
+  return Math.floor(Math.random() * (h - d + 1)) + d;
+    // var f = 0;
     
-    //h++
-    while(f == 0){
-      var r = Math.floor(Math.random() * h) + d;
-      if(r >= d && r <= h){
-        break;
-      }
-    }
-    return r;
+    // //h++
+    // while(f == 0){
+    //   var r = Math.floor(Math.random() * h) + d;
+    //   if(r >= d && r <= h){
+    //     break;
+    //   }
+    // }
+    // return r;
 }
 
 
@@ -1137,6 +1138,40 @@ function cambiar(loc, vis){
 
   return true
   
+}
+
+function getBuzo(a, b){
+  var arqueros = [
+      'rojo',
+      'azul',
+      'verde',
+      'amarilo',
+      'naranja',
+      'celeste',
+      'verdeclaro',
+      'violeta',
+      'blanco',
+      'gris',
+      'negro',
+    ],
+  ok = false,
+  aq = null
+
+  while(!ok){
+    try{
+      aq = arqueros[rdm(0, arqueros.length - 1)]
+      var c = parseColor(aq)
+      if(!equalColor(c, a) && !equalColor(c, b) && !similColor(c, a) && !similColor(c, b)){
+        ok = true
+      }   
+    }catch(e){} 
+  }
+
+   return aq + '.png'
+}
+
+function setBuzo(img, src){
+  img.prop('src', ASSET + 'arqueros/' + src)
 }
 
 

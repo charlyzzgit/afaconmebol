@@ -58,8 +58,7 @@
 @section('js')
 @include('partials.scripts')
 <script>
-  //alert([window.innerWidth, window.innerHeight].join(' x '))
-  //384 x 724
+  
   var MAX = 20,
       loc = $('#loc'),
       vis = $('#vis'),
