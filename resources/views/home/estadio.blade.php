@@ -238,13 +238,27 @@
       bottom:300px;
       z-index: 100000;
       opacity: 0;
+      font-size: 22px;
+    }
+
+    #half-time{
+      position: absolute;
+      left: 50%;
+      bottom:350px;
+      transform: translateX(-50%);
+      z-index: 100000;
+      opacity: 0;
+      border-radius: 100px;
+      font-size: 20px;
     }
 
     #gol .inner{
-      border-radius: 10px;
+      border-radius: 100px;
     }
 
     .add{
+      width: 20px;
+      height: 20px;
       border-radius: 100%;
       font-size: 12px;
     }
@@ -324,7 +338,7 @@
             <div class="reloj col-9 flex-col-start-center">
               <div class="box-time col-12 flex-row-center-center p-1">
                 <small class="time">2º tiempo</small>
-                <div class="add ml-2 p-1">10</div>
+                <div class="add flex-row-center-center ml-2 p-1">10</div>
               </div>
               <div class="col-12 flex-row-center-center p-1"> 
                  <b class="cronometro">45</b>
@@ -357,10 +371,15 @@
   <img id="visitante" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
   <div id="gol" class="col-12 flex-row-center-center p-2">
     <div class="inner flex-row-center-center cristal p-2">
-      <img src="{{ asset('resources/default/escudo.png') }}" height="50">
-      <b class="ml-2 ml-2">gol de xxxxxxxx</b>
-      <img src="{{ asset('resources/default/jugador.png') }}" height="50">
+      <img class="gol-esc" src="{{ asset('resources/default/escudo.png') }}" height="50">
+      <b class="gol-lbl ml-2 ml-2">gol de independiente medellin</b>
+      <img class="gol-jug" src="{{ asset('resources/default/jugador.png') }}" height="50">
     </div>
+  </div>
+  <div id="half-time" class="col-9 flex-row-between-center p-1 cristal">
+    <img class="half-loc" src="{{ asset('resources/default/escudo.png') }}" height="30">
+    <b>entretiempo</b>
+    <img class="half-vis" src="{{ asset('resources/default/escudo.png') }}" height="30">
   </div>
   <div id="footer-partido" class="col-12 p-1">
     <div class="footer-inner flex-col-start-center p-2 cristal">
@@ -450,6 +469,9 @@
        microloc = getEl(fondo, 'micro-local'),
        microvis = getEl(fondo, 'micro-visitante'),
        clasifica = getEl(fondo, 'clasifica', true),
+       halftime = getEl(fondo, 'half-time', true),
+       halfloc = getEl(fondo, 'half-loc'),
+       halfvis = getEl(fondo, 'half-vis'),
        change = cambiar(loc, vis),
        camvis = change ? 'visitante' : 'local',
        timer,
@@ -543,8 +565,15 @@
 
       add.hide()
 
+      setCristalRGB(halftime, cola)
+      setText(halftime, colb, cola, .1)
+
+      setImageEquipo(halfloc, loc, 'escudo')
+      setImageEquipo(halfvis, vis, 'escudo')
+
       fondo.css({backgroundImage: 'url(' + ASSET + 'estadios/' + getEstadio(loc, partido.hora, rain) + ')'})
       cesped.css({backgroundImage: 'url(' + ASSET + 'cesped/' + getCesped(loc) + ')'})
+
 
 
       if(!(partido.is_vuelta == 1 && partido.is_define == 1)){
@@ -571,7 +600,7 @@
 
 
     $('#balon').click(function(){
-      JUEGO = new Juego(fondo, loc, vis)
+      JUEGO = new Juego(fondo, loc, vis, camvis)
       JUEGO.jugar()
     })
     

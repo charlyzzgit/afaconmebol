@@ -1,6 +1,6 @@
 <script>
  var PAUSE  = false
-	function Juego(el, loc, vis){
+	function Juego(el, loc, vis, camvis){
 	  this.max = 20
      this.el = el
      this.gl = 0,
@@ -33,6 +33,9 @@
      this.minLeft = 15
      this.maxTime = 0
      this.aditionalTime = getEl(el, 'add')
+     this.half = getEl(el, 'half-time', true)
+     this.golOf = 0
+     this.camvis = camvis
 
 
      
@@ -93,6 +96,7 @@
 	          
 	          this.gl++
 	          this.gol = true
+	          this.golOf = 1
 	          this.goal.animate({left: '-400px'}, 0)
             parent.endAnimation()
 	          //this.duelo.animate({left: (parent.width/2 - parent.duelo.width()/2) + 'px'}, parent.vel, parent.endAnimation.bind(this))
@@ -110,6 +114,7 @@
 	          
 	          this.gv++
 	          this.gol = true
+	          this.golOf = -1
 	          this.goal.animate({left: '400px'}, 0)
             parent.endAnimation()
 	          //this.duelo.animate({left: (parent.width/2 - parent.duelo.width()/2) + 'px'}, parent.vel, parent.endAnimation.bind(this))
@@ -152,7 +157,7 @@
   		parent.gol = false
 	    parent.gloc.html(this.gl)
 	    parent.gvis.html(this.gv)
-	    //parent.pause = true
+	    parent.setGol()
 	    
 	    parent.goal.animate({left:0, opacity:1}, 150)
       setTimeout(function(){
@@ -160,13 +165,36 @@
       }, 2000)
 	    setTimeout(function(){
 	            PAUSE = false
-              
+              parent.golOf = 0
 	            parent.goal.animate({opacity:0}, 150)
 	     }, 3000)
   	}else{
   		PAUSE = false
   	}
   	//log('end', [PAUSE])
+  	
+  }
+
+  this.setGol = function(){
+  	var box = getEl(this.goal, 'inner'),
+  	    esc = getEl(this.goal, 'gol-esc'),
+  			lbl = getEl(this.goal, 'gol-lbl'),
+  			jug = getEl(this.goal, 'gol-jug')
+  	if(this.golOf == 1){
+  		lbl.html('gol de ' + loc.name)
+  		setCristalRGB(box, this.loc.color_a)
+  		setText(lbl, this.loc.color_b, this.loc.color_a, .1)
+  		setImageEquipo(esc, this.loc, 'escudo')
+  		setImageEquipo(jug, this.loc, 'local')
+  	}
+
+  	if(this.golOf == -1){
+  		lbl.html('gol de ' + vis.name)
+  		setCristalRGB(box, this.vis.color_a)
+  		setText(lbl, this.vis.color_b, this.vis.color_a, .1)
+  		setImageEquipo(esc, this.vis, 'escudo')
+  		setImageEquipo(jug, this.vis, this.camvis)
+  	}
   	
   }
 
@@ -178,10 +206,15 @@
   this.halfTime = function(){
     var parent = this,
     j = getEl(parent.el, 'jugador')
-    j.fadeOut(150)
+    j.fadeOut(150, function(){
+    	parent.half.fadeTo(150, 1)
+    })
     parent.duelo.animate({left: parent.center + 'px'}, 2000)
     setTimeout(function(){
-      j.fadeIn(150)
+    	parent.half.fadeTo(150, 0, function(){
+    		j.fadeIn(150)
+    	})
+      
       parent.endTime = false
       parent.tiempo = 2
       parent.jugar()
