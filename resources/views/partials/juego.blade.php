@@ -1,6 +1,6 @@
 <script>
  var PAUSE  = false
-	function Juego(el, loc, vis, camvis){
+	function Juego(el, partido, camvis){
 	  this.max = 20
      this.el = el
      this.gl = 0,
@@ -12,8 +12,9 @@
      this.penales = false
      this.time = 0
      this.seconds = 0
-     this.loc = loc 
-     this.vis = vis
+     this.partido = partido
+     this.loc = partido.local
+     this.vis = partido.visitante
      this.width = window.innerWidth
      this.gloc = getEl(el, 'gl')
      this.gvis = getEl(el, 'gv')
@@ -36,6 +37,9 @@
      this.half = getEl(el, 'half-time', true)
      this.golOf = 0
      this.camvis = camvis
+     this.cesped = getEl(el, 'cesped', true)
+     this.timeDuration = 45
+     this.winner = 0
 
 
      
@@ -158,7 +162,7 @@
 	    parent.gloc.html(this.gl)
 	    parent.gvis.html(this.gv)
 	    parent.setGol()
-	    
+	    parent.papelitos()
 	    parent.goal.animate({left:0, opacity:1}, 150)
       setTimeout(function(){
         parent.duelo.animate({left: parent.center + 'px'}, 2000)
@@ -182,7 +186,7 @@
   			jug = getEl(this.goal, 'gol-jug')
   	if(this.golOf == 1){
   		lbl.html('gol de ' + loc.name)
-  		setCristalRGB(box, this.loc.color_a)
+      setCristalBorder(box, this.loc.color_a, this.loc.color_b, 2)
   		setText(lbl, this.loc.color_b, this.loc.color_a, .1)
   		setImageEquipo(esc, this.loc, 'escudo')
   		setImageEquipo(jug, this.loc, 'local')
@@ -190,7 +194,7 @@
 
   	if(this.golOf == -1){
   		lbl.html('gol de ' + vis.name)
-  		setCristalRGB(box, this.vis.color_a)
+  		setCristalBorder(box, this.vis.color_a, this.vis.color_b, 2)
   		setText(lbl, this.vis.color_b, this.vis.color_a, .1)
   		setImageEquipo(esc, this.vis, 'escudo')
   		setImageEquipo(jug, this.vis, this.camvis)
@@ -205,7 +209,7 @@
 
   this.halfTime = function(){
     var parent = this,
-    j = getEl(parent.el, 'jugador')
+    j = getEl(parent.el, 'jug-campo')
     j.fadeOut(150, function(){
     	parent.half.fadeTo(150, 1)
     })
@@ -219,6 +223,73 @@
       parent.tiempo = 2
       parent.jugar()
     }, 2000)
+  }
+
+  this.papelito = function(){
+    var p = $('<div class="papelito"></papelito>'),
+        eq = this.golOf == 1 ? this.loc : this.vis,
+        l = rdm(0, this.cesped.width()),
+        t = rdm(0, this.cesped.height()),
+        r = rdm(0, 10),
+        col = r < 5 ? eq.color_a : (r >= 5 && r < 8 ? eq.color_b : eq.color_c)
+    p.css({
+      position:'absolute',
+      top:t + 'px',
+      left:l + 'px',
+      zIndex:10000000,
+      width:'2px',
+      height:'2px',
+      background:getRgb(col.rgb)
+    })
+
+    return p
+  }
+
+
+  this.papelitos = function(){
+    for(var i = 0; i < 100; i++){
+      this.cesped.append(this.papelito())
+    }
+  }
+
+  this.finPartido = function(){
+    var l = getEl(this.el, 'local', true),
+        v = getEl(this.el, 'visitante', true),
+        winner = getEl(this.el, 'winner', true),
+        eloc = getEl(winner, 'w-left'),
+        evis = getEl(winner, 'w-right'),
+        lbl = getEl(winner, 'w-name')
+    switch(this.winner){
+      case 1: 
+        setImageEquipo(l, this.loc, 'local')
+        setImageEquipo(v, this.loc, 'local')
+        setCristalBorder(winner, this.loc.color_a, this.loc.color_b, 2)
+        setImageEquipo(eloc, this.loc, 'escudo')
+        setImageEquipo(evis, this.loc, 'escudo')
+        lbl.html('gano ' + this.loc.name)
+        setText(lbl, this.loc.color_b, this.loc.color_a, .1)
+      break
+      case -1:
+        setImageEquipo(l, this.vis, this.camvis)
+        setImageEquipo(v, this.vis, this.camvis)
+        setCristalBorder(winner, this.vis.color_a, this.vis.color_b, 2)
+        setImageEquipo(eloc, this.vis, 'escudo')
+        setImageEquipo(evis, this.vis, 'escudo')
+        lbl.html('gano ' + this.vis.name)
+        setText(lbl, this.vis.color_b, this.vis.color_a, .1)
+      break
+      default:
+        l.hide()
+        v.hide()
+        setCristalBorder(winner, this.loc.color_a, this.loc.color_b, 2)
+        setImageEquipo(eloc, this.loc, 'escudo')
+        setImageEquipo(evis, this.vis, 'escudo')
+        lbl.html('empate')
+        setText(lbl, this.loc.color_b, this.loc.color_a, .1)
+      break
+    }
+
+     winner.fadeTo(150, 1)
   }
 
   this.jugar = function(){
@@ -245,7 +316,7 @@
 	        parent.seconds = 0
 	        parent.time++
 	        parent.cronometro.html(parent.time)
-	        if(parent.time > 45){
+	        if(parent.time > parent.timeDuration){
             parent.aditionalTime.show()
           }
 	        if(parent.time > parent.maxTime){
@@ -256,6 +327,19 @@
             if(parent.tiempo == 1){
               
               parent.halfTime()
+            }else{
+              if(parent.partido.is_define && parent.partido.is_vuelta){
+
+              }else{
+                if(parent.gl > parent.gv){
+                  parent.winner = 1
+                }
+
+                if(parent.gl < parent.gv){
+                  parent.winner = -1
+                }
+                parent.finPartido()
+              }
             }
 	        }
 	      }

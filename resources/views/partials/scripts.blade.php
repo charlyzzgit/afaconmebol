@@ -692,6 +692,20 @@ function setCristalRGB(obj, cola, colb){
   
 }
 
+function setCristalBorder(obj, cola, colb, stroke){
+
+  var a = toRGBA(cola.rgb, .5),
+      b =colb.rgb
+  
+  
+  $(obj).css({
+    background: 'rgba(' + a + ')',
+    border:'solid ' + stroke +'px rgb(' + b + ')',
+  })
+  
+  
+}
+
 function setBackDuo(obj, cola, colb){
 
   var rgbaA = [cola.r, cola.g, cola.b, 1],

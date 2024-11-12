@@ -41,6 +41,17 @@
       right: 50px;
     }
 
+    #capitan{
+      width: 100px;
+      height: 300px;
+      position: absolute;
+      bottom: 200px;
+      z-index: 100000;
+      object-fit: cover;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     #balon{
       position: absolute;
       left: 50%;
@@ -252,6 +263,17 @@
       font-size: 20px;
     }
 
+    #winner{
+      position: absolute;
+      left: 50%;
+      bottom:300px;
+      transform: translateX(-50%);
+      z-index: 100000;
+      opacity: 0;
+      border-radius: 100px;
+      font-size: 20px;
+    }
+
     #gol .inner{
       border-radius: 100px;
     }
@@ -360,15 +382,16 @@
     </div>
   </div>
   <div id="cesped" class="col-12"></div>
-  <img id="j-left" class="mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
-  <img id="j-center" class="mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
-  <img id="j-right" class="mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
-  <img id="local" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <img id="j-left" class="jug-campo mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <img id="j-center" class="jug-campo mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <img id="j-right" class="jug-campo mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <img id="local" class="jug-campo jugador" src="{{ asset('resources/default/jugador.png') }}">
   <div id="clasifica" class="p-2 cristal">
     <img src="{{ asset('resources/default/escudo.png') }}">
   </div>
+  <img id="capitan" src="{{ asset('resources/default/jugador.png') }}">
   <img id="balon" src="{{ asset('resources/default/logo.png') }}">
-  <img id="visitante" class="jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <img id="visitante" class="jug-campo jugador" src="{{ asset('resources/default/jugador.png') }}">
   <div id="gol" class="col-12 flex-row-center-center p-2">
     <div class="inner flex-row-center-center cristal p-2">
       <img class="gol-esc" src="{{ asset('resources/default/escudo.png') }}" height="50">
@@ -381,6 +404,13 @@
     <b>entretiempo</b>
     <img class="half-vis" src="{{ asset('resources/default/escudo.png') }}" height="30">
   </div>
+
+  <div id="winner" class="col-9 flex-row-between-center p-1 cristal">
+    <img class="w-left" src="{{ asset('resources/default/escudo.png') }}" height="30">
+    <b class="w-name"></b>
+    <img class="w-right" src="{{ asset('resources/default/escudo.png') }}" height="30">
+  </div>
+
   <div id="footer-partido" class="col-12 p-1">
     <div class="footer-inner flex-col-start-center p-2 cristal">
       <div class="juego col-12 flex-row-between-center">
@@ -455,6 +485,7 @@
        eflag = getEl(fondo, 'e-flag'),
        local = getEl(fondo, 'local', true),
        visitante = getEl(fondo, 'visitante', true),
+       capitan = getEl(fondo, 'capitan', true),
        cesped = getEl(fondo, 'cesped', true),
        loc = partido.local,
        vis = partido.visitante,
@@ -565,7 +596,8 @@
 
       add.hide()
 
-      setCristalRGB(halftime, cola)
+      //setCristalRGB(halftime, cola)
+      setCristalBorder(halftime, cola, colb, 2)
       setText(halftime, colb, cola, .1)
 
       setImageEquipo(halfloc, loc, 'escudo')
@@ -574,7 +606,7 @@
       fondo.css({backgroundImage: 'url(' + ASSET + 'estadios/' + getEstadio(loc, partido.hora, rain) + ')'})
       cesped.css({backgroundImage: 'url(' + ASSET + 'cesped/' + getCesped(loc) + ')'})
 
-
+      capitan.hide()
 
       if(!(partido.is_vuelta == 1 && partido.is_define == 1)){
         clasifica.hide()
@@ -600,7 +632,7 @@
 
 
     $('#balon').click(function(){
-      JUEGO = new Juego(fondo, loc, vis, camvis)
+      JUEGO = new Juego(fondo, partido, camvis)
       JUEGO.jugar()
     })
     
