@@ -3,8 +3,10 @@
 	function Juego(el, partido, camvis){
 	  this.max = 20
      this.el = el
-     this.gl = 0,
+     this.gl = 0
      this.gv = 0
+     this.ploc = null
+     this.pvis = null
      this.timer = null
      this.pause = true
      this.tiempo = 1
@@ -42,6 +44,8 @@
      this.winner = 0
      this.firstTimeList = getEl(el, 'goles-pt')
      this.secondTimeList = getEl(el, 'goles-st')
+     this.goleadores = []
+     
 
 
      
@@ -259,6 +263,51 @@
     }
   }
 
+  this.getGotaPapel = function(){
+    const $raindrop = $('<div class="papelito"></papelito>'),
+          r = rdm(0, 10),
+          eq = this.winner == 1 ? this.loc : this.vis,
+          col = r < 5 ? eq.color_a : (r >= 5 && r < 8 ? eq.color_b : eq.color_c)
+  
+    // Posición horizontal aleatoria
+    $raindrop.css({
+      position:'absolute',
+      top:'-10vh',
+      left: rdm(0,100) + 'vw',
+      zIndex:10000000,
+      width:'2px',
+      height:'2px',
+      background:getRgb(col.rgb)
+      //animation: 'fall linear'
+    })
+    
+    // // Duración y velocidad aleatoria para la caída
+    // const duration = Math.random() * 3 + 2;
+    // //$raindrop.css('animation-duration', `${duration}s`);
+    // $raindrop.animate({top: rdm(60, 100) + 'vh'}, duration)
+
+    return $raindrop
+  }
+
+ this.lloverPapelitos = function(I){
+    for(var i = 0; i < I; i++){
+      var papelito = this.getGotaPapel()
+      
+      // Añadir el div al body
+      this.el.append(papelito);
+
+       
+      //const duration = Math.random() * 3 + 2;
+     
+      papelito.animate({top: rdm(60, 100) + 'vh'}, rdm(1000,3000))
+        log('pap', papelito)
+        // // Remover el div cuando termine la animación
+        // papelito.on('animationend', function() {
+        //   $(this).remove();
+        // });
+    }
+  }
+
  
 
 
@@ -333,6 +382,25 @@
   	}
   }
 
+  this.addGoleador = function(j, eq_id){
+    var parent = this
+    $.each(parent.goleadores, function(i, g){
+      var e = false
+      if(g.jugador == j && g.equipo_id == eq_id){
+        parent.goleadores[i].goles++
+        e = true
+      }
+    })
+
+    if(!e){
+      this.goleadores.push({
+                            judador: j,
+                            equipo_id: eq_id,
+                            goles: 1
+                          })
+    }
+  }
+
   this.getLiGol = function(){
   	var li = $('<li class="li-gol col-12 flex-row-start-center p-1 mb-1">\
   							<img class="gol-escudo" height="10">\
@@ -340,11 +408,12 @@
   					 </li>'),
   	    eq = this.golOf > 0 ? this.loc : this.vis,
  				esc = getEl(li, 'gol-escudo'),
- 				lbl = getEl(li, 'detalle')
+ 				lbl = getEl(li, 'detalle'),
+        jug = this.getJugadorN()
 
   	setImageEquipo(esc, eq, 'escudo')
-  	lbl.html(this.time + "'" + ' - Nº ' + this.getJugadorN() + ' de ' + this.golDe())
-
+  	lbl.html(this.time + "'" + ' - Nº ' + jug + ' de ' + this.golDe())
+    this.addGoleador(jug, eq.id)
   	setEquipoUI(li, eq)
   	setText(lbl, eq.color_b, eq.color_a, .1)
 
@@ -367,6 +436,7 @@
         setImageEquipo(evis, this.loc, 'escudo')
         lbl.html('gano ' + this.loc.name)
         setText(lbl, this.loc.color_b, this.loc.color_a, .1)
+        this.lloverPapelitos(10)
       break
       case -1:
         setImageEquipo(l, this.vis, this.camvis)
@@ -376,6 +446,7 @@
         setImageEquipo(evis, this.vis, 'escudo')
         lbl.html('gano ' + this.vis.name)
         setText(lbl, this.vis.color_b, this.vis.color_a, .1)
+        this.lloverPapelitos(5)
       break
       default:
         l.hide()
@@ -389,9 +460,30 @@
     }
 
      winner.fadeTo(150, 1)
+
+     
+  }
+
+  this.getResult = function(){
+    return {
+      id:this.partido.id,
+      gl:this.gl,
+      gv: this.gv,
+      pa: this.pa,
+      pb: this.pb,
+      winner: this.winner,
+      goleadores: this.goleadores
+    }
   }
 
   this.jugar = function(){
+    // var parent = this
+    // this.winner = 1
+    // setInterval(function(){
+    //   parent.lloverPapelitos(20)
+    // }, 10)
+    
+    // return
   	log('center', [this.center])
     var parent = this,
         add = rdm(0, 10)
