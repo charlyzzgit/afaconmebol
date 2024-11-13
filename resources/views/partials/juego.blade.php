@@ -40,6 +40,8 @@
      this.cesped = getEl(el, 'cesped', true)
      this.timeDuration = 45
      this.winner = 0
+     this.firstTimeList = getEl(el, 'goles-pt')
+     this.secondTimeList = getEl(el, 'goles-st')
 
 
      
@@ -164,6 +166,11 @@
 	    parent.setGol()
 	    parent.papelitos()
 	    parent.goal.animate({left:0, opacity:1}, 150)
+	    if(parent.tiempo == 1){
+	    	parent.firstTimeList.append(parent.getLiGol())
+	    }else{
+	    	parent.secondTimeList.append(parent.getLiGol())
+	    }
       setTimeout(function(){
         parent.duelo.animate({left: parent.center + 'px'}, 2000)
       }, 2000)
@@ -250,6 +257,98 @@
     for(var i = 0; i < 100; i++){
       this.cesped.append(this.papelito())
     }
+  }
+
+ 
+
+
+  this.golDe = function(){
+  	var g = rdm(0, 100)
+  	if(g < 50){
+  		return 'jugada'
+  	}
+  	if(g >= 50 && g < 60){
+  		return 'cabeza'
+  	}
+  	if(g >= 60 && g < 70){
+  		return 'volea'
+  	}
+  	if(g >= 70 && g < 75){
+  		return 'palomita'
+  	}
+  	if(g >= 75 && g < 80){
+  		return 'olimpico'
+  	}
+  	if(g >= 80 && g < 85){
+  		return 'media cancha'
+  	}
+  	if(g >= 85 && g < 90){
+  		return 'media cancha'
+  	}
+  	if(g >= 90 && g < 95){
+  		return 'arco a arco'
+  	}
+  	
+  	return 'chilena'
+  	
+  }
+
+  this.getJugadorN = function(){
+  	var j = rdm(0, 10)
+  	switch(j){
+  	case 0: return 9
+  	case 1: return 9
+  	case 2: return 9
+  	case 3: return 9
+  	case 4: return this.getPunta() 
+  	case 5: return this.getPunta()
+  	case 6: return this.getPunta()
+  	case 7: return this.getMedio()
+  	case 8: return this.getMedio()
+  	case 9: return this.getDefensor()
+  	default: 1
+  	}
+  }
+
+  this.getPunta = function(){
+  	return rdm(0, 1) == 1 ? 7 : 11
+  }
+
+  this.getMedio = function(){
+  	var m = rdm(0, 2)
+  	switch(m){
+  	case 0: return 5
+  	case 1: return 8
+  	default: return 10
+  	}
+  }
+
+  this.getDefensor = function(){
+  	var m = rdm(0, 3)
+  	switch(m){
+	  	case 0: return 2
+	  	case 1: return 6
+	  	case 2: return 3
+	  	default: return 4
+  	}
+  }
+
+  this.getLiGol = function(){
+  	var li = $('<li class="li-gol col-12 flex-row-start-center p-1 mb-1">\
+  							<img class="gol-escudo" height="10">\
+  							<b class="detalle"></b>\
+  					 </li>'),
+  	    eq = this.golOf > 0 ? this.loc : this.vis,
+ 				esc = getEl(li, 'gol-escudo'),
+ 				lbl = getEl(li, 'detalle')
+
+  	setImageEquipo(esc, eq, 'escudo')
+  	lbl.html(this.time + "'" + ' - Nº ' + this.getJugadorN() + ' de ' + this.golDe())
+
+  	setEquipoUI(li, eq)
+  	setText(lbl, eq.color_b, eq.color_a, .1)
+
+  	return li
   }
 
   this.finPartido = function(){

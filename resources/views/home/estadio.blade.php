@@ -299,6 +299,11 @@
 
     }
 
+    .li-gol{
+      font-size: 12px;
+      border-radius: 5px;
+    }
+
 
 </style>
 <div id="fondo" class="col-12 box-content p-1">
@@ -438,11 +443,11 @@
       <div class="col-12 flex-row-between-start">
         <div class="col-6 flex-col-start-center pr-1">
           <b>1º tiempo</b>
-          <ul class="goles col-12 p-0 mt-1 cristal"></ul>
+          <ul class="goles goles-pt col-12 p-1 mt-1 cristal"></ul>
         </div>
         <div class="col-6 flex-col-start-center pl-1">
           <b>2º tiempo</b>
-          <ul class="goles col-12 p-0 mt-1 cristal"></ul>
+          <ul class="goles goles-st col-12 p-1 mt-1 cristal"></ul>
         </div>
       </div>
     </div>

@@ -949,16 +949,7 @@ function getColorGrupo(g){
 
 function rdm(d, h){
   return Math.floor(Math.random() * (h - d + 1)) + d;
-    // var f = 0;
-    
-    // //h++
-    // while(f == 0){
-    //   var r = Math.floor(Math.random() * h) + d;
-    //   if(r >= d && r <= h){
-    //     break;
-    //   }
-    // }
-    // return r;
+   
 }
 
 
