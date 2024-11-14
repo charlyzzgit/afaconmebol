@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Grupo;
 use App\Models\Partido;
+use DB;
 
 class PartidoController extends Controller
 {   
@@ -101,6 +102,17 @@ class PartidoController extends Controller
       return $p;
     }
 
+  public function getIda($partido_id){
+    $vuelta = Partido::find($partido_id);
+   
+    $ida = Partido::where('grupo_id', $vuelta->grupo_id)
+                  ->where('is_vuelta', false)
+                  ->where('loc_id', $vuelta->vis_id)
+                  ->where('vis_id', $vuelta->loc_id)
+                  ->first();
+    return $ida;
+  }
+
 
   public function index($copa_zona, $fase, $grupo_id = null){
     $m = getMain();
@@ -161,5 +173,24 @@ class PartidoController extends Controller
                               ])
                               ->find($partido_id);
     return view('home.estadio', compact('partido'));
+  }
+
+  public function updatePartido($data){
+    $partido = Partido::find($data->id);
+
+    $partido->gl = $data->gl;
+    $partido->gl = $data->gl;
+    if($data->pa && $data->pb){
+      $partido->pa = $data->pa;
+      $partido->pb = $data->pb;
+    }
+    $partido->is_jugado = true;
+    $partido->detalle = json_encode($data->detalle);
+    $partido->winner_id = $data->winner_id;
+
+    $partido->d = abs($data->gl - $data->gv);
+    $partido->s = $data->gl + $data->gv;
+
+    $partido->save();
   }
 }

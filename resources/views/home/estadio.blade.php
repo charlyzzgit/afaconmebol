@@ -313,6 +313,20 @@
       border-radius: 100%;
     }
 
+    #ida{
+      position: absolute;
+      bottom: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      border-radius: 100px;
+    }
+
+    .ida-name{
+      font-size: 12px;
+      line-height: 1;
+    }
+
 
 </style>
 <div id="fondo" class="col-12 box-content p-1">
@@ -373,11 +387,11 @@
           <div class="col-7 flex-col-center-center">
             <div class="reloj col-9 flex-col-start-center">
               <div class="box-time col-12 flex-row-center-center p-1">
-                <small class="time">2º tiempo</small>
-                <div class="add flex-row-center-center ml-2 p-1">10</div>
+                <small class="time">1º tiempo</small>
+                <div class="add flex-row-center-center ml-2 p-1">0</div>
               </div>
               <div class="col-12 flex-row-center-center p-1"> 
-                 <b class="cronometro">45</b>
+                 <b class="cronometro">0</b>
               </div>
             </div>
             <div class="col-12 flex-row-between-center">
@@ -429,6 +443,26 @@
     <img class="w-left" src="{{ asset('resources/default/escudo.png') }}" height="30">
     <b class="w-name"></b>
     <img class="w-right" src="{{ asset('resources/default/escudo.png') }}" height="30">
+  </div>
+
+  <div id="ida" class="col-11 flex-row-between-center cristal pl-1 pr-1">
+    <div class="col-1 flex-row-start-center">
+      <img src="{{ asset('resources/default/escudo.png') }}" class="eloc-ida" height="20">
+    </div>
+    <div class="col-4 flex-row-start-center">
+      <b class="ida-loc ida-name">independiente medellin</b>
+    </div>
+    <div class="col-2 flex-row-center-center">
+      <b class="ida-gl mr-2">88</b>
+      <b class="lbl-ida">ida</b>
+      <b class="ida-gv ml-2">88</b>
+    </div>
+    <div class="col-4 flex-row-end-center">
+      <b class="ida-vis ida-name">independiente medellin</b>
+    </div>
+    <div class="col-1 flex-row-end-center">
+      <img src="{{ asset('resources/default/escudo.png') }}" class="evis-ida" height="20">
+    </div>
   </div>
 
   <div id="footer-partido" class="col-12 p-1">
@@ -528,7 +562,8 @@
        timer,
        par = true,
        rain = rdm(0, 10) > 7 ? true : false,
-       salir = getEl(fondo, 'exit', true)
+       salir = getEl(fondo, 'exit', true),
+       ida = getEl(fondo, 'ida', true)
 
   log('partido', [partido])
 
@@ -638,6 +673,27 @@
         fill:getRgb(colb.rgb)
       })
       salir.hide()
+
+      if(partido.is_vuelta){
+        setCristalBorder(ida, vis.color_a, vis.color_b, 1)
+        setText(getEl(ida, 'ida-loc'), vis.color_a, vis.color_b, .1)
+        setText(getEl(ida, 'ida-gl'), vis.color_a, vis.color_b, .1)
+        setText(getEl(ida, 'lbl-ida'), vis.color_a, vis.color_b, .1)
+
+        getEl(ida, 'ida-gl').html(MAIN.ida.gl)
+        getEl(ida, 'ida-gv').html(MAIN.ida.gv)
+
+        getEl(ida, 'ida-loc').html(vis.name)
+        getEl(ida, 'ida-vis').html(loc.name)
+
+        setText(getEl(ida, 'ida-vis'), loc.color_a, loc.color_b, .1)
+        setText(getEl(ida, 'ida-gv'), loc.color_a, loc.color_b, .1)
+
+        setImageEquipo(getEl(ida, 'eloc-ida'), vis, 'escudo')
+        setImageEquipo(getEl(ida, 'evis-ida'), loc, 'escudo')
+      }else{
+        ida.hide()
+      }
    }    
    
 

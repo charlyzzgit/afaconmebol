@@ -18,4 +18,14 @@ class Grupo extends Model
     public function equiposPosition(){
       return $this->hasMany('App\Models\EquipoGrupo')->orderBy('pos');
     }
+
+    public function equiposTableOrder(){
+      return $this->hasMany('App\Models\EquipoGrupo')->orderBy('pts', 'desc')
+                                                     ->orderBy('d', 'desc')
+                                                     ->orderBy('gf', 'desc')
+                                                     ->orderBy('gc')
+                                                     ->orderBy('gv')
+                                                     ->orderBy('g', 'desc')
+                                                     ->orderBy('p');
+    }
 }

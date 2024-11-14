@@ -46,6 +46,7 @@
      this.secondTimeList = getEl(el, 'goles-st')
      this.goleadores = []
      this.exit = getEl(el, 'exit', true)
+     this.detalles = []
      
 
 
@@ -396,7 +397,7 @@
 
     if(!e){
       this.goleadores.push({
-                            judador: j,
+                            jugador: j,
                             equipo_id: eq_id,
                             goles: 1
                           })
@@ -411,10 +412,11 @@
   	    eq = this.golOf > 0 ? this.loc : this.vis,
  				esc = getEl(li, 'gol-escudo'),
  				lbl = getEl(li, 'detalle'),
-        jug = this.getJugadorN()
-
+        jug = this.getJugadorN(),
+        detalle = this.time + "'" + ' - Nº ' + jug + ' de ' + this.golDe()
+    this.detalles.push(detalle)
   	setImageEquipo(esc, eq, 'escudo')
-  	lbl.html(this.time + "'" + ' - Nº ' + jug + ' de ' + this.golDe())
+  	lbl.html(detalle)
     this.addGoleador(jug, eq.id)
   	setEquipoUI(li, eq)
   	setText(lbl, eq.color_b, eq.color_a, .1)
@@ -469,12 +471,18 @@
   this.getResult = function(){
     return {
       id:this.partido.id,
+      anio: this.partido.anio, 
+      copa: this.partido.copa, 
+      fase: this.partido.fase, 
+      fecha: this.partido.fecha, 
+      zona: this.partido.zona,
       gl:this.gl,
       gv: this.gv,
       pa: this.ploc,
       pb: this.pvis,
-      winner: this.winner,
-      goleadores: this.goleadores
+      winner_id: this.winner == 1 ? this.loc.id : (this.winner == -1 ? this.vis.id : null),
+      goleadores: this.goleadores,
+      detalle: this.detalles
     }
   }
 

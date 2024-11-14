@@ -8,6 +8,7 @@ use App\Models\Color;
 use App\Models\EquipoGrupo;
 use App\Models\Liga;
 use App\Models\Partido;
+use DB;
 class GrupoController extends Controller
 {
     public function getLastFase($copa, $anio, $zona = null){
@@ -140,12 +141,92 @@ class GrupoController extends Controller
       return $grupos;
     }
 
-    public function updateGrupo($partido_id, $data){
-      $p = Partido::find($partido_id);
-      $grupo = Grupo::find($p->grupo_id);
-      $loc = EquipoGrupo::where('equipo_id', $p->loc_id)->where('grupo_id', $grupo->id)->first();
-      $vis = EquipoGrupo::where('equipo_id', $p->vis_id)->where('grupo_id', $grupo->id)->first();
+    public function updateGrupo($data){
+      $p = Partido::find($data->id);
       
+      $loc = EquipoGrupo::where('equipo_id', $p->loc_id)->where('grupo_id', $p->grupo_id)->first();
+      $vis = EquipoGrupo::where('equipo_id', $p->vis_id)->where('grupo_id', $p->grupo_id)->first();
+      
+      $loc->j++;
+      $vis->j++;
+      if($data->gl > $data->gv){
+        $loc->g++;
+        $vis->p++;
+        $loc->pts += 3;
+      }else if($data->gl < $data->gv){
+        $vis->g++;
+        $loc->p++;
+        $vis->pts += 3;
+      }else{
+        $loc->e++;
+        $vis->e++;
 
+        $loc->pts++;
+        $vis->pts++;
+      }
+
+      $loc->gf += $data->gl;
+      $loc->gc += $data->gv;
+      $loc->d = $loc->gf - $loc->gc;
+
+      $vis->gf += $data->gv;
+      $vis->gc += $data->gl;
+      $vis->gv += $data->gv;
+      $vis->d = $vis->gf - $vis->gc;
+
+      if($data->pa && $data->pb){
+        $loc->penales = $data->winner_id == $loc->equipo_id ? 1 : 0;
+        $vis->penales = $data->winner_id == $vis->equipo_id ? 1 : 0;
+      }
+
+
+      $loc->save();
+      $vis->save();
+
+      $egCount = EquipoGrupo::where('grupo_id', $p->grupo_id);
+      $egSum = clone $egCount;
+
+      $count = $egCount->count();
+
+      $egSum = $egSum->select(DB::raw('SUM(j) as jugados'))->first();
+
+      $grupo = Grupo::with('equiposTableOrder')->find($p->grupo_id);
+
+      if($count == 4){
+        $grupo->completed = $egSum->jugados == 24 ? true : false;
+      }else{
+        $grupo->completed = $egSum->jugados == 4 ? true : false;
+      }
+
+      foreach($grupo->equiposTableOrder as $order => $e){
+         $e->pos = $order + 1;
+         $e->save();
+      }
+
+      $this->setEstadoClasificacion($grupo->id);
+
+      $grupo->save();
+    }
+
+    private function setEstadoClasificacion($grupo_id){
+      $grupo = Grupo::with('equiposTableOrder')->find($grupo_id);
+      $grupos_id = Grupo::where('anio', $grupo->anio)
+                        ->where('copa', $grupo->copa)
+                        ->where('fase', $grupo->fase);
+      
+      switch($grupo->copa){
+        case 'afa':
+
+        break;
+        case 'argentina':
+
+        break;
+        default:
+          foreach($grupo->equiposTableOrder as $order => $e){
+             $e->estado = $grupo->completed ? ($e->pos == 1 ? 2 : -1) : 0;
+             $e->save();
+          }
+        break;
+      }
     }
 }

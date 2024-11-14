@@ -1021,8 +1021,8 @@ function getTableCell(text, isheader, first){
     if(isheader){
       cell.addClass('flex-row-center-center')
       if(text.column == 'estado'){
-        var icon = $('<img>')
-        icon.css({height: '20px'}).prop('src', ASSET + 'default/logo.png')
+        var icon = $('<i class="fas fa-question-circle"></i>')
+        icon.css({fontSize: '20px'})
         cell.append(icon)
       }else{
         cell.html(text.column)
@@ -1030,7 +1030,13 @@ function getTableCell(text, isheader, first){
       
     }else{
       cell.addClass('flex-row-center-center')
-      cell.html(text.value)
+      if(text.column == 'estado'){
+        var icon = $('<img>')
+        icon.css({height: '20px'}).prop('src', ASSET + 'default/' + text.value + '.png')
+        cell.append(icon)
+      }else{
+        cell.html(text.value)
+      }
     }
   
 
@@ -1095,6 +1101,44 @@ function getTable(eq){
   table.append(getTableRow(items, eq.equipo.color_b.rgb, false))
 
   return table
+}
+
+function getEstado(estado, copa, fase, zona){
+  if(estado == -1){
+    return 'eli'
+  }
+
+  if(estado == 0){
+    return 'logo'
+  }
+  switch(copa){
+    case 'afa':
+      switch(fase){
+        case -2:  return estado == 2 ? 'afa_a' : 'afa_b'
+        case -1:  
+          switch(zona){
+            case 'a': return estado >= 2 ? 'afa_a' : (estado == 1 ? 'afa_b' : 'afa_c')
+            default: return 'afa_b'
+          }
+        case 0: case 1:
+          switch(zona){
+            case 'a': return estado >= 2 ? 'afa_a' : 'afa_b'
+            case 'b': return estado >= 2 ? 'afa_b' : 'afa_c'
+            default: return 'afa_c'
+
+          }
+        default: return [copa, zona].join('_')
+      }
+    case 'argentina': return copa
+    case 'sudamericana': return copa 
+    case 'libertadores':
+      switch(fase){
+        case 0: return estado >= 2 ? copa : 'sudamericana'
+        default: return copa
+      }
+    default: return copa
+  }
+  
 }
 
 function getDia(d){

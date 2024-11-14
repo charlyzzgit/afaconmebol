@@ -41,6 +41,7 @@
       color:white;
     }
 </style>
+
 <div class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
     <div class="flex-row-start-center h-100">
@@ -154,7 +155,8 @@
     name.html(eg.equipo.name)
 
     setEquipoUI(li, eg.equipo)
-
+    eg.estado = getEstado(eg.estado, copa, fase, zona)
+    log('estado', eg.estado)
     li.append(getTable(eg))
     
     return li

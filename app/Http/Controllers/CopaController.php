@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\PartidoController;
+use App\Http\Controllers\GoleadoresController;
 use App\Classes\Sorteo;
 use App\Classes\Admin;
 
@@ -46,6 +47,15 @@ class CopaController extends Controller
    }
 
    public function savePartido(Request $request){
-     
+     return processTransaction(function() use($request){
+       (new GrupoController())->updateGrupo($request);
+       (new PartidoController())->updatePartido($request);
+       (new GoleadoresController())->saveGoleadores($request);
+
+       $p = (new PartidoController())->nextPartido($request->anio, $request->copa, $request->fase, $request->fecha, $request->zona);
+       if(!$p){
+         (new Admin())->processed();
+       }
+     }, 'Grupo, partido, goleadores actualizados', 'Error a guardar');
    }
 }

@@ -30,6 +30,7 @@ class Admin{
     public function getData(){
       $c = json_decode($this->calendar->copas);
       $namecopa = count($c) ? $c[0] : null;
+      $next = (new PartidoController())->nextPartido($this->main->anio, $namecopa, $this->calendar->fase, $this->calendar->fecha, null); //zona = getZona(copa)
       return [
                 'action' => $this->calendar->action,
                 'anio' => $this->main->anio,
@@ -45,7 +46,8 @@ class Admin{
                 'procesada' => $this->calendar->procesado ? true : false,
                 'mes' =>$this->calendar->mes,
                 'semana' => $this->calendar->semana,
-                'partido' => (new PartidoController())->nextPartido($this->main->anio, $namecopa, $this->calendar->fase, $this->calendar->fecha, null) //zona = getZona(copa)
+                'partido' => $next,
+                'ida' => (new PartidoController())->getIda($next->id)
 
       ];
     }
