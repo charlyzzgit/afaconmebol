@@ -7,6 +7,7 @@ use App\Models\Grupo;
 use App\Models\Color;
 use App\Models\EquipoGrupo;
 use App\Models\Liga;
+use App\Models\Partido;
 class GrupoController extends Controller
 {
     public function getLastFase($copa, $anio, $zona = null){
@@ -137,5 +138,14 @@ class GrupoController extends Controller
 
 
       return $grupos;
+    }
+
+    public function updateGrupo($partido_id, $data){
+      $p = Partido::find($partido_id);
+      $grupo = Grupo::find($p->grupo_id);
+      $loc = EquipoGrupo::where('equipo_id', $p->loc_id)->where('grupo_id', $grupo->id)->first();
+      $vis = EquipoGrupo::where('equipo_id', $p->vis_id)->where('grupo_id', $grupo->id)->first();
+      
+
     }
 }

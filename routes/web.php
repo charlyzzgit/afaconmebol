@@ -60,7 +60,10 @@ Route::prefix('main')->group(function(){
   Route::post('new-temporada', [App\Http\Controllers\MainController::class, 'newTemporada'])->name('main.new-temporada');
   Route::post('sorteo', [App\Http\Controllers\CopaController::class, 'newFase'])->name('main.sorteo');
   Route::post('init-fecha', [App\Http\Controllers\MainController::class, 'initFecha'])->name('main.init-fecha');
+  Route::post('save-partido', [App\Http\Controllers\CopaController::class, 'savePartido'])->name('main.save-partido');
   
+  
+
 
 });
 

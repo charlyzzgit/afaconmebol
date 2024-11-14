@@ -293,7 +293,7 @@
       var url = "{{ route('home') }}",
           params = $(this).data('params').split('.')
        //url += page
-      
+       log('url', [url, params])
        nextPage(url, params, true)
      })
      return c

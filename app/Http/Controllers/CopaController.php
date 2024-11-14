@@ -44,4 +44,8 @@ class CopaController extends Controller
      }, 'Copa '. $request->copa.' sorteada', 'Error de sorteo');
 
    }
+
+   public function savePartido(Request $request){
+     
+   }
 }

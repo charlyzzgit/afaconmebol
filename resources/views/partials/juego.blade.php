@@ -45,6 +45,7 @@
      this.firstTimeList = getEl(el, 'goles-pt')
      this.secondTimeList = getEl(el, 'goles-st')
      this.goleadores = []
+     this.exit = getEl(el, 'exit', true)
      
 
 
@@ -383,9 +384,10 @@
   }
 
   this.addGoleador = function(j, eq_id){
-    var parent = this
+    var parent = this,
+        e = false
     $.each(parent.goleadores, function(i, g){
-      var e = false
+      
       if(g.jugador == j && g.equipo_id == eq_id){
         parent.goleadores[i].goles++
         e = true
@@ -461,7 +463,7 @@
 
      winner.fadeTo(150, 1)
 
-     
+     this.exit.fadeIn(150)
   }
 
   this.getResult = function(){
@@ -469,8 +471,8 @@
       id:this.partido.id,
       gl:this.gl,
       gv: this.gv,
-      pa: this.pa,
-      pb: this.pb,
+      pa: this.ploc,
+      pb: this.pvis,
       winner: this.winner,
       goleadores: this.goleadores
     }
