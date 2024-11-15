@@ -239,7 +239,7 @@
         })
 
         $('#reload').click(function(){
-          
+          stopTimer(TIMER_PARTIDO)
           $('#content').empty()
           $('#content').load(LAST_URL)
         })

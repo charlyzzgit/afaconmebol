@@ -7,7 +7,7 @@
      this.gv = 0
      this.ploc = null
      this.pvis = null
-     this.timer = null
+     
      this.pause = true
      this.tiempo = 1
      this.alargue = false
@@ -64,8 +64,8 @@
      
     this.correr = function(){
     	var c = 0
-    	for(var i = 0; i < 4; i++){
-    		c+=rdm(0,1)*20
+    	for(var i = 0; i < 10; i++){
+    		c+=rdm(0,1)*10 //rdm(10, 20)
     	}
     	return c
     }
@@ -75,17 +75,7 @@
 	        result = 0
 	    log('correr', [this.correr()])
 	    return rdm(0, level) + this.correr()
-	    // for(var i = 0; i < level; i++){
-	    // 	var p = rdm(0, level),
-	    //       f = rdm(0, this.max)
-	      
-	    //    if(p > f){
-	    //    	result+=p
-	    //    }
-	      
-	    // }
-	   	
-	   	// return result
+	    
 	  }
 
 	  this.game = function(){
@@ -94,86 +84,52 @@
 	  		
 	  		return
 	  	}
-	  	log('balon', [this.balon.offset().left])
-	  	//this.gol = false
-	    var parent = this,
-	        l = this.getPower(loc, true),
-	        v = this.getPower(vis, false)
-	        
-	        changed = false,
-	        
-	        left = parseInt(this.el.css('left').split('px')[0]) + this.el.width()/2
-	        //log('width', [this.el.css('left').split('px')[0], this.el.width()/2])
-	      if(l > v){
-	      	left+=l
-	      	PAUSE = true
-	        if(parent.balon.offset().left > parent.maxRight){
-	        	
-	          
-	          this.gl++
-	          if(this.define){
-	          	this.global_loc++
-	          }
-	          this.gol = true
-	          this.golOf = 1
-	          this.goal.animate({left: '-400px'}, 0)
-            parent.endAnimation()
-	          //this.duelo.animate({left: (parent.width/2 - parent.duelo.width()/2) + 'px'}, parent.vel, parent.endAnimation.bind(this))
-	        }else{
-	        	
-	          this.duelo.animate({left: (left + l) + 'px'}, parent.vel, parent.endAnimation.bind(this))
-	        }
-	        changed = true
-	      }
-	      if(l < v){
-	      	left-=v
-	      	PAUSE = true
-	        if(parent.balon.offset().left < parent.minLeft){
-	          
-	          
-	          this.gv++
-	          if(this.define){
-	          	this.global_vis++
-	          }
-	          this.gol = true
-	          this.golOf = -1
-	          this.goal.animate({left: '400px'}, 0)
-            parent.endAnimation()
-	          //this.duelo.animate({left: (parent.width/2 - parent.duelo.width()/2) + 'px'}, parent.vel, parent.endAnimation.bind(this))
-	        }else{
-	        	
-	          this.duelo.animate({left: (left - v) + 'px'}, parent.vel, parent.endAnimation.bind(this))
-	        }
-	        changed = true
 
-	      }
-	      //log('pelota', [this.balon.offset().left])
-	      
-	      // if(!changed){
-	      //   return
-	      // }
-	      //this.pause = true
-	      // if(gol){
-	      //   this.gol = false
-	      //   this.gloc.html(this.gl)
-	      // 	this.gvis.html(this.gv)
-	      // 	PAUSE = true
-	      // 	this.duelo.animate({left: parent.center + 'px'}, 2000, parent.endAnimation)
-	      // 	this.goal.animate({left:0, opacity:1}, 150)
-	      //   setTimeout(function(){
-	      //       PAUSE = false
-	      //       parent.goal.animate({opacity:0}, 150)
-	      //   }, 3000)
-	      // }else{
-	       
-	      // }
-	      
-	      
+      var parent = this,
+          l = this.getPower(loc, true),
+          v = rdm(0, 1) != 0 ? this.getPower(vis, false) : 0,
+          left = parseInt(this.el.css('left').split('px')[0]) + this.el.width()/2,
+          increment = 0
 
+      if(l > v){
+          left+=l
+          increment = left + l
+      }else{
+        left-=v
+        increment = left - v
+      }
+
+      this.duelo.animate({left: increment + 'px'}, parent.vel, parent.endAnimation.bind(this))
+
+  }
+
+  this.isGol = function(){
+    var r = rdm(0, 10)
+    return r > 5 ? true : false
   }
 
   this.endAnimation = function(){
   	var parent = this
+    if(parent.balon.offset().left > parent.maxRight && parent.isGol()){
+      this.gl++
+      if(this.define){
+        this.global_loc++
+      }
+      this.gol = true
+      this.golOf = 1
+      this.goal.animate({left: '-400px'}, 0)
+      PAUSE = true
+    }
+    if(parent.balon.offset().left < parent.minLeft && parent.isGol()){
+      this.gv++
+      if(this.define){
+        this.global_vis++
+      }
+      this.gol = true
+      this.golOf = -1
+      this.goal.animate({left: '400px'}, 0)
+      PAUSE = true
+    }
   	if(parent.gol){
   		log('gol', [])
   		parent.gol = false
@@ -184,9 +140,15 @@
 	    parent.goal.animate({left:0, opacity:1}, 150)
 	    if(parent.tiempo == 1){
 	    	parent.firstTimeList.append(parent.getLiGol())
+        parent.firstTimeList.animate({scrollTop: 2000}, 150)
 	    }else{
 	    	parent.secondTimeList.append(parent.getLiGol())
+        parent.secondTimeList.animate({scrollTop: 2000}, 150)
 	    }
+      if(this.define){
+        this.clasificaNext()
+      }
+      
       setTimeout(function(){
         parent.duelo.animate({left: parent.center + 'px'}, 2000)
       }, 2000)
@@ -311,7 +273,7 @@
        
       //const duration = Math.random() * 3 + 2;
      
-      papelito.animate({top: rdm(60, 100) + 'vh'}, rdm(1000,3000))
+      papelito.animate({top: rdm(0, 100) + 'vh'}, rdm(1000,3000))
         log('pap', papelito)
         // // Remover el div cuando termine la animación
         // papelito.on('animationend', function() {
@@ -320,37 +282,40 @@
     }
   }
 
+  this.rainPapelitos = function(I){
+    var parent = this
+    PAPELITOS = setInterval(function(){
+        parent.lloverPapelitos(I)}, 1);
+  }
+
  
 
 
   this.golDe = function(){
   	var g = rdm(0, 100)
   	if(g < 50){
-  		return 'jugada'
+  		return 'de jugada'
   	}
-  	if(g >= 50 && g < 60){
-  		return 'cabeza'
-  	}
-  	if(g >= 60 && g < 70){
-  		return 'volea'
+  	if(g >= 50 && g < 70){
+  		return 'de cabeza'
   	}
   	if(g >= 70 && g < 75){
-  		return 'palomita'
+  		return 'de volea'
   	}
   	if(g >= 75 && g < 80){
-  		return 'olimpico'
+  		return 'de palomita'
   	}
   	if(g >= 80 && g < 85){
-  		return 'media cancha'
+  		return 'olimpico'
   	}
   	if(g >= 85 && g < 90){
-  		return 'media cancha'
+  		return 'de media cancha'
   	}
   	if(g >= 90 && g < 95){
-  		return 'arco a arco'
+  		return 'de arco a arco'
   	}
   	
-  	return 'chilena'
+  	return 'de chilena'
   	
   }
 
@@ -367,7 +332,7 @@
   	case 7: return this.getMedio()
   	case 8: return this.getMedio()
   	case 9: return this.getDefensor()
-  	default: 1
+  	default: return 1
   	}
   }
 
@@ -423,15 +388,32 @@
  				esc = getEl(li, 'gol-escudo'),
  				lbl = getEl(li, 'detalle'),
         jug = this.getJugadorN(),
-        detalle = this.time + "'" + ' - Nº ' + jug + ' de ' + this.golDe()
+        detalle = this.time + "'" + ' - Nº ' + jug + ' - ' + this.golDe()
     this.detalles.push(detalle)
   	setImageEquipo(esc, eq, 'escudo')
   	lbl.html(detalle)
     this.addGoleador(jug, eq.id)
   	setEquipoUI(li, eq)
-  	setText(lbl, eq.color_b, eq.color_a, .1)
+  	setText(lbl, eq.color_b, bcColor(eq), .1)
 
   	return li
+  }
+
+  this.nextLevel = function(eq){
+    if(!this.define){
+      return 'gano ' + eq
+    }
+    var copa = this.partido.copa
+    switch(this.partido.fase){
+      case -2: return eq + ' clasifico a 1° fase'
+      case -1: return eq + ' clasifico a 2° fase'
+      case 0: return eq + ' clasifico a ' + (copa != 'afa' ? 'diesieisavos de final' : '2° fase')
+      case 1: return eq + ' clasifico a octavos de final'
+      case 2: return eq + ' clasifico a cuartos de final'
+      case 3: return eq + ' clasifico a semifinales'
+      case 4: return eq + ' clasifico a la final'
+      default: return eq + ' campeon'
+    }
   }
 
   this.finPartido = function(){
@@ -448,9 +430,9 @@
         setCristalBorder(winner, this.loc.color_a, this.loc.color_b, 2)
         setImageEquipo(eloc, this.loc, 'escudo')
         setImageEquipo(evis, this.loc, 'escudo')
-        lbl.html('gano ' + this.loc.name)
+        lbl.html(this.nextLevel(this.loc.name))
         setText(lbl, this.loc.color_b, this.loc.color_a, .1)
-        this.lloverPapelitos(10)
+        
       break
       case -1:
         setImageEquipo(l, this.vis, this.camvis)
@@ -458,9 +440,9 @@
         setCristalBorder(winner, this.vis.color_a, this.vis.color_b, 2)
         setImageEquipo(eloc, this.vis, 'escudo')
         setImageEquipo(evis, this.vis, 'escudo')
-        lbl.html('gano ' + this.vis.name)
+        lbl.html(this.nextLevel(this.vis.name))
         setText(lbl, this.vis.color_b, this.vis.color_a, .1)
-        this.lloverPapelitos(5)
+        
       break
       default:
         l.hide()
@@ -476,6 +458,14 @@
      winner.fadeTo(150, 1)
 
      this.exit.fadeIn(150)
+     if(this.define && this.partido.is_final){
+        this.setFestejo()// llevar loc y vis a 10 left y right
+     }else{
+      if(this.winner != 0){
+       this.rainPapelitos(this.winner == 1 ? 10 : 5)
+      }
+     }
+     
   }
 
   this.clasificaNext = function(){
@@ -489,6 +479,51 @@
   		setCristalBorder(this.clasifica, parseColor('gris'), parseColor('gris'), 1)
   		this.clasifica.find('img').prop('src', ASSET + 'default/juez.png')
   	}
+    getEl(fondo, 'gbl-loc').html('[' + this.global_loc + ']')
+    getEl(fondo, 'gbl-vis').html('[' + this.global_vis + ']')
+  }
+
+  this.setFestejo = function(){
+    var local = getEl(this.el, 'local', true),
+        visitante = getEl(this.el, 'visitante', true),
+        capitan = getEl(this.el, 'capitan', true),
+        flagLeft = getEl(this.el, 'flag-festejo-left', true),
+        flagRight = getEl(this.el, 'flag-festejo-right', true),
+        trofeo = getEl(this.el, 'trofeo', true)
+        box = getEl(this.el, 'box-trofeo', true)
+    local.animate({left:'10px'}, 150)
+    visitante.animate({right:'10px'}, 150),
+    ligaSide = rdm(0, 1)
+
+    if(this.winner == 1){
+      setImageEquipo(capitan, this.loc, 'local')
+      if(ligaSide == 0){
+        setImageFlag(flagLeft, this.loc.liga.bandera)
+        setImageEquipo(flagRight, this.loc, 'bandera')
+      }else{
+        setImageFlag(flagRight, this.loc.liga.bandera)
+        setImageEquipo(flagLeft, this.loc, 'bandera')
+      }
+    }
+
+    if(this.winner == -1){
+      setImageEquipo(capitan, this.vis, this.camvis)
+      if(ligaSide == 0){
+        setImageFlag(flagLeft, this.vis.liga.bandera)
+        setImageEquipo(flagRight, this.vis, 'bandera')
+      }else{
+        setImageFlag(flagRight, this.vis.liga.bandera)
+        setImageEquipo(flagLeft, this.vis, 'bandera')
+      }
+    }
+
+    setImageCopa(trofeo, this.partido.copa)
+
+    capitan.fadeIn(150)
+
+    box.fadeIn(150)
+    this.clasifica.fadeOut(150)
+    this.rainPapelitos(20)
   }
 
   this.getResult = function(){
@@ -526,10 +561,10 @@
     parent.aditionalTime.hide()
     parent.maxTime = 45 + add
     parent.setTiempo()
-    if(parent.timer != null){
-    	clearInterval(parent.timer)
+    if(TIMER_PARTIDO != null){
+    	clearInterval(TIMER_PARTIDO)
     }
-    parent.timer = setInterval(function(){
+    TIMER_PARTIDO = setInterval(function(){
     	//log('pause', [PAUSE])
       if(!PAUSE){
       
@@ -547,13 +582,21 @@
 	        	//log('fin', [parent.time])
 	        	parent.endTime = true
 	        	parent.duelo.stop(true, false)
-	          clearInterval(parent.timer)
+	          clearInterval(TIMER_PARTIDO)
             if(parent.tiempo == 1){
               
               parent.halfTime()
             }else{
               if(parent.partido.is_define && parent.partido.is_vuelta){
-
+                if(parent.global_loc > parent.global_vis){
+                  parent.winner = 1
+                  parent.finPartido()
+                }else if(parent.global_loc < parent.global_vis){
+                  parent.winner = -1
+                  parent.finPartido()
+                }else{
+                  alert('penales')
+                }
               }else{
                 if(parent.gl > parent.gv){
                   parent.winner = 1

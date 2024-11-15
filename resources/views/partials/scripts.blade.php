@@ -32,7 +32,8 @@
       LAST_URL = null,
       PAGES = [],
       RAIN = null,
-      PAPELITOS = null
+      PAPELITOS = null,
+      TIMER_PARTIDO
   @isset($colors)
     COLORS = {!! $colors !!}
   @endisset
@@ -1242,6 +1243,13 @@ function getEstadio(eq, hora, israin){
 
 function getCesped(eq){
   return eq.cesped + '.png'
+}
+
+function bcColor(eq){
+  if(equalColor(eq.color_c, eq.color_b)){
+    return eq.color_a
+  }
+  return eq.color_c
 }
 
 

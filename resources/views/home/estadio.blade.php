@@ -34,11 +34,29 @@
     }
 
     #local{
-      left: 50px;
+      left: 50px; */
     }
 
     #visitante{
-      right: 50px;
+      right: 50px; */
+    }
+
+    #flag-festejo-left{
+      width: 120px;
+      position: absolute;
+      bottom: 320px;
+      left: 1px;
+      z-index: 200000;
+      opacity: .75;
+    }
+
+    #flag-festejo-right{
+      width: 120px;
+      position: absolute;
+      bottom: 320px;
+      right: 1px;
+      z-index: 200000;
+      opacity: .75;
     }
 
     #capitan{
@@ -50,6 +68,25 @@
       object-fit: cover;
       left: 50%;
       transform: translateX(-50%);
+    }
+
+    #box-trofeo{
+      position: absolute;
+      bottom: 210px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200000;
+    }
+
+    #trofeo{
+      height: 150px;
+    }
+
+    #atril{
+      width: 100px;
+      height: 80px;
+      border-radius: 10px 10px 5px 5px;
+      background: linear-gradient(90deg, #800000, #904000, #800000);
     }
 
     #balon{
@@ -115,6 +152,7 @@
 
     .copa{
       height: 100px;
+
     }
 
     .clima{
@@ -275,7 +313,7 @@
       left: 50%;
       bottom:300px;
       transform: translateX(-50%);
-      z-index: 100000;
+      z-index: 10000000;
       opacity: 0;
       border-radius: 100px;
       font-size: 20px;
@@ -319,7 +357,7 @@
       left: 50%;
       transform: translateX(-50%);
       bottom: 210px;
-      z-index: 100000;
+      z-index: 300000;
       border-radius: 100%;
     }
 
@@ -438,6 +476,13 @@
   </div>
   
   <img id="visitante" class="jug-campo jugador" src="{{ asset('resources/default/jugador.png') }}">
+  <img id="flag-festejo-left" src="{{ asset('resources/default/flag.png') }}">
+  <div id="box-trofeo" class="flex-col-start-center">
+    <img id="trofeo" src="{{ asset('resources/default/recopa.png') }}" >
+    <div id="atril"></div>
+  </div>
+  <img id="flag-festejo-right" src="{{ asset('resources/default/flag.png') }}">
+
   <div id="gol" class="col-12 flex-row-center-center p-2">
     <div class="inner flex-row-center-center cristal p-2">
       <img class="gol-esc" src="{{ asset('resources/default/escudo.png') }}" height="50">
@@ -503,11 +548,11 @@
       </div>
       <div class="col-12 flex-row-between-start">
         <div class="col-6 flex-col-start-center pr-1">
-          <b>1º tiempo</b>
+          <b class="lbl-time-list">1º tiempo</b>
           <ul class="goles goles-pt col-12 p-1 mt-1 cristal"></ul>
         </div>
         <div class="col-6 flex-col-start-center pl-1">
-          <b>2º tiempo</b>
+          <b class="lbl-time-list">2º tiempo</b>
           <ul class="goles goles-st col-12 p-1 mt-1 cristal"></ul>
         </div>
       </div>
@@ -618,7 +663,7 @@
   }
        
    function set(){
-      setText(header, colb, cola, .1)
+      setText(header, colb, bcColor(loc), .1)
       setCristalRGB(header, cola)
       namecopa.html(partido.copa)
       anio.html(partido.anio)
@@ -626,11 +671,14 @@
       setImageEquipo(estadio, loc, 'estadio')
       nameestadio.html(loc.name)
       setImageCopa(copa, partido.copa)
+      copa.css({filter: 'drop-shadow(0 0 10px rgba(' + colb.rgb + ', 0.9))'})
       dia.html(getDia(partido.dia))
       hora.html(partido.hora + ' hs.')
       setImage(clima, ASSET + 'clima/', getClima(hora))
       setImageFlag(flag, loc.liga.bandera)
       setImageEquipo(eflag, loc, 'bandera')
+
+      fase.html(getNameFase(partido.copa, partido.fase, partido.zona))
 
       nameloc.html(loc.name)
       namevis.html(vis.name)
@@ -676,7 +724,7 @@
       fondo.css({backgroundImage: 'url(' + ASSET + 'estadios/' + getEstadio(loc, partido.hora, rain) + ')'})
       cesped.css({backgroundImage: 'url(' + ASSET + 'cesped/' + getCesped(loc) + ')'})
 
-      capitan.hide()
+      
 
       if(partido.is_vuelta == 1 && partido.is_define == 1){
         if(MAIN.ida.gl > MAIN.ida.gv){
@@ -723,6 +771,13 @@
       }else{
         ida.hide()
       }
+
+      setText(getEl(fondo, 'lbl-time-list'), loc.color_b, bcColor(loc), .1)
+
+      getEl(fondo, 'box-trofeo', true).hide()
+      capitan.hide()
+      getEl(fondo, 'flag-festejo-left', true).hide()
+      getEl(fondo, 'flag-festejo-right', true).hide()
    }    
    
 

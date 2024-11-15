@@ -161,7 +161,7 @@
     // }
     PAUSE = false
     time = 0
-    timer = setInterval(function(){
+    TIMER_PARTIDO = setInterval(function(){
       if(PAUSE){
         return
       }
@@ -172,7 +172,7 @@
         time++
         $('#time').html(time)
         if(time > 45){
-          clearInterval(timer)
+          clearInterval(TIMER_PARTIDO)
         }
       }
     }, 1)
