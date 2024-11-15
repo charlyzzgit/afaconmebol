@@ -47,6 +47,10 @@
      this.goleadores = []
      this.exit = getEl(el, 'exit', true)
      this.detalles = []
+     this.define = partido.is_vuelta && partido.is_define
+     this.global_loc = this.define ? MAIN.ida.gv : 0
+     this.global_vis = this.define ? MAIN.ida.gl : 0
+     this.clasifica = getEl(el, 'clasifica', true)
      
 
 
@@ -107,6 +111,9 @@
 	        	
 	          
 	          this.gl++
+	          if(this.define){
+	          	this.global_loc++
+	          }
 	          this.gol = true
 	          this.golOf = 1
 	          this.goal.animate({left: '-400px'}, 0)
@@ -125,6 +132,9 @@
 	          
 	          
 	          this.gv++
+	          if(this.define){
+	          	this.global_vis++
+	          }
 	          this.gol = true
 	          this.golOf = -1
 	          this.goal.animate({left: '400px'}, 0)
@@ -466,6 +476,19 @@
      winner.fadeTo(150, 1)
 
      this.exit.fadeIn(150)
+  }
+
+  this.clasificaNext = function(){
+  	if(this.global_loc > this.global_vis){
+  		setCristalBorder(this.clasifica, this.loc.color_a, this.loc.color_b, 1)
+      setImageEquipo(this.clasifica.find('img'), this.loc, 'escudo')
+  	}else if(this.global_loc < this.global_vis){
+  		setCristalBorder(this.clasifica, this.vis.color_a, this.vis.color_b, 1)
+      setImageEquipo(this.clasifica.find('img'), this.vis, 'escudo')
+  	}else{
+  		setCristalBorder(this.clasifica, parseColor('gris'), parseColor('gris'), 1)
+  		this.clasifica.find('img').prop('src', ASSET + 'default/juez.png')
+  	}
   }
 
   this.getResult = function(){

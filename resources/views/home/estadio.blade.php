@@ -87,6 +87,13 @@
 
     .gl, .gv{
       font-size: 50px;
+      line-height: 1;
+    }
+
+    .gbl-loc, .gbl-vis{
+      font-size: 30px;
+      line-height: 1;
+      opacity: 0;
     }
 
     .pa, .pb{
@@ -291,7 +298,10 @@
       left: 50%;
       transform: translate(-50%, -42%);
       z-index: 100;
-      border-radius: 10px;
+      width: 80px;
+      height: 80px;
+      border-radius: 100%;
+      overflow: hidden;
     }
 
     #clasifica img{
@@ -381,8 +391,9 @@
           <img class="e-loc escudo mb-2" src="{{ asset('resources/default/escudo.png') }}">
         </div>
         <div class="col-6 flex-row-between-start">
-          <div class="col-2 flex-row-start-center">
-            <b class="gl mt-5">0</b>
+          <div class="col-2 flex-col-start-center">
+            <b class="gbl-loc">[20]</b>
+            <b class="gl mt-3">0</b>
           </div>
           <div class="col-7 flex-col-center-center">
             <div class="reloj col-9 flex-col-start-center">
@@ -399,8 +410,9 @@
               <b class="pb mt-1">(0)</b>
             </div>
           </div>
-          <div class="col-2 flex-row-end-center">
-            <b class="gv mt-5">0</b>
+          <div class="col-2 flex-col-end-center">
+            <b class="gbl-vis">[20]</b>
+            <b class="gv mt-3">0</b>
           </div>
         </div>
         <div class="col-3 flex-row-end-center">
@@ -414,8 +426,8 @@
   <img id="j-center" class="jug-campo mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
   <img id="j-right" class="jug-campo mini-jugador" src="{{ asset('resources/default/jugador.png') }}">
   <img id="local" class="jug-campo jugador" src="{{ asset('resources/default/jugador.png') }}">
-  <div id="clasifica" class="p-2 cristal">
-    <img src="{{ asset('resources/default/escudo.png') }}">
+  <div id="clasifica" class="p-0 flex-row-center-center cristal">
+    <img class="p-1" src="{{ asset('resources/default/juez.png') }}">
   </div>
   <img id="capitan" src="{{ asset('resources/default/jugador.png') }}">
   <img id="balon" src="{{ asset('resources/default/logo.png') }}">
@@ -534,6 +546,8 @@
        add = getEl(fondo, 'add'),
        gl = getEl(fondo, 'gl'),
        gv = getEl(fondo, 'gv'),
+       global_loc = getEl(fondo, 'gbl-loc'),
+       global_vis = getEl(fondo, 'gbl-vis'),
        pa = getEl(fondo, 'pa'),
        pb = getEl(fondo, 'pb'),
        eflag = getEl(fondo, 'e-flag'),
@@ -624,7 +638,7 @@
       setImageEquipo(eloc, loc, 'escudo')
       setImageEquipo(evis, vis, 'escudo')
 
-      multiText([namevis, gv, pb], vis.color_a, vis.color_b, .1)
+      multiText([namevis, gv, global_vis, pb], vis.color_a, vis.color_b, .1)
 
       bg(boxtime, colb.rgb)
       setText(time, cola, colb, .1)
@@ -664,7 +678,22 @@
 
       capitan.hide()
 
-      if(!(partido.is_vuelta == 1 && partido.is_define == 1)){
+      if(partido.is_vuelta == 1 && partido.is_define == 1){
+        if(MAIN.ida.gl > MAIN.ida.gv){
+          setCristalBorder(clasifica, vis.color_a, vis.color_b, 1)
+          setImageEquipo(clasifica.find('img'), vis, 'escudo')
+        }else if(MAIN.ida.gl < MAIN.ida.gv){
+          setCristalBorder(clasifica, loc.color_a, loc.color_b, 1)
+          setImageEquipo(clasifica.find('img'), loc, 'escudo')
+        }else{
+          setCristalBorder(clasifica, parseColor('gris'), parseColor('gris'), 1)
+        }
+        global_loc.html('[' + MAIN.ida.gv + ']')
+        global_vis.html('[' + MAIN.ida.gl + ']')
+        global_loc.fadeTo(0, 1)
+        global_vis.fadeTo(0, 1)
+        
+      }else{
         clasifica.hide()
       }
 
@@ -722,16 +751,17 @@
 
     salir.click(function(){
       var result = JUEGO.getResult()
-
+      preload(true)
       sendPostRequest("{{ route('main.save-partido') }}", result, function(data){
-        preload()
+        
         if(data.result == 'OK'){
-          
-          var url = "{{ route('home') }}",
-          params = ['home', 'copa', partido.copa, partido.fase]
+          location.reload()
+          // var url = "{{ route('home') }}",
+          // params = ['home', 'copa', partido.copa, partido.fase]
        
-          nextPage(url, params, true)
+          // nextPage(url, params, true)
         }else{
+          preload()
           Swal.fire('GUARDAR PARTIDO', data.message, 'error')
         }
 

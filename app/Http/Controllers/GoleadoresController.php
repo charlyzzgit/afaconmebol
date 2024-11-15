@@ -12,6 +12,9 @@ class GoleadoresController extends Controller
 {
     public function saveGoleadores($data){
       $p = Partido::find($data->id);
+      if(!$data->goleadores){
+        return;
+      }
       $rows = $data->goleadores;
 
       foreach ($rows as $row){
