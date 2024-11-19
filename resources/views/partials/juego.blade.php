@@ -57,9 +57,34 @@
      this.penalesVis = 0
      this.jugadaloc = getEl(el, 'jugada-local', true)
      this.jugadavis = getEl(el, 'jugada-visitante', true)
-     
+
+     this.sndgol ='snd-gol'
+     this.sndpelota ='snd-pelota'
+     this.sndpito ='snd-pito'
+     this.sndpalo ='snd-palo'
+     this.snduuu ='snd-uuu'
+     this.sndpitofinal ='snd-pito-final'
+     this.mute = false
 
 
+     this.mutear = function(){
+        this.mute = true
+     }
+
+     this.sonar = function(audio_id, volume, loop){
+      
+        var audio = $('#' + audio_id)
+        if(this.mute){
+          audio.prop('volume', 0)
+        }else{
+          audio.prop('volume', volume/10)
+        }
+        
+        if(loop !== undefined){
+          audio.prop('loop', true)
+        }
+        audio[0].play()
+      }
      
      this.localia = function(isloc){
      	 if(isloc){
@@ -104,7 +129,7 @@
         left-=v
         increment = left - v
       }
-
+      this.sonar(this.sndpelota, 8)
       this.duelo.animate({left: increment + 'px'}, parent.vel, parent.endAnimation.bind(this))
 
   }
@@ -188,15 +213,20 @@
   	if(isGol !== undefined){
   		getEl(j, 'jugada-gol').show()
   		getEl(j, 'lbl').html('gol')
+      this.sonar(this.sndgol, 8)
   	}else{
   		if(r <= 5){
   			lbl = 'arquero'
+        this.sonar(this.snduuu, 8)
   		}else if(r > 5 && r <= 7){
   			lbl = 'palo'
+        this.sonar(this.sndpalo, 8)
   		}else if(r > 7 && r <= 9){
   			lbl = 'travesaño'
+        this.sonar(this.sndpalo, 8)
   		}else{
   			lbl = 'en la linea'
+        this.sonar(this.snduuu, 8)
   		}
 
   		getEl(j, 'lbl').html(lbl)
@@ -238,7 +268,7 @@
   this.halfTime = function(alargue){
     var parent = this,
     		j = getEl(parent.el, 'jug-campo')
-
+    this.sonar(parent.sndpito, 8)
     if(alargue !== undefined){
     	parent.half.find('b').html('alargue')
     }else{
@@ -517,7 +547,7 @@
        this.rainPapelitos(this.winner == 1 ? 10 : 5)
       }
      }
-     
+     this.sonar(this.sndpitofinal, 8)
   }
 
   this.clasificaNext = function(){
@@ -665,7 +695,7 @@
   			top = atroden ? rdm(min_top, max_top) : rdm(10, 80),
   			pres = getEl(parent.el, 'penal-result', true)
   			
-
+    this.sonar(this.sndpelota, 8)
   	balon.animate({left:(left + balon.width()/2) + 'px', top: (top - balon.height()/2) + 'px'}, 250, function(){
   		var result = 'afuera'
 
@@ -801,18 +831,23 @@
   	switch(result){
 	  	case 'gol': 
 	  		img = 'logo.png'
+        this.sonar(this.sndgol, 8)
 	  	break
 	  	case 'atajado': 
 	  		img = 'atajado.png'
+        this.sonar(this.snduuu, 8)
 	  	break
 	  	case 'travesaño': 
 	  		img = 'travesanio.png'
+        this.sonar(this.sndpalo, 8)
 	  	break
 	  	case 'palo': 
 	  		img = 'palo.png'
+        this.sonar(this.sndpalo, 8)
 	  	break
 	  	case 'afuera': 
 	  		img = 'eli.png'
+        this.sonar(this.snduuu, 8)
 	  	break
 
   	}
@@ -945,6 +980,7 @@
     // }, 10)
     
     // return
+    this.sonar(this.sndpito, 8)
   	log('center', [this.center])
     var parent = this,
         add = parent.alargue ? rdm(0, 2) : rdm(0, 10),
@@ -1028,6 +1064,8 @@
 	    
     }, 100)
   }
+
+  
 }
 
   // function reset(){

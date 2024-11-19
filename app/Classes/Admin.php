@@ -47,7 +47,7 @@ class Admin{
                 'mes' =>$this->calendar->mes,
                 'semana' => $this->calendar->semana,
                 'partido' => $next,
-                'ida' => (new PartidoController())->getIda($next->id)
+                'ida' => $next ? (new PartidoController())->getIda($next->id) : null
 
       ];
     }

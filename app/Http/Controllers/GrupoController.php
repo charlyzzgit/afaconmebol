@@ -203,9 +203,11 @@ class GrupoController extends Controller
          $e->save();
       }
 
-      $this->setEstadoClasificacion($grupo->id);
+      
 
       $grupo->save();
+
+      $this->setEstadoClasificacion($grupo->id);
     }
 
     private function setEstadoClasificacion($grupo_id){

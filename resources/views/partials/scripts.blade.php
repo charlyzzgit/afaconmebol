@@ -1255,5 +1255,7 @@ function bcColor(eq){
 
 
 
+
+
   
 </script>

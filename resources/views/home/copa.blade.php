@@ -40,6 +40,33 @@
       font-size: 50px;
       color:white;
     }
+
+    #podio .inner{
+      border-radius:10px;
+      border:solid thin white;
+    }
+
+    #podio .jugador-cmp{
+      width: 70px;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    #podio .cmp-text{
+      font-size: 25px;
+    }
+
+    #podio .campeon{
+      border-radius: 100px;
+      border:solid thin white;
+      background: linear-gradient(180deg, black, gray, black);
+    }
+
+    @if($fase == 5)
+      #list{
+        height:auto
+      }
+    @endif
 </style>
 
 <div class="col-12 box-content p-1">
@@ -51,6 +78,36 @@
     <b class="subtitle">fases</b>
   </div>
   <ul id="list" class="list col-12 flex-col-start-center p-1 m-0"></ul>
+  @if($fase == 5)
+    @if(count($grupos))
+      @if($grupos[0]->equiposPosition[0]->j)
+        <div id="podio" class="col-12 p-1 mt-1">
+          <div class="inner col-12 flex-col-start-center p-2 cristal">
+             <h1 class="m-0"><b class="title">{{ $copa.' '.(count($grupos) ? $grupos[0]->anio : '') }}</b></h1>
+             <div class="col-12 flex-row-between-center">
+              <div class="col-2 flex-row-start-center">
+                <img class="jugador-cmp" src="{{ asset('resources/default/jugador.png') }}">
+              </div>
+              <div class="col-6 flex-row-center-center">
+                <img class="copa-cmp" src="{{ asset('resources/default/libertadores.png') }}" height="150">
+              </div>
+              <div class="col-2 flex-row-end-center">
+                <img class="escudo-cmp" src="{{ asset('resources/default/escudo.png') }}" height="70">
+              </div>
+             </div>
+             <b class="cmp-text">campeon</b>
+             <div class="campeon col-12 flex-row-center-center p-1">
+               <h1 class="mb-0">
+                 <b class="name">?</b>
+               </h1>
+             </div>
+             
+          </div>
+         
+        </div>
+      @endif
+    @endif
+  @endif
 
   <div id="menu-copa" class="col-12 flex-row-around-end flex-wrap p-2" data-state="off">
     <div class="menu-item col-6 p-3" data-option="partidos">
@@ -219,9 +276,46 @@
       ul.append(getLiGrupo(g))
     })
   }
+
+
+  function setPodio(eq){
+    var p = $('#podio'),
+        body = getEl(p, 'inner'),
+        title = getEl(p, 'title'),
+        e = getEl(p, 'escudo-cmp'),
+        j = getEl(p, 'jugador-cmp'),
+        cmptext = getEl(p, 'cmp-text'),
+        campeon = getEl(p, 'campeon'),
+        name = getEl(p, 'name'),
+        color = parseColor(getColorCopa(copa))
+
+    getColorCopa(copa)
+    setCristalRGB(body, color)
+    textColor(title, 'blanco', getColorCopa(copa), .2)
+    textColor(cmptext, 'blanco', getColorCopa(copa), .1)
+    textColor(name, 'blanco', 'gris', .1)
+    if(eq.j == 2){
+      setImageEquipo(e, eq.equipo, 'escudo')
+      setImageEquipo(j, eq.equipo, 'local')
+      textColor(name, eq.equipo.color_b, bcColor(eq.equipo), .1)
+      setEquipoUI(campeon, eq.equipo, 1)
+    }
+    
+
+  }
+
+
    $(function(){
     setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'grupos')
     setMenu()
+    if(fase == 5){
+      if(grupos.length != 0){
+        if(grupos[0].equipos_position[0].j != 0){
+          setPodio(grupos[0].equipos_position[0])
+        }
+      }
+    }
+    
     footer.empty()
     footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
         nextPage("{{ route('home') }}", ['home', 'inicio'])

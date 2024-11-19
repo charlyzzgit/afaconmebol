@@ -567,6 +567,13 @@
 
 
 </style>
+<audio src="{{ asset('resources/sounds/hinchada.mp3') }}" id="snd-hinchada"></audio>
+<audio src="{{ asset('resources/sounds/pelota.mp3') }}" id="snd-pelota"></audio>
+<audio src="{{ asset('resources/sounds/gol.mp3') }}" id="snd-gol"></audio>
+<audio src="{{ asset('resources/sounds/pito.mp3') }}" id="snd-pito"></audio>
+<audio src="{{ asset('resources/sounds/palo.mp3') }}" id="snd-palo"></audio>
+<audio src="{{ asset('resources/sounds/uuu.mp3') }}" id="snd-uuu"></audio>
+<audio src="{{ asset('resources/sounds/pitofin.mp3') }}" id="snd-pito-final"></audio>
 <div id="fondo" class="col-12 box-content p-1">
   <img id="f-center" class="e-flag" src="{{ asset('resources/default/flag.png') }}">
   <img id="f-left" class="e-flag" src="{{ asset('resources/default/flag.png') }}">
@@ -1051,9 +1058,9 @@
 
       if(partido.is_vuelta){
         setCristalBorder(ida, vis.color_a, vis.color_b, 1)
-        setText(getEl(ida, 'ida-loc'), vis.color_a, vis.color_b, .1)
-        setText(getEl(ida, 'ida-gl'), vis.color_a, vis.color_b, .1)
-        setText(getEl(ida, 'lbl-ida'), vis.color_a, vis.color_b, .1)
+        setText(getEl(ida, 'ida-loc'), vis.color_b, bcColor(vis), .1)
+        setText(getEl(ida, 'ida-gl'), vis.color_b, bcColor(vis), .1)
+        setText(getEl(ida, 'lbl-ida'), vis.color_b, bcColor(vis), .1)
 
         getEl(ida, 'ida-gl').html(MAIN.ida.gl)
         getEl(ida, 'ida-gv').html(MAIN.ida.gv)
@@ -1095,6 +1102,7 @@
 
 
    $(function(){
+    
     set()
     stopTimer(RAIN)
     if(rain){
@@ -1102,17 +1110,13 @@
         llover(20)}, 1);
     }
 
-    // $('#duelo').draggable({
-    //     drag: function(event, ui) {
-    //       log('balon', [$('.micro-balon').offset().left])
-    //     }
+    JUEGO = new Juego(fondo, partido, camvis, aloc, avis)
+    JUEGO.mutear()
 
-    //   })
-
+    JUEGO.sonar('snd-hinchada', 5, true)
 
     $('#balon').click(function(){
-      JUEGO = new Juego(fondo, partido, camvis, aloc, avis)
-      //JUEGO.definicionPenales()
+      
       JUEGO.jugar()
       $(this).fadeOut(150)
     })

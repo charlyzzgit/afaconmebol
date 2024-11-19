@@ -114,9 +114,9 @@
           </div>
         
           <div id="sorteo" class="footer col-12 flex-row-around-center flex-wrap">
-            <img id="afa-c" class="img-cup m-1" src="{{ asset('resources/default/afa_c.png') }}">
-            <img id="afa-b" class="img-cup m-1" src="{{ asset('resources/default/afa_b.png') }}">
-            <img id="afa-a" class="img-cup m-1" src="{{ asset('resources/default/afa_a.png') }}">
+            <!-- <img id="afa-c" class="img-cup m-1" src="{{ asset('resources/default/afa_c.png') }}">
+            <img id="afa-b" class="img-cup m-1" src="{{ asset('resources/default/afa_b.png') }}"> -->
+            <img id="afa" class="img-cup m-1" src="{{ asset('resources/default/escudo_afa.png') }}">
             <img id="argentina" class="img-cup m-1" src="{{ asset('resources/default/argentina.png') }}">
             <img id="recopa" class="img-cup m-1" src="{{ asset('resources/default/recopa.png') }}">
             <img id="sudamericana" class="img-cup m-1" src="{{ asset('resources/default/sudamericana.png') }}">
