@@ -114,9 +114,9 @@
           </div>
         
           <div id="sorteo" class="footer col-12 flex-row-around-center flex-wrap">
-            <img id="afa-c" class="img-cup m-1" src="{{ asset('resources/default/afac.png') }}">
-            <img id="afa-b" class="img-cup m-1" src="{{ asset('resources/default/afab.png') }}">
-            <img id="afa-a" class="img-cup m-1" src="{{ asset('resources/default/afaa.png') }}">
+            <img id="afa-c" class="img-cup m-1" src="{{ asset('resources/default/afa_c.png') }}">
+            <img id="afa-b" class="img-cup m-1" src="{{ asset('resources/default/afa_b.png') }}">
+            <img id="afa-a" class="img-cup m-1" src="{{ asset('resources/default/afa_a.png') }}">
             <img id="argentina" class="img-cup m-1" src="{{ asset('resources/default/argentina.png') }}">
             <img id="recopa" class="img-cup m-1" src="{{ asset('resources/default/recopa.png') }}">
             <img id="sudamericana" class="img-cup m-1" src="{{ asset('resources/default/sudamericana.png') }}">
@@ -199,21 +199,21 @@
         page = 'ligas'
         break
       case 'afa a':
-        icon = 'afaa.png'
+        icon = 'afa_a.png'
         label = 'afa a'
         bg = 'rojo'
         page = 'copa'
         getvars = ['afa-a', '::']
         break
       case 'afa b':
-        icon = 'afab.png'
+        icon = 'afa_b.png'
         label = 'afa b'
         bg = 'azul'
         page = 'copa'
         getvars = ['afa-b', '::']
         break
       case 'afa c':
-        icon = 'afac.png'
+        icon = 'afa_c.png'
         label = 'afa c'
         bg = 'verde'
         page = 'copa'
