@@ -1,6 +1,6 @@
 <script>
  var PAUSE  = false
-	function Juego(el, partido, camvis){
+	function Juego(el, partido, camvis, aloc, avis){
 	  this.max = 20
      this.el = el
      this.gl = 0
@@ -17,6 +17,8 @@
      this.partido = partido
      this.loc = partido.local
      this.vis = partido.visitante
+     this.aloc = aloc
+     this.avis = avis
      this.width = window.innerWidth
      this.gloc = getEl(el, 'gl')
      this.gvis = getEl(el, 'gv')
@@ -51,6 +53,10 @@
      this.global_loc = this.define ? MAIN.ida.gv : 0
      this.global_vis = this.define ? MAIN.ida.gl : 0
      this.clasifica = getEl(el, 'clasifica', true)
+     this.penalesLoc = 0
+     this.penalesVis = 0
+     this.jugadaloc = getEl(el, 'jugada-local', true)
+     this.jugadavis = getEl(el, 'jugada-visitante', true)
      
 
 
@@ -73,14 +79,14 @@
 	  this.getPower = function(eq, isloc){
 	    var level = eq.nivel + this.localia(isloc),
 	        result = 0
-	    log('correr', [this.correr()])
+	   // log('correr', [this.correr()])
 	    return rdm(0, level) + this.correr()
 	    
 	  }
 
 	  this.game = function(){
 	  	if(this.endTime){
-	  		log('end', [this.endTime])
+	  		//log('end', [this.endTime])
 	  		
 	  		return
 	  	}
@@ -110,25 +116,35 @@
 
   this.endAnimation = function(){
   	var parent = this
-    if(parent.balon.offset().left > parent.maxRight && parent.isGol()){
-      this.gl++
-      if(this.define){
-        this.global_loc++
-      }
-      this.gol = true
-      this.golOf = 1
-      this.goal.animate({left: '-400px'}, 0)
-      PAUSE = true
+    if(parent.balon.offset().left > parent.maxRight){
+    	if(parent.isGol()){
+	      this.gl++
+	      if(this.define){
+	        this.global_loc++
+	      }
+	      this.gol = true
+	      this.golOf = 1
+	      this.goal.animate({left: '-400px'}, 0)
+	      PAUSE = true
+	      this.setJugada(true, true)
+	    }else{
+	    	this.setJugada(true)
+	    }
     }
-    if(parent.balon.offset().left < parent.minLeft && parent.isGol()){
-      this.gv++
-      if(this.define){
-        this.global_vis++
-      }
-      this.gol = true
-      this.golOf = -1
-      this.goal.animate({left: '400px'}, 0)
-      PAUSE = true
+    if(parent.balon.offset().left < parent.minLeft){
+    	if(parent.isGol()){
+	      this.gv++
+	      if(this.define){
+	        this.global_vis++
+	      }
+	      this.gol = true
+	      this.golOf = -1
+	      this.goal.animate({left: '400px'}, 0)
+	      PAUSE = true
+	      this.setJugada(false, true)
+	    }else{
+	    	this.setJugada(false)
+	    }
     }
   	if(parent.gol){
   		log('gol', [])
@@ -164,6 +180,33 @@
   	
   }
 
+  this.setJugada = function(isLocal, isGol){
+  	var j = isLocal ? this.jugadaloc : this.jugadavis,
+  			r = rdm(1, 10),
+  			lbl = ''
+  	getEl(j, 'jugada-gol').hide()
+  	if(isGol !== undefined){
+  		getEl(j, 'jugada-gol').show()
+  		getEl(j, 'lbl').html('gol')
+  	}else{
+  		if(r <= 5){
+  			lbl = 'arquero'
+  		}else if(r > 5 && r <= 7){
+  			lbl = 'palo'
+  		}else if(r > 7 && r <= 9){
+  			lbl = 'travesaño'
+  		}else{
+  			lbl = 'en la linea'
+  		}
+
+  		getEl(j, 'lbl').html(lbl)
+  	}
+  	j.fadeIn(150)
+  	setTimeout(function(){
+  		j.fadeOut(150)
+  	}, 1000)
+  }
+
   this.setGol = function(){
   	var box = getEl(this.goal, 'inner'),
   	    esc = getEl(this.goal, 'gol-esc'),
@@ -192,9 +235,18 @@
     this.lbltiempo.html(this.tiempo + '° tiempo' + supl)
   }
 
-  this.halfTime = function(){
+  this.halfTime = function(alargue){
     var parent = this,
-    j = getEl(parent.el, 'jug-campo')
+    		j = getEl(parent.el, 'jug-campo')
+
+    if(alargue !== undefined){
+    	parent.half.find('b').html('alargue')
+    }else{
+    	if(parent.alargue){
+    		parent.half.find('b').html('entretiempo alargue')
+    	}
+    	
+    }
     j.fadeOut(150, function(){
     	parent.half.fadeTo(150, 1)
     })
@@ -205,7 +257,7 @@
     	})
       
       parent.endTime = false
-      parent.tiempo = 2
+      parent.tiempo = alargue !== undefined ? 1 : 2
       parent.jugar()
     }, 2000)
   }
@@ -483,6 +535,325 @@
     getEl(fondo, 'gbl-vis').html('[' + this.global_vis + ']')
   }
 
+  this.definicionPenales = function(){
+  	this.clasifica.fadeOut(150)
+  	var parent = this, 
+  			pnls = getEl(this.el, 'penales', true),
+  			
+  			A = getEl(pnls, 'arquero', true),
+  			B = getEl(pnls, 'pelota', true),
+  			J = getEl(pnls, 'shooter', true)
+
+    parent.ploc = 0
+    parent.pvis = 0
+
+  	pnls.animate({top: '350px'}, 150)
+  	getEl(this.el, 'reloj').hide()
+		setCristalBorder(getEl(this.el, 'juez'), this.loc.color_a, this.loc.color_b, 1)
+  	getEl(this.el, 'juez').fadeIn(150)
+
+  	this.pl.fadeIn(150)
+  	this.pv.fadeIn(150)
+
+  	this.swapPenal(true)
+
+  	// J.click(function(){
+  		
+  	// 	B.animate({left: '50%', transform: 'translateX(-50%)', top: '250px'}, 0)
+  	// 	A.animate({left: '50%', transform: 'translateX(-50%)'}, 0)
+  	// 	setTimeout(function(){
+  	// 		parent.patear()
+  	// 		parent.atajar()
+  	// 	}, 1000)
+  	// })
+
+  	// B.draggable({ 
+  	// 	drag: function(event, ui) { 
+  	// 		var T = getEl(parent.el, 'travesanio', true),
+  	// 		    PL = getEl(parent.el, 'palo-left', true),
+  	// 		    PR = getEl(parent.el, 'palo-right', true)
+  		
+  	// 	//console.log(ui.position.left + B.width()/2, ui.position.top + B.height()/2); 
+  	// 	log('pelota', [parent.getPosition(B, 'left'), parent.getPosition(B, 'top')], true); 
+
+  	//  } 
+  	// });
+
+  	// A.draggable({ 
+  	// 	drag: function(event, ui) { 
+  	// 		//console.clear()
+  	// 	console.log(parent.getPosition(B, 'left'), parent.getPosition(B, 'top')); 
+  	//  } 
+  	// });
+
+  	//travesaño  15 y 38
+  	//arco top > 28 < 38
+  	//arco left > 62   < 334
+  	//palo l 38 y 62
+  	//palo r 334 y 358
+
+  	//min left 26
+  	//max left 370
+  	// min top 10
+  	//max top 90
+  }
+
+  this.swapPenal = function(isLocal){
+  	var parent = this,
+  	    pnls = getEl(this.el, 'penales', true),
+  	    A = getEl(pnls, 'arquero', true),
+  			B = getEl(pnls, 'pelota', true),
+  			J = getEl(pnls, 'shooter', true)
+
+  		
+  	if(isLocal){
+  		getEl(A, 'buzo').prop('src', this.avis.prop('src'))
+  		setImageEquipo(getEl(A, 'jug'), this.vis, this.camvis)
+  		setImageEquipo(J, this.loc, 'local')
+  	}else{
+  		getEl(A, 'buzo').prop('src', this.aloc.prop('src'))
+  		setImageEquipo(getEl(A, 'jug'), this.loc, 'local')
+  		setImageEquipo(J, this.vis, this.camvis)
+  	}
+  	
+  	B.animate({left: '50%', transform: 'translateX(-50%)', top: '250px'}, 0)
+  	A.animate({left: '50%', transform: 'translateX(-50%)'}, 0)
+  	setTimeout(function(){
+  		parent.patear(isLocal)
+  	  parent.atajar()
+  	}, 2000)
+  	
+  }
+
+  this.getPosition = function(el, prop){
+  	return el.css(prop).split('px')[0]
+  }
+  this.intersect = function($elem1, $elem2) {
+
+    // Obtener las posiciones y dimensiones del primer elemento
+		    var pos1 = $elem1.offset();
+		    var ancho1 = $elem1.outerWidth();
+		    var alto1 = $elem1.outerHeight();
+		    
+		    // Obtener las posiciones y dimensiones del segundo elemento
+		    var pos2 = $elem2.offset();
+		    var ancho2 = $elem2.outerWidth();
+		    var alto2 = $elem2.outerHeight();
+		    
+		    // Verificar si se intersectan
+		    return !(
+		        pos1.top + alto1 < pos2.top || // El primer elemento está por encima
+		        pos1.top > pos2.top + alto2 || // El primer elemento está por debajo
+		        pos1.left + ancho1 < pos2.left || // El primer elemento está a la izquierda
+		        pos1.left > pos2.left + ancho2 // El primer elemento está a la derecha
+		    );
+  }
+
+  this.patear = function(isLocal){
+  	var parent = this,
+  			balon = getEl(this.el, 'pelota', true),
+  			arquero = getEl(this.el, 'arquero', true),
+  			T = getEl(parent.el, 'travesanio', true),
+  			PL = getEl(parent.el, 'palo-left', true),
+  			PR = getEl(parent.el, 'palo-right', true),
+  			min_left = 50,
+  			max_left = 342 - balon.width(),
+  			min_top = 10,
+  			max_top = 98 - balon.height(),
+  			atroden = rdm(0, 10) > 3 ? true : false,
+  			left = atroden ? rdm(min_left, max_left) : rdm(26, 370),
+  			top = atroden ? rdm(min_top, max_top) : rdm(10, 80),
+  			pres = getEl(parent.el, 'penal-result', true)
+  			
+
+  	balon.animate({left:(left + balon.width()/2) + 'px', top: (top - balon.height()/2) + 'px'}, 250, function(){
+  		var result = 'afuera'
+
+  		if(parent.intersect(balon, T)){
+  			result = 'travesaño'
+  			parent.rebote()
+  		}else if(parent.intersect(balon, PL) || parent.intersect(balon, PR)){
+  			result = 'palo'
+  			parent.rebote()
+  		}else if(parent.intersect(balon, arquero)){
+  			result = 'atajado'
+  			parent.rebote()
+  		}else{
+  			var l = parent.getPosition(balon, 'left'),
+  			    t = parent.getPosition(balon, 'top'),
+  			    left = 50,
+  			    mleft = 342 - balon.width(),
+  			    top = 10
+  			    mtop = 98 - balon.height()
+  				// l: 50 342- w
+  				// t: 28 98- h
+  			    if(l > left && l < mleft && t > top && t < mtop){
+  			    	result = 'gol'
+  			    }
+  		}
+
+  		//log('penal', [result, t], true)
+  		//travesaño  15 y 38
+	  	//arco top > 28 < 38
+	  	//arco left > 62   < 334
+	  	//palo l 38 y 62
+	  	//palo r 334 y 358
+
+	  	
+
+	  	
+	  	if(isLocal){
+	  		parent.penalesLoc++
+	  	}else{
+	  		parent.penalesVis++
+	  	}
+	  	parent.setPenalResult(result, isLocal)
+
+	  	if(!parent.finPenales()){
+	  		setTimeout(function(){
+	  			pres.fadeOut(150, function(){
+	  				parent.swapPenal(!isLocal)
+	  			})
+	  			
+	  		}, 2000)
+
+	  		if(parent.penalesLoc > 5 && parent.penalesLoc == parent.penalesVis){
+	  			setTimeout(function(){
+	  					$('.pen-x').removeAttr('src')
+	  			}, 1000)
+	  		}
+	  		
+	  	}else{
+	  		setTimeout(function(){
+	  			var w = parent.ploc > parent.pvis ? true : false,
+	  				  lbl = w ? parent.loc.name : parent.vis.name
+
+	  			parent.setPenalResult('gano ' + lbl, w, true)
+	  			parent.scorer('winner', w)
+	  			setTimeout(function(){
+	  				getEl(parent.el, 'penales', true).animate({top: '800px'}, 150)
+	  				parent.winner = w ? 1 : -1
+	  				parent.finPartido()
+	  			})
+	  		}, 2000)
+	  	}
+  	})
+
+  }
+
+  this.rebote = function(){
+  	var B = getEl(this.el, 'pelota', true)
+
+  	B.animate({top: '250px'}, 150)
+  }
+
+  this.setPenalResult = function(result, isLocal, finpenales){
+  	var R = getEl(this.el, 'penal-result', true),
+  			box = getEl(R, 'content'),
+  			e = getEl(R, 'pen-escudo'),
+  			lbl = getEl(R, 'result')
+  	if(isLocal){
+  		R.animate({left:'-100%'}, 0, function(){
+  			R.fadeIn(0)
+  		})
+  		setText(lbl, this.loc.color_b, bcColor(this.loc), .1)
+  		setImageEquipo(e, this.loc, 'escudo')
+  		setCristalBorder(box, this.loc.color_a, this.loc.color_b, 1)
+  		if(result == 'gol'){
+  			this.ploc++
+  		}
+  	}else{
+  		R.animate({left:'100%'}, 0, function(){
+  			R.fadeIn(0)
+  		})
+  		setText(lbl, this.vis.color_b, bcColor(this.vis), .1)
+  		setImageEquipo(e, this.vis, 'escudo')
+  		setCristalBorder(box, this.vis.color_a, this.vis.color_b, 1)
+  		if(result == 'gol'){
+  			this.pvis++
+  		}
+  	}
+  	if(finpenales === undefined){
+  		this.scorer(result, isLocal)
+  	}
+  	
+  	//log('result', [result, this.ploc, this.pvis], true)
+  	if(result == 'gol'){
+  		this.pl.html('(' + this.ploc + ')')
+  		this.pv.html('(' + this.pvis + ')')
+  	}
+  	lbl.html(result)
+  	R.animate({left: 0}, 150)
+
+  }
+
+  this.scorer = function(result, isLocal){
+  	var row = getEl(this.el, isLocal ? 'row-loc' : 'row-vis'),
+  			c = isLocal ? (this.penalesLoc <= 5 ? '.pen-' + this.penalesLoc : '.pen-x') : (this.penalesVis <= 5 ? '.pen-' + this.penalesVis : '.pen-x'),
+  			cell = row.find(c),
+  			img = null
+
+  	if(result == 'winner'){
+  		setImageCopa(row.find('.p-winner'), this.partido.copa)
+  		return
+  	}
+
+  	switch(result){
+	  	case 'gol': 
+	  		img = 'logo.png'
+	  	break
+	  	case 'atajado': 
+	  		img = 'atajado.png'
+	  	break
+	  	case 'travesaño': 
+	  		img = 'travesanio.png'
+	  	break
+	  	case 'palo': 
+	  		img = 'palo.png'
+	  	break
+	  	case 'afuera': 
+	  		img = 'eli.png'
+	  	break
+
+  	}
+  	log('penal', [cell])
+  	cell.prop('src', ASSET + 'default/' + img)
+  }
+
+  this.atajar = function(){
+  	var left = rdm(36, 294),
+  			arquero = getEl(this.el, 'arquero', true)
+
+  	arquero.animate({left:(left + arquero.width()/2) + 'px'}, 250)
+
+
+  }
+
+
+  this.finPenales = function(){
+  	if(this.penalesLoc < 5 && this.penalesVis < 5){
+	  	if(this.ploc < this.pvis){
+	  		var d = 5 - this.penalesLoc
+	  		if(this.ploc + d < this.pvis){
+	  			return true
+	  		}
+	  	}
+	  	if(this.pvis < this.ploc){
+	  		var d = 5 - this.penalesVis
+	  		if(this.pvis + d < this.ploc){
+	  			return true
+	  		}
+	  	}
+	  }else{
+	  	if(this.penalesLoc == this.penalesVis && this.pvis != this.ploc){
+	  		return true
+	  	}
+	  }
+  	return false
+  }
+
+  
+
   this.setFestejo = function(){
     var local = getEl(this.el, 'local', true),
         visitante = getEl(this.el, 'visitante', true),
@@ -517,13 +888,35 @@
       }
     }
 
-    setImageCopa(trofeo, this.partido.copa)
+    if(this.partido.is_final && this.partido.is_final){
 
-    capitan.fadeIn(150)
+    	setImageCopa(trofeo, this.partido.copa)
 
-    box.fadeIn(150)
-    this.clasifica.fadeOut(150)
-    this.rainPapelitos(20)
+    	capitan.fadeIn(150)
+      flagLeft.fadeIn(150)
+      flagRight.fadeIn(150)
+      this.showArquero()
+    	box.fadeIn(150)
+    	this.clasifica.fadeOut(150)
+    	this.rainPapelitos(20)
+    }
+  }
+
+  this.showArquero = function(){
+  	var n = rdm(1, 100),
+  			aq
+  	if(n > 40){
+  		if(n < 60){
+  			aq = getEl(this.el, 'buzo-left', true)
+  		}else if(n >= 60 && n < 80){
+  			aq = getEl(this.el, 'buzo-center', true)
+  		}else{
+  			aq = getEl(this.el, 'buzo-right', true)
+  		}
+
+  		aq.prop('src', this.winner == 1 ? this.aloc.prop('src') : this.avis.prop('src'))
+  		aq.fadeIn(150)
+  	}
   }
 
   this.getResult = function(){
@@ -554,12 +947,13 @@
     // return
   	log('center', [this.center])
     var parent = this,
-        add = rdm(0, 10)
+        add = parent.alargue ? rdm(0, 2) : rdm(0, 10),
+        T = parent.alargue ? 15 : 45
     PAUSE = false
     parent.time = 0
     parent.aditionalTime.html(add)
     parent.aditionalTime.hide()
-    parent.maxTime = 45 + add
+    parent.maxTime = T + add
     parent.setTiempo()
     if(TIMER_PARTIDO != null){
     	clearInterval(TIMER_PARTIDO)
@@ -595,7 +989,28 @@
                   parent.winner = -1
                   parent.finPartido()
                 }else{
-                  alert('penales')
+                	if(parent.alargue){
+                		parent.half.find('b').html('penales')
+                		parent.half.fadeTo(150, 1)
+                		setTimeout(function(){
+                			parent.definicionPenales()
+                		}, 2000)
+                		
+                	}else{
+                		if(parent.partido.is_final){
+	                		parent.alargue = true
+
+	                		parent.halfTime(true)
+	                	}else{
+											parent.half.find('b').html('penales')
+	                		parent.half.fadeTo(150, 1)
+	                		setTimeout(function(){
+	                			parent.definicionPenales()
+	                		}, 2000)
+	                	}
+                	}
+                	
+                  
                 }
               }else{
                 if(parent.gl > parent.gv){

@@ -70,6 +70,40 @@
       transform: translateX(-50%);
     }
 
+    #buzo-left{
+      width: 100px;
+      height: 300px;
+      position: absolute;
+      bottom: 200px;
+      z-index: 200000;
+      object-fit: cover;
+      left: 10px;
+      display: none;
+    }
+
+    #buzo-center{
+      width: 100px;
+      height: 300px;
+      position: absolute;
+      bottom: 200px;
+      z-index: 200000;
+      object-fit: cover;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+    }
+
+    #buzo-right{
+      width: 100px;
+      height: 300px;
+      position: absolute;
+      bottom: 200px;
+      z-index: 200000;
+      object-fit: cover;
+      right: 10px;
+      display: none;
+    }
+
     #box-trofeo{
       position: absolute;
       bottom: 210px;
@@ -375,6 +409,162 @@
       line-height: 1;
     }
 
+    .juez{
+      border-radius: 10px;
+      display: none;
+    }
+
+    #penales{
+      position: absolute;
+      top:800px;
+      left: 0;
+      z-index: 10000000;
+    }
+
+    #penales .inner{
+      border-radius: 5px;
+      background: rgba(102,153,0,.95);
+      height: 400px;
+      border:solid thin white;
+    }
+
+    #arco{
+      background: rgba(255,255,255,.3);
+    }
+
+    #travesanio{
+      height: 5px;
+      background: linear-gradient(180deg, #FFFFFF, #F2F2F2, #FFFFFF);
+    }
+
+    #penales .palo{
+      width: 5px;
+      height: 70px;
+      background: linear-gradient(90deg, #FFFFFF, #F2F2F2, #FFFFFF);
+    }
+
+    .linea{
+      height: 5px;
+      background: white;
+    }
+
+    #arquero{
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+
+    }
+
+    #arquero img{
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+
+    }
+
+    #arquero div{
+      position: relative;
+      width: 25px;
+      height: 70px;
+      
+    }
+
+    #arquero .buzo{
+      z-index: 100;
+    }
+
+    #arquero .jug{
+      z-index: 80;
+    }
+
+    #shooter{
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      width: 50px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    #pelota{
+      position: absolute;
+      top: 250px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      width: 20px;
+      height: auto;
+    }
+
+    #penal-result{
+      position: absolute;
+      top:130px;
+      left:-100%;
+      z-index: 500;
+    }
+
+    #penal-result .content{
+      border-radius: 100px;
+    }
+
+    #penales-scorer{
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      border:solid thin white;
+      background: rgba(255,255,255,.2);
+    }
+
+    .penal{
+      width: 12.5%;
+      height: 40px;
+      color: white;
+    }
+
+    .penal img{
+      height: 30px;
+    }
+
+    .b-top{
+      border-top: solid thin white;
+    }
+
+    .b-left{
+      border-left: solid thin white;
+    }
+
+    .row-header .penal{
+      height: 20px;
+    }
+
+    #jugada-local{
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      z-index: 100;
+      border-radius: 100px;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    #jugada-visitante{
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      z-index: 100;
+      border-radius: 100px;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+
 
 </style>
 <div id="fondo" class="col-12 box-content p-1">
@@ -434,6 +624,9 @@
             <b class="gl mt-3">0</b>
           </div>
           <div class="col-7 flex-col-center-center">
+            <div class="juez p-1 cristal">
+              <img src="{{ asset('resources/default/juez.png') }}" height="40">
+            </div>
             <div class="reloj col-9 flex-col-start-center">
               <div class="box-time col-12 flex-row-center-center p-1">
                 <small class="time">1º tiempo</small>
@@ -474,7 +667,9 @@
       <path d="M208 96a48 48 0 1 0 0-96 48 48 0 1 0 0 96zM123.7 200.5c1-.4 1.9-.8 2.9-1.2l-16.9 63.5c-5.6 21.1-.1 43.6 14.7 59.7l70.7 77.1 22 88.1c4.3 17.1 21.7 27.6 38.8 23.3s27.6-21.7 23.3-38.8l-23-92.1c-1.9-7.8-5.8-14.9-11.2-20.8l-49.5-54 19.3-65.5 9.6 23c4.4 10.6 12.5 19.3 22.8 24.5l26.7 13.3c15.8 7.9 35 1.5 42.9-14.3s1.5-35-14.3-42.9L281 232.7l-15.3-36.8C248.5 154.8 208.3 128 163.7 128c-22.8 0-45.3 4.8-66.1 14l-8 3.5c-32.9 14.6-58.1 42.4-69.4 76.5l-2.6 7.8c-5.6 16.8 3.5 34.9 20.2 40.5s34.9-3.5 40.5-20.2l2.6-7.8c5.7-17.1 18.3-30.9 34.7-38.2l8-3.5zm-30 135.1L68.7 398 9.4 457.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L116.3 441c4.6-4.6 8.2-10.1 10.6-16.1l14.5-36.2-40.7-44.4c-2.5-2.7-4.8-5.6-7-8.6zM550.6 153.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L530.7 224 384 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l146.7 0-25.4 25.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l80-80c12.5-12.5 12.5-32.8 0-45.3l-80-80z"/>
     </svg>
   </div>
-  
+  <img id="buzo-left" src="{{ asset('resources/arqueros/amarillo.png') }}">
+  <img id="buzo-center" src="{{ asset('resources/arqueros/amarillo.png') }}">
+  <img id="buzo-right" src="{{ asset('resources/arqueros/amarillo.png') }}">
   <img id="visitante" class="jug-campo jugador" src="{{ asset('resources/default/jugador.png') }}">
   <img id="flag-festejo-left" src="{{ asset('resources/default/flag.png') }}">
   <div id="box-trofeo" class="flex-col-start-center">
@@ -545,6 +740,16 @@
           </div>
           <img class="palo mr-3" src="{{ asset('resources/default/palo.png') }}">
         </div>
+        <div id="jugada-local" class="flex-row-start-center pl-1 pr-1 cristal">
+          <img class="jugada-esc" src="{{ asset('resources/default/escudo.png') }}" height="15">
+          <b class="ml-1 lbl">travesaño</b>
+          <img class="jugada-gol ml-2" src="{{ asset('resources/default/logo.png') }}" height="15">
+        </div>
+        <div id="jugada-visitante" class="flex-row-start-center pl-1 pr-1 cristal">
+          <img class="jugada-gol mr-2" src="{{ asset('resources/default/logo.png') }}" height="15">
+          <b class="ml-r lbl">travesaño</b>
+          <img class="jugada-esc" src="{{ asset('resources/default/escudo.png') }}" height="15">
+        </div>
       </div>
       <div class="col-12 flex-row-between-start">
         <div class="col-6 flex-col-start-center pr-1">
@@ -554,6 +759,94 @@
         <div class="col-6 flex-col-start-center pl-1">
           <b class="lbl-time-list">2º tiempo</b>
           <ul class="goles goles-st col-12 p-1 mt-1 cristal"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="penales" class="col-12 p-1">
+    <div class="inner col-12 flex-col-start-center p-2">
+      <div id="arco" class="col-10 flex-row-between-start flex-wrap mt-3">
+        <div id="travesanio" class="col-12"></div>
+        <div id="palo-left" class="palo col-12"></div>
+        <div id="palo-right" class="palo col-12"></div>
+        <div id="arquero">
+          <div>
+            <img class="jug" src="{{ asset('resources/default/jugador.png') }}">
+            <img class="buzo" src="{{ asset('resources/default/jugador.png') }}">
+          </div>
+        </div>
+      </div>
+      <div class="linea col-12"></div>
+      <img id="shooter" src="{{ asset('resources/default/jugador.png') }}">
+      <img id="pelota" src="{{ asset('resources/default/logo.png') }}">
+      <div id="penal-result" class="col-12 flex-row-center-center">
+        <div class="content flex-row-start-center pl-2 pr-2 pt-1 pb-1 cristal">
+          <img class="pen-escudo" src="{{ asset('resources/default/escudo.png') }}" height="20">
+          <b class="result ml-2">travesaño</b>
+        </div>
+      </div>
+      <div id="penales-scorer" class="col-11 flex-col-start-start">
+        <div class="row-header col-12 flex-row-start-center">
+          <div class="penal flex-row-center-center p-2">E</div>
+          <div class="penal flex-row-center-center p-2 b-left">1</div>
+          <div class="penal flex-row-center-center p-2 b-left">2</div>
+          <div class="penal flex-row-center-center p-2 b-left">3</div>
+          <div class="penal flex-row-center-center p-2 b-left">4</div>
+          <div class="penal flex-row-center-center p-2 b-left">5</div>
+          <div class="penal flex-row-center-center p-2 b-left">x</div>
+          <div class="penal flex-row-center-center p-2 b-left">W</div>
+        </div>
+        <div class="row-loc col-12 flex-row-start-center b-top">
+          <div class="penal flex-row-center-center p-2">
+            <img class="escudo" src="{{ asset('resources/default/escudo.png') }}">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-1">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-2">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-3">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-4">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-5">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-x">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="p-winner">
+          </div>
+        </div>
+        <div class="row-vis col-12 flex-row-start-center b-top">
+          <div class="penal flex-row-center-center p-2">
+            <img class="escudo" src="{{ asset('resources/default/escudo.png') }}">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-1">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-2">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-3">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-4">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-5">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="pen-x">
+          </div>
+          <div class="penal flex-row-center-center p-2 b-left">
+            <img class="p-winner">
+          </div>
         </div>
       </div>
     </div>
@@ -622,7 +915,10 @@
        par = true,
        rain = rdm(0, 10) > 7 ? true : false,
        salir = getEl(fondo, 'exit', true),
-       ida = getEl(fondo, 'ida', true)
+       ida = getEl(fondo, 'ida', true),
+       penales = getEl(fondo, 'penales', true),
+       jugadaloc = getEl(fondo, 'jugada-local', true),
+       jugadavis = getEl(fondo, 'jugada-visitante', true)
 
   log('partido', [partido])
 
@@ -700,7 +996,9 @@
       setImageEquipo(loc1, loc, 'local')
       setImageEquipo(loc2, loc, 'local')
 
-      setBuzo(aloc, getBuzo(loc.camiseta, camvis))
+      setBuzo(aloc, getBuzo(loc.camiseta, change ? vis.alternativa : vis.camiseta))
+
+      setBuzo(avis, getBuzo(loc.camiseta, change ? vis.alternativa : vis.camiseta))
 
       setImageEquipo(microloc, loc, 'local')
 
@@ -778,6 +1076,20 @@
       capitan.hide()
       getEl(fondo, 'flag-festejo-left', true).hide()
       getEl(fondo, 'flag-festejo-right', true).hide()
+
+      setImageEquipo($('.row-loc .escudo'), loc, 'escudo')
+      setImageEquipo($('.row-vis .escudo'), vis, 'escudo')
+
+
+      setCristalBorder(jugadaloc, loc.color_a, loc.color_b, 1)
+      setText(getEl(jugadaloc, 'lbl'), loc.color_b, bcColor(loc), .1)
+      setImageEquipo(getEl(jugadaloc, 'jugada-esc'), loc, 'escudo')
+
+      setCristalBorder(jugadavis, vis.color_a, vis.color_b, 1)
+      setText(getEl(jugadavis, 'lbl'), vis.color_b, bcColor(vis), .1)
+      setImageEquipo(getEl(jugadavis, 'jugada-esc'), vis, 'escudo')
+      jugadaloc.hide()
+      jugadavis.hide()
    }    
    
 
@@ -799,7 +1111,8 @@
 
 
     $('#balon').click(function(){
-      JUEGO = new Juego(fondo, partido, camvis)
+      JUEGO = new Juego(fondo, partido, camvis, aloc, avis)
+      //JUEGO.definicionPenales()
       JUEGO.jugar()
       $(this).fadeOut(150)
     })
