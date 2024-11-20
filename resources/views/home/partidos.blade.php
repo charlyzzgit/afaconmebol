@@ -56,6 +56,11 @@
     .partido .body{
        border-radius: 0 0 10px 10px;
     }
+
+    #box-equipo{
+      font-size: 30px;
+      border-radius: 10px;
+    }
 </style>
 <div class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
@@ -65,44 +70,13 @@
     </div>
     <b class="subtitle">partidos</b>
   </div>
-  <ul id="list" class="list col-12 flex-col-start-center p-1 m-0">
-    <!-- <li class="partido col-12 flex-col-start-center mb-1">
-      <div class="header col-12 flex-row-between-center p-1">
-        <img src="{{ asset('resources/default/libertadores.png') }}" height="90%">
-        <div class="flex-col-start-center">
-          <b class="copa-fase">copa - fase</b>
-          <b class="grupo-fecha">grupo 10 - partido de vuelta</b>
-        </div>
-        <img src="{{ asset('resources/default/flag.png') }}" height="90%">
-      </div>
-      <div class="body col-12 flex-col-start-center p-1 cristal">
-        <div class="names col-12 flex-row-between-start">
-          <b class="nameloc">independiente medellin</b>
-          <b class="namevis text-right">independiente medellin</b>
-        </div>
-        <div class="flex-row-between-center">
-          <img class="jugador" src="{{ asset('resources/default/jugador.png') }}" height="200">
-          <div class="flex-col-start-center p-2">
-             <b class="name-estadio">estadio independiente medellin</b>
-             <div class="col-12 flex-row-between-center mt-2 mb-2">
-               <img class="escudo" src="{{ asset('resources/default/escudo.png') }}" height="50">
-               <img class="estadio ml-2 mr-2" src="{{ asset('resources/default/estadio.png') }}" height="70">
-               <img class="escudo" src="{{ asset('resources/default/escudo.png') }}" height="50">
-             </div>
-             <b class="dia-hora">mercoles - 21 hs.</b>
-             <div class="score flex-row-center-end">
-               <b class="gl">3</b>
-               <b class="pa ml-1">(5)</b>
-               <b class="vs">vs</b>
-               <b class="pb flex-row-end-center mr-1">(4)</b>
-               <b class="gv">0</b>
-             </div>
-          </div>
-          <img class="jugador" src="{{ asset('resources/default/jugador.png') }}" height="200">
-        </div>
-      </div>
-    </li> -->
-  </ul>
+  @isset($equipo)
+    <div id="box-equipo" class="col-12 flex-row-start-center mt-1 mb-1 p-1">
+      <img class="escudo" src="{{ asset('resources/default/escudo.png') }}" height="30">
+      <b class="name ml-3">independiente medellin</b>
+    </div>
+  @endisset
+  <ul id="list" class="list col-12 flex-col-start-center p-1 m-0"></ul>
 </div>
 
 
@@ -112,7 +86,12 @@
        fase = parseInt('{{ $fase }}'),
        zona = '{{ $zona }}',
        src_copa = 'default/' + copa + '.png',
-       ul = $('#list')
+       ul = $('#list'),
+       E = null
+
+    @isset($equipo)
+      E = {!! $equipo !!}
+    @endisset
 
    
    log('partidos', [partidos])
@@ -244,7 +223,11 @@
    $(function(){
     setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'partidos')
 
-
+    if(E != null){
+      setEquipoUI($('#box-equipo'), E, 1)
+      setImageEquipo($('#box-equipo .escudo'), E, 'escudo')
+      $('#box-equipo .name').html(E.name)
+    }
     footer.empty()
     footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
       nextPage("{{ route('home') }}", ['home', 'inicio'])

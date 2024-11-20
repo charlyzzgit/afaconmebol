@@ -215,6 +215,14 @@
     eg.estado = getEstado(eg.estado, copa, fase, zona)
     log('estado', eg.estado)
     li.append(getTable(eg))
+
+    li.find('.jugador').data({equipo_id: eg.equipo_id, grupo_id: eg.grupo_id}).click(function(){
+      var equipo_id = $(this).data('equipo_id'),
+          grupo_id = $(this).data('grupo_id'),
+          params = ['home', 'partidos-equipo-grupo', equipo_id, grupo_id],
+          url = "{{ route('home') }}"
+      nextPage(url, params, true)
+    })
     
     return li
   }
@@ -297,7 +305,8 @@
     if(eq.j == 2){
       setImageEquipo(e, eq.equipo, 'escudo')
       setImageEquipo(j, eq.equipo, 'local')
-      textColor(name, eq.equipo.color_b, bcColor(eq.equipo), .1)
+     
+      name.html(eq.equipo.name)
       setEquipoUI(campeon, eq.equipo, 1)
     }
     

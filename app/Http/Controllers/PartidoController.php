@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Grupo;
+use App\Models\Equipo;
 use App\Models\Partido;
 use DB;
 
@@ -192,5 +193,52 @@ class PartidoController extends Controller
     $partido->s = $data->gl + $data->gv;
 
     $partido->save();
+  }
+
+  public function partidosEquipoGrupo($equipo_id, $grupo_id){
+    $grupo = Grupo::find($grupo_id);
+    $equipo = Equipo::with([
+                            'colorA',
+                            'colorB',
+                            'colorC'
+                          ])
+                          ->find($equipo_id);
+
+    $partidos = Partido::with([
+                                'grupo',
+                                'local.colorA',
+                                'local.colorB',
+                                'local.colorC',
+                                'local.liga',
+                                'local.camiseta',
+                                'local.alternativa',
+                                'visitante.colorA',
+                                'visitante.colorB',
+                                'visitante.colorC',
+                                'visitante.camiseta',
+                                'visitante.alternativa'
+                              ])
+                              ->where('grupo_id', $grupo_id)
+                              ->where(function($q) use($equipo_id){
+                                  $q->where('loc_id', $equipo_id)
+                                    ->orWhere('vis_id', $equipo_id);
+                              });
+                              
+
+    
+
+    $partidos = $partidos->orderBy('fecha')
+                         ->orderBy('dia')
+                         ->orderBy('hora')
+                         ->get()
+                         ->map(function($row){
+                            $colors = colorGrupo($row->grupo->grupo);
+                            $row->a = $colors['a'];
+                            $row->b = $colors['b'];
+                            return $row;
+                         });
+
+
+    return view('home.partidos', ['equipo' => $equipo, 'copa' => $grupo->copa, 'fase' => $grupo->fase, 'zona' => $grupo->zona, 'partidos' => $partidos]);
   }
 }

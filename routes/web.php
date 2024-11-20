@@ -78,6 +78,7 @@ Route::prefix('home')->group(function(){
    Route::get('copa/{copa_zona}/{fase}/{id?}', [App\Http\Controllers\CopaController::class, 'index'])->name('home.copa');
    Route::get('partidos/{copa_zona}/{fase}/{grupo_id?}', [App\Http\Controllers\PartidoController::class, 'index'])->name('home.partidos');
    Route::get('estadio/{partido_id}', [App\Http\Controllers\PartidoController::class, 'estadio'])->name('home.estadio');
+   Route::get('partidos-equipo-grupo/{equipo_id}/{grupo_id?}', [App\Http\Controllers\PartidoController::class, 'partidosEquipoGrupo'])->name('home.partidos-equipo-grupo');
 });
 
 

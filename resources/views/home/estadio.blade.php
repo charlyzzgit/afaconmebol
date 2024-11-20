@@ -1111,7 +1111,7 @@
     }
 
     JUEGO = new Juego(fondo, partido, camvis, aloc, avis)
-    JUEGO.mutear()
+    //JUEGO.mutear()
 
     JUEGO.sonar('snd-hinchada', 5, true)
 
