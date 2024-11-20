@@ -9,4 +9,8 @@ class Goleador extends Model
 {
     use HasFactory;
     protected $table = 'goleadores';
+
+    public function equipoData(){
+        return $this->belongsTo('App\Models\Equipo');
+    }
 }

@@ -48,4 +48,28 @@ class GoleadoresController extends Controller
 
 
     }
+
+    public function index($copa, $zona = null){
+      $m = getMain();
+      
+      $goleadores = Goleador::where('copa', $copa);
+                                  
+      if($zona){
+        $goleadores = $goleadores->where('zona', $zona);
+      }
+
+      $goleadores = $goleadores->groupBy('equipo_id')
+                               ->orderBy('goles', 'desc')
+                               ->orderBy('updated_at', 'desc')
+                               ->get()
+                               ->map(function($g){
+                                 $g->total = $g->sum('goles');
+                                 $g->equipo = Equipo::with(['colorA', 'colorB', 'colorC'])->find($g->equipo_id);
+                                 return $g;
+                               });
+
+
+      return view('home.goleadores', compact('goleadores', 'copa', 'zona'));
+
+    }
 }

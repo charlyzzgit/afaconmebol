@@ -271,7 +271,10 @@
       textColor(getEl(el, 'lbl'), 'blanco', a, .2)
 
       getEl(el, 'inner').click(function(){
-        nextPage("{{ route('home') }}", ['home', 'partidos', copa, fase], true)
+        if(option == 'goleadores'){
+          fase = zona
+        }
+        nextPage("{{ route('home') }}", ['home', option, copa, fase], true)
       })
 
       
@@ -340,6 +343,8 @@
           $('#menu-copa').animate({bottom: '-1000px'}, 150)
         }
       }))
+
+    
 
     listar()
      preload()
