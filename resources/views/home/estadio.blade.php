@@ -1127,7 +1127,9 @@
       sendPostRequest("{{ route('main.save-partido') }}", result, function(data){
         
         if(data.result == 'OK'){
-          location.reload()
+          var url = "{{ route('home', $partido->grupo_id) }}"
+          //location.reload()
+          window.location.href = url
           // var url = "{{ route('home') }}",
           // params = ['home', 'copa', partido.copa, partido.fase]
        

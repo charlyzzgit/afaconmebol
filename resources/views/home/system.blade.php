@@ -58,7 +58,7 @@
             Swal.fire(title, data.message, data.result == 'OK' ? 'success' : 'error').then(function(){
               if(action == 'restore'){
                 //nextPage("{{ route('home') }}", ['home', 'inicio'])
-                location.reload()
+                window.location.href = "{{ route('home') }}"
               }
             })
           })

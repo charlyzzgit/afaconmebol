@@ -5,6 +5,7 @@ namespace App\Classes;
 use Illuminate\Http\Request;
 use App\Models\Main;
 use App\Models\Calendar;
+use App\Models\Grupo;
 use DB;
 use App\Http\Controllers\PartidoController;
 
@@ -15,10 +16,12 @@ class Admin{
     private $calendar;
     private $nextCalendar;
     private $main;
+    private $redirect_params;
   
     function __construct(){
       $this->calendar = Calendar::where('procesado', 0)->orderBy('id')->first();
       $this->main = Main::first();
+      $this->redirect_params = null;
     }
 
     public function processed(){
@@ -31,8 +34,10 @@ class Admin{
       $c = json_decode($this->calendar->copas);
       $namecopa = count($c) ? $c[0] : null;
       $next = (new PartidoController())->nextPartido($this->main->anio, $namecopa, $this->calendar->fase, $this->calendar->fecha, null); //zona = getZona(copa)
-      return [
+      
+      $data = [
                 'action' => $this->calendar->action,
+                'redirect' => $this->redirect_params,
                 'anio' => $this->main->anio,
                 'copas' => json_decode($this->calendar->copas),
                 'namecopa' => $namecopa,
@@ -50,6 +55,23 @@ class Admin{
                 'ida' => $next ? (new PartidoController())->getIda($next->id) : null
 
       ];
+
+      return $data;
+    }
+
+    public function setGrupo($grupo_id){
+      if($grupo_id){
+        $grupo = Grupo::find($grupo_id);
+        if($grupo){
+          $data = [
+                    'grupo_id' => $grupo->id,
+                    'copa' => $grupo->copa,
+                    'fase' => $grupo->fase,
+                    'zona' => $grupo->zona
+          ];
+          $this->redirect_params = $data;
+        }
+      }
     }
 
     private function getNameFase(){

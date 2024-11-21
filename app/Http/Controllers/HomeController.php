@@ -33,8 +33,9 @@ class HomeController extends Controller
 
    
 
-   public function index(){
+   public function index($grupo_id = null){
       $admin = new Admin();
+      $admin->setGrupo($grupo_id);
       $data = json_encode($admin->getData());
       return view('layouts.home', compact('data'));
    }

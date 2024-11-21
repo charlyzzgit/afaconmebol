@@ -354,10 +354,7 @@ function getEquipoIdByName($name){
   return $eq ? $eq->id : null;
 }
 
-function getData(){
- 
-  return json_encode((new \App\Classes\Admin())->getData());
-}
+
 
 
 function isCampeon($id, $copa, $zona = null){

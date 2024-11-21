@@ -450,7 +450,7 @@
         preload(true)
           sendPostRequest("{{ route('main.new-temporada') }}", null, function(data){
             swalResponse('nueva temporada', data, function(){
-              location.reload()
+              window.location.href = "{{ route('home') }}"
             })
           })
        })
@@ -467,7 +467,7 @@
       preload(true)
        sendPostRequest("{{ route('main.init-fecha') }}", null, function(data){
         
-        location.reload()
+        window.location.href = "{{ route('home') }}"
 
       })
      })

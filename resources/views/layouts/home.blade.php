@@ -216,7 +216,7 @@
     <script>
     
     var ASSET = "{{ asset('resources') }}/",
-        MAIN = {!! getData() !!},
+        MAIN = {!! $data !!},
         footer = $('footer')
 
 
@@ -245,9 +245,18 @@
         })
 
         setGradient($('footer'), 180, ['gris', 'blanco', 'blanco', 'gris'], [0, 20, 80, 100])
+       
+       if(MAIN.redirect != null){
+        var c = MAIN.redirect.copa
+        if(MAIN.redirect.zona != null){
+            c+= '_' + MAIN.redirect.zona
+        }
+        nextPage("{{ route('home') }}", ['home','copa', MAIN.redirect.copa, MAIN.redirect.fase, MAIN.redirect.grupo_id], true)
+       }else{
+         nextPage("{{ route('home') }}", ['home','inicio'])
+       }
 
-
-       nextPage("{{ route('home') }}", ['home','inicio'])
+       
     })
     
     </script>

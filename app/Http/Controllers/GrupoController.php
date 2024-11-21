@@ -207,6 +207,39 @@ class GrupoController extends Controller
 
       $grupo->save();
 
+      if($grupo->fase == 5){
+        $m = getMain();
+        $eq_id = $grupo->equiposTableOrder[0]->equipo_id;
+        switch($grupo->copa){
+          case 'afa':
+            switch($grupo->zona){
+              case 'A':
+                $m->afa_a = $eq_id;
+              break;
+              case 'B':
+                $m->afa_b = $eq_id;
+              break;
+              default:
+                $m->afa_c = $eq_id;
+              break;
+            }
+          break;
+          case 'argentina':
+            $m->arg = $eq_id;
+          break;
+          case 'sudamericana':
+            $m->sud = $eq_id;
+          break;
+          case 'libertadores':
+            $m->lib = $eq_id;
+          break;
+          default:
+            $m->rec = $eq_id;
+          break;
+        }
+        $m->save();
+      }
+
       $this->setEstadoClasificacion($grupo->id);
     }
 

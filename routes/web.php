@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/{grupo_id?}', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/online', [App\Http\Controllers\HomeController::class, 'onLine'])->name('online');
 

@@ -51,7 +51,7 @@ class CopaController extends Controller
        (new GrupoController())->updateGrupo($request);
        (new PartidoController())->updatePartido($request);
        (new GoleadoresController())->saveGoleadores($request);
-
+       
        $p = (new PartidoController())->nextPartido($request->anio, $request->copa, $request->fase, $request->fecha, $request->zona);
        if(!$p){
          (new Admin())->processed();
