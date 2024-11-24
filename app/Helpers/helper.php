@@ -435,4 +435,9 @@ function colorGrupo($gp){
         case 16: return [ 'a' => Color::where('name', 'marron')->first(), 'b' => Color::where('name', 'marronclaro')->first()];
         default: return ['a' => null, 'b' => null];
       }
-    }
+}
+
+function isInternacional($copa){
+  $copas = ['sudamericana', 'libertadores'];
+  return in_array($copa, $copas);
+}

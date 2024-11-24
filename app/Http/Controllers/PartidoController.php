@@ -65,7 +65,7 @@ class PartidoController extends Controller
         $partidos = $partidos->where('zona', $zona);
       }
 
-      $partidos = $partidos->get();
+      $partidos = $partidos->orderBy('relevancia')->get();
       switch($copa){
         case 'recopa':
           foreach($partidos as $p){
@@ -74,6 +74,18 @@ class PartidoController extends Controller
             $p->save();
           }
         break;
+        case 'afa':
+          foreach($partidos as $p){
+            switch($fase){
+              case -2:
+
+              break;
+            }
+            $p->dia = 2;
+            $p->hora = 21;
+            $p->save();
+          }
+        break
       }
     }
 

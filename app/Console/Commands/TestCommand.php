@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\AdminController;
 use App\Classes\Admin;
+use App\Classes\Sorteo;
 use DB;
 use \Carbon\Carbon;
 
@@ -60,7 +61,10 @@ class TestCommand extends Command
       // $this->cloneTable('cupos_afa');
       // $this->cloneTable('calendar');
       //$this->fondos();
-      dd(getPlazas('libertadores'));
+      //dd(getPlazas('libertadores'));
+
+      $s = new Sorteo('libertadores', 0);
+      dd($s->sortear());
     }
 
     private function fondos(){
