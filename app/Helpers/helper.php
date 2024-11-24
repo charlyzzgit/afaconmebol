@@ -441,3 +441,473 @@ function isInternacional($copa){
   $copas = ['sudamericana', 'libertadores'];
   return in_array($copa, $copas);
 }
+
+
+function getNivelCopa($liga_id){
+  switch($liga_id){
+    case 1: return 10;
+    case 2: return 9;
+    case 3: return 8;
+    case 4: return 7;
+    case 5: return 6;
+    case 6: return 5;
+    case 7: return 4;
+    case 8: return 3;
+    case 9: return 2;
+    default: return 1;
+  }
+}
+
+function cantGrupos($grupo){
+  $count = \App\Models\Grupo::where('anio', $grupo->anio)
+                            ->where('copa', $grupo->copa)
+                            ->where('fase', $grupo->fase);
+  if($grupo->zona){
+    $count = $count->where('zona', $grupo->zona);
+  }
+  //dump('count', $count->count());
+  return $count->count();
+
+}
+
+function getBolillero($count){
+  $bolillas = [];
+  for($i = 0; $i < $count; $i++){
+    $bolillas[] = $count + 1;
+  }
+  return $bolillas;
+}
+
+function getDia($grupo){
+  $cg = cantGrupos($grupo);
+  $gp = $grupo->grupo;
+  switch($cg){
+    case 1: return 2;
+    case 2: return $gp == 1 ? 2 : 3;
+    case 4: return ($gp == 2 || $gp == 3) ? 2 : ($gp == 1 ? 1: 3);
+    case 8: return $gp < 3 ? 1 : ($gp >= 3 && $gp < 6 ? 2 : 3);
+    default: return $gp < 6 ? 1 : ($gp >= 6 && $gp < 12 ? 2 : 3); 
+  }
+}
+
+function getHora($grupo){
+  $cg = cantGrupos($grupo);
+  $gp = $grupo->grupo;
+  switch($cg){
+    case 1: case 2: return 21;
+    case 4: return $gp == 2 ? 19 : 21;
+    case 8: $v = [1,3,6]; return in_array($gp, $v) ? 19 : 21;
+    default: $v = [1,2,6,7,8,12,13]; return in_array($gp, $v) ? 19 : 21;
+  }
+}
+
+function getDiasAfa($count){
+  switch($count){
+    case 24: return [
+                
+                [
+                  'dia' => 4,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 4,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 4,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 4,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 7,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 7,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 7,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 7,
+                  'hora' => 21
+                ]
+                
+              ];
+    case 20: return [
+                
+                [
+                  'dia' => 4,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 4,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 7,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 7,
+                  'hora' => 21
+                ]
+                
+              ];
+    case 12: return [
+                
+                [
+                  'dia' => 5,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ]
+              ];
+
+    case 8: return [
+                
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ]
+              ];
+    case 6: return [
+                [
+                  'dia' => 4,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 4,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ]
+              ];
+
+    case 4: return [
+                
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ]
+              ];
+    case 3: return [
+                [
+                  'dia' => 4,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ]
+              ];
+    case 2: return [
+                
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ]
+              ];
+    default: return [
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ]
+              ];
+  }
+}
+
+function getWeeksDay($d, $h, $count){
+  $dh = getDiasAfa($count);
+  $result = [];
+  foreach($dh as $el){
+    if($el['dia'] == $d && $el['hora'] == $h){
+      $result[] = $el;
+    }
+  }
+  return $result;
+}
+
+function getHorarioAfa($count){
+  $jornadas = [];
+  switch($count){
+    case 24: case 20:
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 17, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 17, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(4, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 14, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 14, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(7, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(4, 17, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(7, 17, $count));
+    break;
+    case 12:
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 17, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 17, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 14, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 14, $count));
+    break;
+    case 8: case 4:
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 17, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 17, $count));
+    break;
+    case 6: case 3:
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(4, 21, $count));
+    break;
+    case 2:
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 21, $count));
+      $jornadas = array_merge($jornadas, getWeeksDay(5, 21, $count));
+    break;
+    default:
+      $jornadas = array_merge($jornadas, getWeeksDay(6, 21, $count));
+    break;
+
+  }
+
+  return $jornadas;
+}
