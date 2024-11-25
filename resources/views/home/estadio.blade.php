@@ -580,6 +580,30 @@
       border-radius: 10px;
     }
 
+    
+
+    #status{
+      line-height: 1;
+    }
+
+    #status b{
+      font-size: 12px;
+    }
+
+    .percent-bar{
+      border-radius: 5px;
+      border:solid thin white;
+    }
+
+    .status-bar{
+      width: 50%;
+      height: 10px;
+    }
+
+    .box-status{
+      border-radius: 5px;
+    }
+
 
 
 </style>
@@ -774,16 +798,44 @@
           <img class="jugada-esc" src="{{ asset('resources/default/escudo.png') }}" height="15">
         </div>
       </div>
-      <!-- <div class="col-12 flex-row-between-start">
-        <div class="col-6 flex-col-start-center pr-1">
-          <b class="lbl-time-list">1º tiempo</b>
-          <ul class="goles goles-pt col-12 p-1 mt-1 cristal"></ul>
+      <div id="status" class="col-12 flex-row-between-start flex-wrap mt-2">
+        <div class="col-6 p-1">
+          <div id="status-loc" class="box-status col-12 flex-row-between-center p-1 cristal">
+            <div class="col-3 flex-row-start-center">
+              <img src="{{ asset('resources/default/escudo.png') }}" height="40">
+            </div>
+            <div class="col-9 flex-row-between-start flex-wrap pl-2">
+              <b>Posesion</b>
+              <b class="percent">0 %</b>
+              <div class="col-12 flex-row-start-center percent-bar mt-1 mb-1">
+                <div class="status-bar"></div>
+              </div>
+              <b>Remates</b>
+              <b class="remates">0</b>
+            </div>
+          </div>
         </div>
-        <div class="col-6 flex-col-start-center pl-1">
-          <b class="lbl-time-list">2º tiempo</b>
-          <ul class="goles goles-st col-12 p-1 mt-1 cristal"></ul>
+        <div class="col-6 p-1">
+          <div id="status-vis" class="box-status col-12 flex-row-between-center p-1 cristal">
+            <div class="col-9 flex-row-between-start flex-wrap pr-2">
+              <b>Posesion</b>
+              <b class="percent">0 %</b>
+              <div class="col-12 flex-row-start-center percent-bar mt-1 mb-1">
+                <div class="status-bar"></div>
+              </div>
+              <b>Remates</b>
+              <b class="remates">0</b>
+            </div>
+            <div class="col-3 flex-row-end-center">
+              <img src="{{ asset('resources/default/escudo.png') }}" height="40">
+            </div>
+          </div>
         </div>
-      </div> -->
+        <div class="col-12 flex-row-center-center">
+          <button id="btn-list-goles" class="btn btn-sm btn-dark pt-1 pb-1 pl-2 pr-2">ver GOLES</button>
+        </div>
+        
+      </div>
     </div>
   </div>
   <div id="penales" class="col-12 p-1">
@@ -898,6 +950,9 @@
           <ul class="goles goles-s goles-st-s col-12 p-1 mt-1 cristal"></ul>
         </div>
       </div>
+      <div class="col-12 flex-row-center-center p-1">
+        <button id="btn-close-modal-goles" class="btn btn-sm btn-dark">cerrar</button>
+      </div>
     </div>
   </div>
 
@@ -969,7 +1024,11 @@
        ida = getEl(fondo, 'ida', true),
        penales = getEl(fondo, 'penales', true),
        jugadaloc = getEl(fondo, 'jugada-local', true),
-       jugadavis = getEl(fondo, 'jugada-visitante', true)
+       jugadavis = getEl(fondo, 'jugada-visitante', true),
+       alarguelist = getEl(fondo, 'alargue-list', true),
+       statusloc = getEl(fondo, 'status-loc', true),
+       statusvis = getEl(fondo, 'status-vis', true),
+       footerpartido = getEl(fondo, 'footer-inner')
 
   log('partido', [partido])
 
@@ -1008,8 +1067,19 @@
       });
     }
   }
+
+  function setStatus(st, eq){
+    var escudo = st.find('img'),
+        marco = getEl(st, 'percent-bar'),
+        bar = getEl(st, 'status-bar')
+
+    setCristalBorder(st, eq.color_a, eq.color_b, 1)
+        
+
+  }
        
    function set(){
+    var cup = partido.copa == 'afa' ? partido.copa + '_' + partido.zona.toLowerCase() : partido.copa
       setText(header, colb, bcColor(loc), .1)
       setCristalRGB(header, cola)
       namecopa.html(partido.copa)
@@ -1017,7 +1087,7 @@
 
       setImageEquipo(estadio, loc, 'estadio')
       nameestadio.html(loc.name)
-      setImageCopa(copa, partido.copa)
+      setImageCopa(copa, cup)
       copa.css({filter: 'drop-shadow(0 0 10px rgba(' + colb.rgb + ', 0.9))'})
       dia.html(getDia(partido.dia))
       hora.html(partido.hora + ' hs.')
@@ -1141,6 +1211,26 @@
       setImageEquipo(getEl(jugadavis, 'jugada-esc'), vis, 'escudo')
       jugadaloc.hide()
       jugadavis.hide()
+
+      if(partido.local.estructura == 'chica'){
+        $('#f-center').hide()
+      }
+
+      $('#btn-list-goles').click(function(){
+        $('#modal-goles').fadeIn(150)
+      })
+
+
+      $('#btn-close-modal-goles').click(function(){
+        $('#modal-goles').fadeOut(150)
+      })
+
+      alarguelist.hide()
+
+      setCristalRGB(footerpartido, loc.color_a)
+
+      setStatus(statusloc, loc)
+      setStatus(statusvis, vis)
    }    
    
 
@@ -1155,7 +1245,7 @@
     }
 
     JUEGO = new Juego(fondo, partido, camvis, aloc, avis)
-    //JUEGO.mutear()
+    JUEGO.mutear()
 
     JUEGO.sonar('snd-hinchada', 5, true)
 
@@ -1185,6 +1275,8 @@
 
       })
     })
+
+    $('#modal-goles').hide()
     
     preload()
    })

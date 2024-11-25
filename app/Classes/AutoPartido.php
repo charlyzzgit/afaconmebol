@@ -10,15 +10,15 @@ use App\Models\Partido;
 
 
 class AutoPartido{
-    public $partido;
-    public $ida;
-    public $gl;
-    public $gv;
-    public $gbl;
-    public $gbv;
-    public $golesloc;
-    public $golesvis;
-    public $detalle;
+    private $partido;
+    private $ida;
+    private $gl;
+    private $gv;
+    private $gbl;
+    private $gbv;
+    private $golesloc;
+    private $golesvis;
+    private $detalle;
   
     function __construct($partido){
         $this->partido = $partido;
@@ -34,22 +34,22 @@ class AutoPartido{
         // alert($this->gbl.' ---- '.$this->gbv);
     }
 
-    public function getIda(){
+    private function getIda(){
       $ida = Partido::with('grupo', 'local', 'visitante')
                   ->where('anio', $this->partido->anio)
                   ->where('copa', $this->partido->copa)
                   ->where('fase', $this->partido->fase)
                   ->where('grupo_id', $this->partido->grupo_id)
                   ->where('zona', $this->partido->zona)
-                  ->where('loc_equipo_id', $this->partido->vis_equipo_id)
-                  ->where('vis_equipo_id', $this->partido->loc_equipo_id)
+                  ->where('loc_id', $this->partido->vis_id)
+                  ->where('vis_id', $this->partido->loc_id)
                   ->where('is_vuelta', false)
                   ->first();
     return $ida;
     }
 
 
-    public function getPower($a, $b, $islocal){
+    private function getPower($a, $b, $islocal){
         $dif = abs($a - $b);
         $l = $a > $b ? 10 : 10 - $dif;
         $v = $b > $a ? 10 : 10 - $dif;
@@ -59,11 +59,11 @@ class AutoPartido{
 
 
 
-   public function frame($level){
+   private function frame($level){
         return rand(0, 15) + $level > 10 ? 1 : 0;
     }
 
-    public function power($level){
+    private function power($level){
         $pw = 0;
         for($i = 0; $i < 100; $i++){
             $pw += $this->frame($level);
@@ -166,7 +166,7 @@ class AutoPartido{
       
     }
 
-    public function penales(){
+    private function penales(){
       $p = 0;
       $count_a = 0;
       $count_b = 0;
@@ -194,12 +194,12 @@ class AutoPartido{
       return $this->savePartido(['pa' => $pa, 'pb' => $pb]);
     }
 
-    public function tieneChances($convertidos, $ejecutados, $rival){
+    private function tieneChances($convertidos, $ejecutados, $rival){
       $faltantes = 5 - $ejecutados;
       return ($convertidos + $faltantes >= $rival) ? true : false;
     }
 
-    public function getJugador(){
+    private function getJugador(){
       $puesto = rand(1, 11);
       $desde;
       if($puesto == 1){
@@ -212,7 +212,7 @@ class AutoPartido{
       return rand($desde, 11);
     }
 
-    public function getWinner(){
+    private function getWinner(){
       
       if($this->gl > $this->gv){
         return 1;
@@ -224,7 +224,7 @@ class AutoPartido{
       return 0;
     }
 
-    public function savePartido($penales = null){
+    private function savePartido($penales = null){
       $request = new Request([
           'id' => $this->partido->id,
           'gl' => $this->gl,
@@ -242,6 +242,9 @@ class AutoPartido{
       return $res->original;
       // {"gl":"0","gv":"2","golesloc":null,"golesvis":"11|2","id":"1","winner":"-1"
     }
+
+
+    
 
 
   }

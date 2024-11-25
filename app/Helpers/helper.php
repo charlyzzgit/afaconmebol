@@ -911,3 +911,25 @@ function getHorarioAfa($count){
 
   return $jornadas;
 }
+
+function getNameFase($copa, $fase){
+  $copas = config('copas');
+  foreach($copas as $c){
+    if($c['copa'] == $copa){
+      foreach($c['fases'] as $f){
+        if($f['fase'] == $fase){
+          return $f['text'];
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function getFechaFase($copa, $fase, $fecha){
+  if($copa == 'afa'){
+    return $fase < 2 ? $fecha.'° FECHA' : ($fecha == 1 ? 'IDA' : 'VUELTA');
+  }else{
+    return $fase == 0 ? $fecha.'° FECHA' : ($fecha == 1 ? 'IDA' : 'VUELTA');
+  }
+}
