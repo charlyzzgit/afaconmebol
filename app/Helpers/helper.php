@@ -84,7 +84,7 @@ function processTransaction($callback, $success, $error){
       return getResponse(true, $success, $data);
    }catch(Exception $e){
       \DB::rollback();
-      //dd($e);
+      dd($e);
       Illuminate\Support\Facades\Log::channel('app')->info($e);
       return getResponse(false, $error.' '.getException($e));
    }
@@ -430,7 +430,7 @@ function colorGrupo($gp){
         case 11: return [ 'a' => Color::where('name', 'verdeoscuro')->first(), 'b' => Color::where('name', 'verde')->first()];
         case 12: return [ 'a' => Color::where('name', 'marronclaro')->first(), 'b' => Color::where('name', 'amarillo')->first()];
         case 13: return [ 'a' => Color::where('name', 'grana')->first(), 'b' => Color::where('name', 'rosa')->first()];
-        case 14: return [ 'a' => Color::where('name', 'violeta')->first(), 'b' => Color::where('name', 'violetaclaro')->first()];
+        case 14: return [ 'a' => Color::where('name', 'violeta')->first(), 'b' => Color::where('name', 'rosa')->first()];
         case 15: return [ 'a' => Color::where('name', 'turquesa')->first(), 'b' => Color::where('name', 'celeste')->first()];
         case 16: return [ 'a' => Color::where('name', 'marron')->first(), 'b' => Color::where('name', 'marronclaro')->first()];
         default: return ['a' => null, 'b' => null];

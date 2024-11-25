@@ -120,6 +120,29 @@
           cursor: pointer;
           background: transparent;
         }
+
+        #sorteo-result{
+              position: fixed;
+              width: 100%;
+              height: 100%;
+              top: 0;
+              left: 0;
+              background: rgba(0,0,0, .8);
+              z-index: 1000000000;
+              visibility:hidden;
+/*              display: none;*/
+        }
+
+        #sorteo-result .sorteo-dialog{
+            background:white;
+            border-radius:10px;
+            font-size: 30px;
+        }
+
+        .sorteo-result{
+            border-radius: 5px;
+            color:white;
+        }
     </style>
     @yield('css')
 </head>
@@ -134,6 +157,12 @@
          <img src="{{ asset('images/dragon.png') }}" class="custom-preoader"> 
       </div> -->
     </div>
+  </div>
+
+  <div id="sorteo-result" class="flex-row-center-center">
+      <div class="col-11 sorteo-dialog flex-col-start-center p-2">
+          <ul class="col-12 col-flex-col-start-center m-0 p-1"></ul>
+      </div>
   </div>
   
   <div id="reload"></div>
@@ -225,6 +254,8 @@
 
     log('main', [MAIN])
     $(function(){
+        $('#sorteo-result').hide()
+        $('#sorteo-result').css('visibility', 'visible')
         $('footer').hide()
         $('.logo').click(function(){
             

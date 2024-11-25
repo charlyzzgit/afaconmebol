@@ -626,7 +626,7 @@ function setGradient(obj, angle, colores, I){
   }
 
   bg += ')'
-  console.log('GRADIENT', bg)
+  //console.log('GRADIENT', bg)
   $(obj).css('background', bg)
 }
 
@@ -927,7 +927,10 @@ function getBtnFooter(color, src, icon, callback){
 
 }
 
-function setBar(bar, icon, title, color, text){
+function setBar(bar, icon, title, color, text, zona){
+  if(zona != ''){
+    icon = 'default/afa_' + zona + '.png'
+  }
   bar.find('.icon').prop('src', ASSET + icon)
   bar.find('.title').html(title)
   if(text !== undefined){
@@ -959,7 +962,10 @@ function getEl(parent, reference, id){
   return parent.find(prefix + reference)
 }
 
-function setImageCopa(img, copa){
+function setImageCopa(img, copa, forceAfa){
+  if(copa == 'afa' && forceAfa !== undefined){
+    copa = 'escudo_afa'
+  }
   img.prop('src', ASSET + 'default/' + copa + '.png')
 }
 
@@ -969,23 +975,24 @@ function setImageFlag(img, src){
 
 
 function getNameFase(copa, fase, zona){
+  var z = zona != null ? zona + ' - ' : ''
   switch(fase){
     case -2: return 'fase preliminar';
-    case -1: return '1ª fase';
+    case -1: return z + '1ª fase';
     case 0:
     switch(copa){
-        case 'afa': return '2ª fase';
+        case 'afa': return z + '2ª fase';
         default: return 'fase de grupos';
     }
     case 1:
       switch(copa){
-        case 'afa': return '3ª fase';
+        case 'afa': return z + '3ª fase';
         default: return 'dieciseisavos de final';
     }
-    case 2: return 'octavos de final';
-    case 3: return 'cuartos de final';
-    case 4: return 'semifinales';
-    case 5: return 'final';
+    case 2: return z + 'octavos de final';
+    case 3: return z + 'cuartos de final';
+    case 4: return z + 'semifinales';
+    case 5: return z + 'final';
     default: return 'a definir';
   }
 }

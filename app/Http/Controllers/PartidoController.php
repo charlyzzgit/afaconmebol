@@ -58,35 +58,60 @@ class PartidoController extends Controller
 
     public function cronograma($copa, $fase, $zona = null){
       $m = getMain();
-      $partidos = Partido::where('anio', $m->anio)
+      
+      if($copa == 'recopa'){
+        $partidos = Partido::where('anio', $m->anio)
+                         ->where('copa', $copa)
+                         ->where('fase', $fase)
+                         ->get();
+        foreach($partidos as $p){
+            $p->dia = 2;
+            $p->hora = 21;
+            $p->save();
+          }
+      }else{
+        $max = $this->getCantFechas($m->anio, $copa, $fase, $zona);
+        for($f = 1; $f <= $max; $f++){
+          $partidos = Partido::where('anio', $m->anio)
+                         ->where('copa', $copa)
+                         ->where('fase', $fase)
+                         ->where('fecha', $f);
+          if($zona){
+            $partidos = $partidos->where('zona', $zona);
+          }
+
+          if($copa == 'afa'){
+              $partidos = $partidos->orderBy('relevancia', 'desc')->get();
+              $dias = getHorarioAfa($partidos->count());
+              foreach($partidos as $index => $p){
+                $d = $dias[$index];
+                $p->dia = $d['dia'];
+                $p->hora = $d['hora'];
+                $p->save();
+              }
+          }else{
+            $partidos = $partidos->orderBy('id')->get();
+            foreach($partidos as $index => $p){
+                $grupo = Grupo::find($p->grupo_id);
+                $p->dia = getDia($grupo);
+                $p->hora = getHora($grupo);
+                $p->save();
+              }
+          }
+        }
+      }
+    }
+
+    private function getCantFechas($anio, $copa, $fase, $zona = null){
+      $partidos = Partido::where('anio', $anio)
                          ->where('copa', $copa)
                          ->where('fase', $fase);
       if($zona){
         $partidos = $partidos->where('zona', $zona);
       }
 
-      $partidos = $partidos->orderBy('relevancia')->get();
-      switch($copa){
-        case 'recopa':
-          foreach($partidos as $p){
-            $p->dia = 2;
-            $p->hora = 21;
-            $p->save();
-          }
-        break;
-        case 'afa':
-          foreach($partidos as $p){
-            switch($fase){
-              case -2:
+      return $partidos->groupBy('fecha')->count();
 
-              break;
-            }
-            $p->dia = 2;
-            $p->hora = 21;
-            $p->save();
-          }
-        break
-      }
     }
 
     public function nextPartido($anio, $copa, $fase, $fecha, $zona = null){

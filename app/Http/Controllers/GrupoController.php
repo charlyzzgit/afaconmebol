@@ -38,11 +38,12 @@ class GrupoController extends Controller
       if(!$grupo){
         switch ($copa) {
           case 'afa':
-            switch($zona){
-              case 'A': return -2;
-              case 'B': return -1;
-              default: return 0;
-            }
+            return -2;
+            // switch($zona){
+            //   case 'A': return -2;
+            //   case 'B': return -1;
+            //   default: return -2;
+            // }
           case 'argentina': return 1;
           case 'sudamericana': return 0;
           case 'libertadores': return 0;

@@ -64,7 +64,8 @@ class TestCommand extends Command
       //dd(getPlazas('libertadores'));
 
       $s = new Sorteo('libertadores', 0);
-      dd($s->sortear());
+      //dd($s->sortear());
+      dd(getHorarioAfa(24));
     }
 
     private function fondos(){

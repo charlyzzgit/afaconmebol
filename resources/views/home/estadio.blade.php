@@ -309,9 +309,13 @@
     }
 
     .goles{
-      height: 70px;
+      height: 150px;
       overflow-x:hidden;
       overflow-y: auto;
+    }
+
+    .goles-s{
+      height: 70px;
     }
 
     #duelo{
@@ -564,6 +568,18 @@
       line-height: 1;
     }
 
+    #modal-goles{
+      position: absolute;
+      top:280px;
+      left: 0;
+      z-index: 5000000;
+    }
+
+
+    #modal-goles .inner{
+      border-radius: 10px;
+    }
+
 
 
 </style>
@@ -758,7 +774,7 @@
           <img class="jugada-esc" src="{{ asset('resources/default/escudo.png') }}" height="15">
         </div>
       </div>
-      <div class="col-12 flex-row-between-start">
+      <!-- <div class="col-12 flex-row-between-start">
         <div class="col-6 flex-col-start-center pr-1">
           <b class="lbl-time-list">1º tiempo</b>
           <ul class="goles goles-pt col-12 p-1 mt-1 cristal"></ul>
@@ -767,7 +783,7 @@
           <b class="lbl-time-list">2º tiempo</b>
           <ul class="goles goles-st col-12 p-1 mt-1 cristal"></ul>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
   <div id="penales" class="col-12 p-1">
@@ -858,7 +874,35 @@
       </div>
     </div>
   </div>
+
+  <div id="modal-goles" class="col-12 flex-row-center-center p-2">
+    <div class="inner col-12 flex-col-start-center p-2 cristal">
+      <div class="col-12 flex-row-between-start">
+        <div class="col-6 flex-col-start-center pr-1">
+          <b class="lbl-time-list">1º tiempo</b>
+          <ul class="goles goles-pt col-12 p-1 mt-1 cristal"></ul>
+        </div>
+        <div class="col-6 flex-col-start-center pl-1">
+          <b class="lbl-time-list">2º tiempo</b>
+          <ul class="goles goles-st col-12 p-1 mt-1 cristal"></ul>
+        </div>
+      </div>
+
+      <div id="alargue-list" class="col-12 flex-row-between-start">
+        <div class="col-6 flex-col-start-center pr-1">
+          <b class="lbl-time-list">1º tiempo s</b>
+          <ul class="goles goles-s goles-pt-s col-12 p-1 mt-1 cristal"></ul>
+        </div>
+        <div class="col-6 flex-col-start-center pl-1">
+          <b class="lbl-time-list">2º tiempo s</b>
+          <ul class="goles goles-s goles-st-s col-12 p-1 mt-1 cristal"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+
 
 @include('partials.juego')
 <script>

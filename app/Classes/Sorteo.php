@@ -15,12 +15,14 @@ class Sorteo{
     private $copa;
     private $fase;
     private $grupos;
+    private $zona;
   
     function __construct($copa, $fase){
       $this->main = getMain();
       $this->copa = $copa;
       $this->fase = $fase;
       $this->grupos = [];
+      $this->zona = null;
     }
 
     private function getNewGrupo($count){
@@ -59,6 +61,10 @@ class Sorteo{
       }
     }
 
+    public function getZona(){
+      return $this->zona;
+    }
+
     private function getEquipo($id){
       $eq = Equipo::select('id', 'liga_id', 'clasico_id', 'name')->find($id);
       return $eq->toArray();
@@ -82,13 +88,15 @@ class Sorteo{
 
     private function sorteoAfaPreliminar(){
       $repeat = 0;
-      
+      $this->zona = 'A';
       $fin = false;
       $grupos = $this->getEmptyGrupos(12, 4);
       $equipos = Equipo::select(
                         'id',
                         'name',
-                        'clasico_id'
+                        'clasico_id',
+                        'liga_id', 
+                        'nivel'
                       )
                        ->where('liga_id', 2)
                        ->orderBy('nivel', 'desc')
@@ -223,7 +231,8 @@ class Sorteo{
       $equipos = Equipo::select(
                         'id',
                         'name',
-                        'liga_id'
+                        'liga_id',
+                        'nivel'
                       )
                        ->where('copa', $copa)
                        ->orderBy('liga_id')
@@ -240,13 +249,15 @@ class Sorteo{
         $grupos[0][0] = Equipo::select(
                         'id',
                         'name',
-                        'liga_id'
+                        'liga_id',
+                        'nivel'
                       )->find($m->lib);
 
         $grupos[8][0] = Equipo::select(
                         'id',
                         'name',
-                        'liga_id'
+                        'liga_id',
+                        'nivel'
                       )->find($m->sud);
       }
 
@@ -281,7 +292,7 @@ class Sorteo{
         }
       }
 
-      $this->show($grupos);
+      //$this->show($grupos);
 
       return $grupos;
 

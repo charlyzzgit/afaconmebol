@@ -166,11 +166,11 @@
       src_copa = 'default/' + copa + '.png'
   log('grupos', [grupos])
 
-
-
+ 
+  
   
   function getLiGrupo(g){
-    var li = $('<li class="grupo col-12 flex-col-start-center">\
+    var li = $('<li class="grupo col-12 flex-col-start-center mb-2">\
                   <div class="bar col-12 flex-row-center-center"></div>\
                   <ul class="equipos col-12 flex-col-start-center p-1 m-0"></ul>\
               </li>'),
@@ -180,14 +180,16 @@
     $.each(g.equipos_position, function(i, e){
        li.find('.equipos').append(getLiEquipo(e))
     })
-
+    
     bar.html(prefix + g.grupo)
+
+    textColor(bar, 'blanco', g.b.name, 1)
 
     bg(bar, g.a.rgb)
     
     setCristalRGB(ul, g.a, g.b)
 
-    textColor(bar, 'blanco', g.b.name, .2)
+  
 
     return li
   }
@@ -318,7 +320,7 @@
 
 
    $(function(){
-    setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'grupos')
+    setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'grupos', zona)
     setMenu()
     if(fase == 5){
       if(grupos.length != 0){

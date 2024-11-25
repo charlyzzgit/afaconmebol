@@ -175,7 +175,8 @@
 
 
  <script>
-  var INDEX = 0
+  var INDEX = 0,
+      modalSorteoResult = $('#sorteo-result')
    function getItem(action){
      var c = $('<div class="col-6 menu-item p-1">\
                 <div class="inner col-12 flex-col-start-center p-1">\
@@ -299,15 +300,36 @@
      return c
    }
 
+   function getLiSorteo(copa, msg){
+      var li = $('<li class="sorteo-result col-12 flex-row-start-center pl-2 pr-2 pt-1 pb-1 mb-1">\
+                  <img height="30">\
+                  <b class="ml-2">libertadores sorteada</b>\
+                </li>'),
+          color = parseColor(getColorCopa(copa))
+
+      bg(li, color.rgb)
+      setImageCopa(li.find('img'), copa, true)
+      li.find('b').html(msg)
+
+      return li
+   }
+
    function sortear(){
     var copa = MAIN.copas[INDEX]
      sendPostRequest("{{ route('main.sorteo') }}", {copa: copa}, function(data){
         if(data.result == 'OK'){
             INDEX++
+            modalSorteoResult.find('ul').append(getLiSorteo(copa, data.message))
+            modalSorteoResult.fadeIn(150)
             if(INDEX == MAIN.copas.length){
-              finSorteo()
+              setTimeout(function(){
+                modalSorteoResult.fadeOut(150)
+                finSorteo()
+              },2000)
+              
               //return
             }else{
+              
               sortear()  
             }
             
@@ -459,6 +481,7 @@
      $('#sorteo').click(function(){
        swalSiNo('sorteo copas', '¿sortear ' + (MAIN.copas).join(' - ') + '?', function(){
         preload(true)
+        modalSorteoResult.find('ul').empty()
           sortear()
        })
      })

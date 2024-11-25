@@ -18,6 +18,7 @@ class CopaController extends Controller
     $m = getMain();
     $copa = copaZona($copa_zona, 0);
     $zona = copaZona($copa_zona, 1);
+    
     if($fase == '::'){
       $fase = (new GrupoController())->getLastFase($copa, $m->anio, $zona);
     }
@@ -33,10 +34,11 @@ class CopaController extends Controller
        }else{
          $copa = $request->copa;
          $fase = (new GrupoController())->getNextFase($copa);
+         
          $s = new Sorteo($copa, $fase);
          $grupos = $s->sortear();
          foreach ($grupos as $g => $grupo) {
-            $grupo_id = (new GrupoController())->create($g + 1, $grupo, $copa, $fase);
+            $grupo_id = (new GrupoController())->create($g + 1, $grupo, $copa, $fase, $s->getZona());
             (new PartidoController())->create($grupo_id);
          }
          (new PartidoController())->cronograma($copa, $fase);
