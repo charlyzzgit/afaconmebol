@@ -846,7 +846,7 @@ function setImageEquipo(img, eq, shape){
 }
 
 function setBgGradientEq(obj, eq){
-  setGradient(obj, 180, [eq.loc_b, eq.loc_a, eq.loc_a, eq.loc_c], [0, 20, 80, 100])
+  setGradient(obj, 180, [eq.color_b.rgb, eq.color_a.rgb, eq.color_a.rgb, eq.color_c.rgb], [0, 20, 80, 100])
   
   //radialGradient(div.find('.puntos'), a, b)
 }

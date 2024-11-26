@@ -65,6 +65,10 @@
      this.snduuu ='snd-uuu'
      this.sndpitofinal ='snd-pito-final'
      this.mute = false
+     this.posesionloc = 0
+     this.posesionvis = 0
+     this.rematesloc = 0
+     this.rematesvis = 0
 
 
      this.mutear = function(){
@@ -125,9 +129,11 @@
       if(l > v){
           left+=l
           increment = left + l
+          parent.posesionloc++
       }else{
         left-=v
         increment = left - v
+        parent.posesionvis++
       }
       this.sonar(this.sndpelota, 8)
       this.duelo.animate({left: increment + 'px'}, parent.vel, parent.endAnimation.bind(this))
@@ -142,6 +148,7 @@
   this.endAnimation = function(){
   	var parent = this
     if(parent.balon.offset().left > parent.maxRight){
+      parent.rematesloc++
     	if(parent.isGol()){
 	      this.gl++
 	      if(this.define){
@@ -157,6 +164,7 @@
 	    }
     }
     if(parent.balon.offset().left < parent.minLeft){
+      parent.rematesvis++
     	if(parent.isGol()){
 	      this.gv++
 	      if(this.define){
@@ -171,6 +179,9 @@
 	    	this.setJugada(false)
 	    }
     }
+
+    parent.updateStatus(true)
+    parent.updateStatus(false)
   	if(parent.gol){
   		log('gol', [])
   		parent.gol = false
@@ -496,6 +507,29 @@
       case 4: return eq + ' clasifico a la final'
       default: return eq + ' campeon'
     }
+  }
+
+  this.updateStatus = function(isLocal){
+    var st = getEl(this.el, isLocal ? 'status-loc' : 'status-vis', true),
+        percent = getEl(st, 'percent'),
+        remates = getEl(st, 'remates'),
+        bar = getEl(st, 'status-bar'),
+        total = this.posesionloc + this.posesionvis,
+        p
+    if(isLocal){
+      p = this.posesionloc/total*100
+      percent.html(p.toFixed(2) + '%')
+      remates.html(this.rematesloc)
+      bar.css({width: p + '%'})
+      log('status loc', [st])
+    }else{
+      p = this.posesionvis/total*100
+      percent.html(p.toFixed(2) + '%')
+      remates.html(this.rematesvis)
+      bar.css({width: p + '%'})
+      log('status vis', [st])
+    }
+
   }
 
   this.finPartido = function(){

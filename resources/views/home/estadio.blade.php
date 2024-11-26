@@ -596,7 +596,7 @@
     }
 
     .status-bar{
-      width: 50%;
+      width: 0;
       height: 10px;
     }
 
@@ -1074,7 +1074,10 @@
         bar = getEl(st, 'status-bar')
 
     setCristalBorder(st, eq.color_a, eq.color_b, 1)
-        
+    setImageEquipo(escudo, eq, 'escudo')    
+    colBordeUI(marco, eq.color_c.rgb)
+    setBgGradientEq(bar, eq)
+    setText(st, eq.color_b, bcColor(eq), .1)
 
   }
        
@@ -1231,6 +1234,11 @@
 
       setStatus(statusloc, loc)
       setStatus(statusvis, vis)
+
+      
+      
+      setEquipoUI($('#btn-list-goles, #btn-close-modal-goles'), loc, 1)
+      setText($('#btn-list-goles, #btn-close-modal-goles'), loc.color_b, bcColor(loc), .1)
    }    
    
 
