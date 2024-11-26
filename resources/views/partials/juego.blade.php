@@ -389,9 +389,12 @@
   	if(g < 50){
   		return 'de jugada'
   	}
-  	if(g >= 50 && g < 70){
+  	if(g >= 50 && g < 60){
   		return 'de cabeza'
   	}
+    if(g >= 60 && g < 70){
+      return 'de penal'
+    }
   	if(g >= 70 && g < 75){
   		return 'de volea'
   	}
@@ -481,8 +484,15 @@
  				esc = getEl(li, 'gol-escudo'),
  				lbl = getEl(li, 'detalle'),
         jug = this.getJugadorN(),
-        detalle = this.time + "'" + ' - Nº ' + jug + ' - ' + this.golDe()
-    this.detalles.push(detalle)
+        golde = this.golDe()
+        detalle = this.time + "'" + ' - Nº ' + jug + ' - ' + golde
+    this.detalles.push({
+          minuto: this.time,
+          tiempo: this.tiempo, 
+          jugador: jug,
+          gol: golde,
+          equipo_id: eq.id
+        })
   	setImageEquipo(esc, eq, 'escudo')
   	lbl.html(detalle)
     this.addGoleador(jug, eq.id)

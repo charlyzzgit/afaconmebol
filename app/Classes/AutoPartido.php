@@ -5,7 +5,7 @@ namespace App\Classes;
 use Illuminate\Http\Request;
 use DB;
 use App\Http\Controllers\PartidoController;
-use App\Http\Controllers\Api\AppController;
+use App\Http\Controllers\CopaController;
 use App\Models\Partido;
 
 
@@ -16,8 +16,7 @@ class AutoPartido{
     private $gv;
     private $gbl;
     private $gbv;
-    private $golesloc;
-    private $golesvis;
+    private $goleadores;
     private $detalle;
   
     function __construct($partido){
@@ -27,8 +26,8 @@ class AutoPartido{
         $this->gv = 0;
         $this->gbl = $partido->is_vuelta && $partido->is_define ? $this->ida->gv : 0;
         $this->gbv = $partido->is_vuelta && $partido->is_define ? $this->ida->gl : 0;
-        $this->golesloc = [];
-        $this->golesvis = [];
+        $this->goleadores = [];
+        
         $this->detalle = [];
         // dump($this->ida->toArray());
         // alert($this->gbl.' ---- '.$this->gbv);
@@ -72,6 +71,37 @@ class AutoPartido{
     }
 
 
+    private function golDe(){
+       $g = rand(0, 100);
+        if($g < 50){
+          return 'de jugada';
+        }
+        if($g >= 50 && $g < 60){
+          return 'de cabeza';
+        }
+        if($g >= 60 && $g < 70){
+          return 'de penal';
+        }
+        if($g >= 70 && $g < 75){
+          return 'de volea';
+        }
+        if($g >= 75 && $g < 80){
+          return 'de palomita';
+        }
+        if($g >= 80 && $g < 85){
+          return 'olimpico';
+        }
+        if($g >= 85 && $g < 90){
+          return 'de media cancha';
+        }
+        if($g >= 90 && $g < 95){
+          return 'de arco a arco';
+        }
+        
+        return 'de chilena';
+      
+    }
+
     public function jugar(){
       
       $level1 = 0;
@@ -79,11 +109,12 @@ class AutoPartido{
       $power1 = 0;
       $power2 = 0;
       //dd($this->partido);
-      foreach($this->partido->grupo->posiciones as $e){
-        if($this->partido->equipoLocal->id == $e->equipo_id){
+      foreach($this->partido->grupo->equiposPosition as $e){
+
+        if($this->partido->local->id == $e->equipo_id){
            $level1 = $e->nivel;
         }
-        if($this->partido->equipoVisitante->id == $e->equipo_id){
+        if($this->partido->visitante->id == $e->equipo_id){
            $level2 = $e->nivel;
         }
       }
@@ -116,12 +147,14 @@ class AutoPartido{
           $this->gbl++;
           $j = $this->getJugador();
           $this->detalle[] = [
-              'islocal' => true,
+              'equipo_id' => $this->partido->local->id,
               'jugador' => $j,
               'minuto' => $minuto,
-              'tiempo' => $tiempo
+              'tiempo' => $tiempo,
+              'gol' =>  $this->golDe()
           ];
-          $this->golesloc[] = $j;
+          //$this->golesloc[] = $j;
+          $this->addGoleador($j, $this->partido->local->id);
           $position = $half;
         }
 
@@ -129,13 +162,15 @@ class AutoPartido{
           $this->gv++;
           $this->gbv++;
           $j = $this->getJugador();
-          $this->detalle[] = [
-              'islocal' => false,
+           $this->detalle[] = [
+              'equipo_id' => $this->partido->visitante->id,
               'jugador' => $j,
               'minuto' => $minuto,
-              'tiempo' => $tiempo
+              'tiempo' => $tiempo,
+              'gol' =>  $this->golDe()
           ];
-          $this->golesvis[] = $j;
+          $this->addGoleador($j, $this->partido->visitante->id);
+          //$this->golesvis[] = $j;
           $position = $half;
         }
         $minuto++;
@@ -164,6 +199,25 @@ class AutoPartido{
       
       
       
+    }
+
+    private function addGoleador($j, $eq_id){
+      $e = false;
+      foreach($this->goleadores as &$g){
+        
+        if($g['jugador'] == $j && $g['equipo_id'] == $eq_id){
+          $g['goles']++;
+          $e = true;
+        }
+      }
+
+      if(!$e){
+        $this->goleadores[] = [
+                                'jugador' => $j,
+                                'equipo_id' => $eq_id,
+                                'goles' => 1
+                              ];
+      }
     }
 
     private function penales(){
@@ -226,19 +280,26 @@ class AutoPartido{
 
     private function savePartido($penales = null){
       $request = new Request([
-          'id' => $this->partido->id,
-          'gl' => $this->gl,
-          'gv' => $this->gv,
-          'golesloc' => implode('|', $this->golesloc),
-          'golesvis' => implode('|', $this->golesvis),
-          'winner' => $this->getWinner(),
-          'detalle' => json_encode($this->detalle)
+        'id' => $this->partido->id,
+        'anio' => $this->partido->anio,
+        'copa' => $this->partido->copa, 
+        'fase' => $this->partido->fase, 
+        'fecha' => $this->partido->fecha, 
+        'zona' => $this->partido->zona,
+        'gl' => $this->gl,
+        'gv' => $this->gv,
+        'winner_id' => $this->getWinner(),
+        'goleadores' =>  $this->goleadores,
+        'detalle' => json_encode($this->detalle)
       ]);
       if($penales){
         $request = $request->merge($penales);
       }
+      
+
+     
       //dd($request->all());
-      $res = (new AppController())->savePartido($request);
+      $res = (new CopaController())->savePartido($request);
       return $res->original;
       // {"gl":"0","gv":"2","golesloc":null,"golesvis":"11|2","id":"1","winner":"-1"
     }

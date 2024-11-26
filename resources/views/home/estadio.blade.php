@@ -799,7 +799,7 @@
         </div>
       </div>
       <div id="status" class="col-12 flex-row-between-start flex-wrap mt-2">
-        <div class="col-6 p-1">
+        <div class="col-6 pl-0 pt-1 pb-1 pr-1">
           <div id="status-loc" class="box-status col-12 flex-row-between-center p-1 cristal">
             <div class="col-3 flex-row-start-center">
               <img src="{{ asset('resources/default/escudo.png') }}" height="40">
@@ -815,7 +815,7 @@
             </div>
           </div>
         </div>
-        <div class="col-6 p-1">
+        <div class="col-6 pl-1 pt-1 pb-1 pr-0">
           <div id="status-vis" class="box-status col-12 flex-row-between-center p-1 cristal">
             <div class="col-9 flex-row-between-start flex-wrap pr-2">
               <b>Posesion</b>
