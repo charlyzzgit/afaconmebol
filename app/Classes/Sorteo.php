@@ -82,6 +82,7 @@ class Sorteo{
     private function sorteoAfa(){
       switch($this->fase){
         case -2: return $this->sorteoAfaPreliminar();
+        case -1: return $this->sorteoAfaAB();
         default: return null;
       }
     }
@@ -135,6 +136,10 @@ class Sorteo{
       //$this->show($grupos);
 
       return $grupos;
+    }
+
+    private function sorteoAfaAB(){
+      
     }
 
     private function nextPos($grupos){

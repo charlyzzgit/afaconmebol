@@ -245,14 +245,39 @@ class GrupoController extends Controller
     }
 
     private function setEstadoClasificacion($grupo_id){
-      $grupo = Grupo::with('equiposTableOrder')->find($grupo_id);
-      $grupos_id = Grupo::where('anio', $grupo->anio)
-                        ->where('copa', $grupo->copa)
-                        ->where('fase', $grupo->fase);
+      $grupo = Grupo::with('equiposPosition')->find($grupo_id);
+      
       
       switch($grupo->copa){
         case 'afa':
-
+          if($grupo->fase == -2){
+            $grupos = Grupo::with('equiposPosition')
+                            ->where('anio', $grupo->anio)
+                            ->where('copa', $grupo->copa)
+                            ->where('fase', $grupo->fase)
+                            ->where('id', '<>', $grupo->id)
+                            ->get();
+          }
+          foreach($grupo->equiposTableOrder as $order => $e){
+            switch($grupo->fase){
+              case -2:
+                switch($e->pos){
+                  case 1: case 2: 
+                    $e->estado = $grupo->completed ? 2 : $this->clasifica($e, $grupo);
+                  break;
+                  case 3:
+                    $e->estado = $grupo->completed ? $this->clasificaGral($e) : $this->clasifica($e, $grupo);
+                  break;
+                  default:
+                    $e->estado = $grupo->completed ? -1 : $this->clasifica($e, $grupo);
+                  break;
+                }
+              break;
+            }
+             
+            $e->save();
+          }
+          
         break;
         case 'argentina':
 
@@ -265,4 +290,64 @@ class GrupoController extends Controller
         break;
       }
     }
+
+
+  private function clasifica($e, $grupo){
+    $superados = 0;
+    $me_superan = 0;
+    foreach($grupo->equiposPosition as $eq){
+      if($eq->id == $e->id){
+        continue;
+      }
+      if($this->supera($e, $eq)){
+        $superados++;
+      }
+
+      if($this->supera($eq, $e)){
+        $me_superan++;
+      }
+    }
+
+    if($superados >= 2){
+      return 2;
+    }
+
+    if($superados == 1){
+      if($me_superan < 2){
+        return 0;
+      }
+
+      return 1;
+    }
+
+    return -1;
+  }
+
+  private function supera($e, $eq){
+    return $e->pts > ((6 - $eq->j)*3 + $eq->pts);
+  }
+
+  public function getTablaGeneralFase($copa, $fase, $zona = null){
+    $m = getMain();
+    $equipos = EquipoGrupo::with('grupo', 'equipo')
+                          ->whereHas('grupo', function ($query) use ($copa, $fase) {
+                              $query->where('fase', $fase)
+                                    ->where('copa', $copa);
+                          });
+    if($zona){
+      $equipos = $equipos->where('zona', $zona);
+    }
+                        
+    $equipos = $equipos->orderBy('pos')
+                       ->orderBy('pts', 'desc')
+                      ->orderBy('d', 'desc')
+                      ->orderBy('gf', 'desc')
+                      ->orderBy('gc')
+                      ->orderBy('gv')
+                      ->orderBy('g', 'desc')
+                      ->orderBy('p')
+                      ->get();
+
+    return $equipos;
+  }
 }

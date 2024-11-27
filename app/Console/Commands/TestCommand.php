@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GrupoController;
 use App\Classes\Admin;
 use App\Classes\Sorteo;
 use DB;
@@ -48,24 +49,11 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        //procesarLote(0);
-        //dd((new Admin())->getCalendar());
-      // $this->cloneTable('main');
-      // $this->cloneTable('ligas');
-      // $this->cloneTable('equipos');
-      // $this->cloneTable('grupos');
-      // $this->cloneTable('equipos_grupo');
-      // $this->cloneTable('partidos');
-      // $this->cloneTable('goleadores');
-      // $this->cloneTable('colores');
-      // $this->cloneTable('cupos_afa');
-      // $this->cloneTable('calendar');
-      //$this->fondos();
-      //dd(getPlazas('libertadores'));
-
-      $s = new Sorteo('libertadores', 0);
+       $eqs = (new GrupoController())->getTablaGeneralFase('afa', -2);
+       dd($eqs->toArray());
+      //$s = new Sorteo('libertadores', 0);
       //dd($s->sortear());
-      dd(getHorarioAfa(24));
+      //dd(getHorarioAfa(24));
     }
 
     private function fondos(){

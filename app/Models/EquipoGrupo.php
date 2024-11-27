@@ -13,4 +13,8 @@ class EquipoGrupo extends Model
     public function equipo(){
         return $this->belongsTo('App\Models\Equipo');
     }
+
+    public function grupo(){
+        return $this->belongsTo('App\Models\Grupo');
+    }
 }
