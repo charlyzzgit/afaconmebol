@@ -282,6 +282,46 @@ class GrupoController extends Controller
         case 'argentina':
 
         break;
+        case 'sudamericana':
+          foreach($grupo->equiposTableOrder as $order => $e){
+            switch($grupo->fase){
+              case 0:
+                switch($e->pos){
+                  case 1: case 2: 
+                    $e->estado = $grupo->completed ? 2 : $this->clasifica($e, $grupo);
+                  break;
+                  default:
+                    $e->estado = $grupo->completed ? -1 : $this->clasifica($e, $grupo);
+                  break;
+                  
+                }
+              break;
+            }
+             
+            $e->save();
+          }
+        break;
+        case 'libertadores':
+          foreach($grupo->equiposTableOrder as $order => $e){
+            switch($grupo->fase){
+              case 0:
+                switch($e->pos){
+                  case 1: case 2: 
+                    $e->estado = $grupo->completed ? 2 : $this->clasifica($e, $grupo);
+                  break;
+                  case 3:
+                    $e->estado = $grupo->completed ? 1 : $this->clasifica($e, $grupo);
+                  break;
+                  default:
+                    $e->estado = $grupo->completed ? -1 : $this->clasifica($e, $grupo);
+                  break;
+                }
+              break;
+            }
+             
+            $e->save();
+          }
+        break;
         default:
           foreach($grupo->equiposTableOrder as $order => $e){
              $e->estado = $grupo->completed ? ($e->pos == 1 ? 2 : -1) : 0;
@@ -327,16 +367,34 @@ class GrupoController extends Controller
     return $e->pts > ((6 - $eq->j)*3 + $eq->pts);
   }
 
+  private function clasificaGral($e){
+    $grupo = Grupo::find($e->grupo_id);
+    $eqs = $this->getTablaGeneralFase($grupo->copa, $grupo->fase, $grupo->zona);
+    $pos = 0;
+    foreach($eqs as $eq){
+      if($eq->pos == 3){
+        $pos++;
+        if($e->equipo_id == $eq->equipo_id){
+          break;
+        }
+      }
+    }
+    return $pos >= 8 ? 1 : -1;
+  }
+
   public function getTablaGeneralFase($copa, $fase, $zona = null){
     $m = getMain();
     $equipos = EquipoGrupo::with('grupo', 'equipo')
-                          ->whereHas('grupo', function ($query) use ($copa, $fase) {
+                          ->whereHas('grupo', function ($query) use ($copa, $fase, $zona) {
                               $query->where('fase', $fase)
                                     ->where('copa', $copa);
+                              if (!is_null($zona)) {
+                                  $query->where('zona', 'Norte');
+                              }
+
+
                           });
-    if($zona){
-      $equipos = $equipos->where('zona', $zona);
-    }
+    
                         
     $equipos = $equipos->orderBy('pos')
                        ->orderBy('pts', 'desc')
