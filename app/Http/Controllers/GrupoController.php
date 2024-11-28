@@ -244,7 +244,9 @@ class GrupoController extends Controller
       $this->setEstadoClasificacion($grupo->id);
     }
 
-    private function setEstadoClasificacion($grupo_id){
+
+
+    public function setEstadoClasificacion($grupo_id){
       $grupo = Grupo::with('equiposPosition')->find($grupo_id);
       
       
@@ -348,6 +350,8 @@ class GrupoController extends Controller
       }
     }
 
+    //dump($e->equipo, $superados, $me_superan);
+
     if($superados >= 2){
       return 2;
     }
@@ -360,7 +364,17 @@ class GrupoController extends Controller
       return 1;
     }
 
-    return -1;
+    if($me_superan > 1){
+      if($me_superan == 2){
+        return 0;
+      }
+
+      if($me_superan == 2){
+        return -1;
+      }
+    }
+
+    return 0;
   }
 
   private function supera($e, $eq){
@@ -379,7 +393,7 @@ class GrupoController extends Controller
         }
       }
     }
-    return $pos >= 8 ? 1 : -1;
+    return $pos <= 8 ? 1 : -1;
   }
 
   public function getTablaGeneralFase($copa, $fase, $zona = null){

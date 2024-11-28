@@ -49,11 +49,32 @@ class TestCommand extends Command
      */
     public function handle()
     {
-       $eqs = (new GrupoController())->getTablaGeneralFase('afa', -2);
-       dd($eqs->toArray());
+       //$eqs = (new GrupoController())->getTablaGeneralFase('afa', -2);
+       //dd($eqs->toArray());
+      $this->updateStateGrupos('libertadores', 0);
+
       //$s = new Sorteo('libertadores', 0);
       //dd($s->sortear());
       //dd(getHorarioAfa(24));
+    }
+
+    private function updateStateGrupos($copa, $fase){
+      try{
+         DB::beginTransaction();
+         $ids = \App\Models\Grupo::where('copa', $copa)->where('fase', $fase)->get()->pluck('id');
+
+         foreach($ids as $id){
+           (new GrupoController())->setEstadoClasificacion($id);
+         }
+
+         DB::commit();
+         dd('ok');
+      }catch(\Exception $e){
+         DB::rollback();
+         dd($e->getMessage());
+      }
+      
+
     }
 
     private function fondos(){

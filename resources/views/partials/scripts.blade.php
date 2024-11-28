@@ -1112,8 +1112,8 @@ function getTable(eq){
 }
 
 function getEstado(estado, copa, fase, zona){
-  if(estado == -1){
-    return 'eli'
+  if(estado == -1 && copa != 'afa'){
+      return 'eli'
   }
 
   if(estado == 0){
@@ -1125,13 +1125,13 @@ function getEstado(estado, copa, fase, zona){
         case -2:  return estado == 2 ? 'afa_a' : 'afa_b'
         case -1:  
           switch(zona){
-            case 'a': return estado >= 2 ? 'afa_a' : (estado == 1 ? 'afa_b' : 'afa_c')
+            case 'A': return estado >= 2 ? 'afa_a' : (estado == 1 ? 'afa_b' : 'afa_c')
             default: return 'afa_b'
           }
         case 0: case 1:
           switch(zona){
-            case 'a': return estado >= 2 ? 'afa_a' : 'afa_b'
-            case 'b': return estado >= 2 ? 'afa_b' : 'afa_c'
+            case 'A': return estado >= 2 ? 'afa_a' : 'afa_b'
+            case 'B': return estado >= 2 ? 'afa_b' : 'afa_c'
             default: return 'afa_c'
 
           }
