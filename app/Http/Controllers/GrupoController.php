@@ -246,7 +246,7 @@ class GrupoController extends Controller
 
 
 
-    public function setEstadoClasificacion($grupo_id){
+    private function setEstadoClasificacion($grupo_id){
       $grupo = Grupo::with('equiposPosition')->find($grupo_id);
       
       
@@ -396,7 +396,7 @@ class GrupoController extends Controller
     return $pos <= 8 ? 1 : -1;
   }
 
-  public function getTablaGeneralFase($copa, $fase, $zona = null){
+  private function getTablaGeneralFase($copa, $fase, $zona = null){
     $m = getMain();
     $equipos = EquipoGrupo::with('grupo', 'equipo')
                           ->whereHas('grupo', function ($query) use ($copa, $fase, $zona) {
@@ -421,5 +421,70 @@ class GrupoController extends Controller
                       ->get();
 
     return $equipos;
+  }
+
+  public function tablaGeneral($copa, $fase, $zona = null){
+    $m = getMain();
+    $grupos = Grupo::with([
+                              'equiposPosition.equipo.colorA',
+                              'equiposPosition.equipo.colorB',
+                              'equiposPosition.equipo.colorC',
+                              'equiposPosition.equipo.liga'
+                          ])
+                          ->where('anio', $m->anio)
+                          ->where('copa', $copa)
+                          ->where('fase', $fase);
+      
+      if ($zona) {
+          $grupos = $grupos->where('zona', $zona);
+      }
+
+      $grupos = $grupos->get();
+
+    // Unifica las posiciones de todos los grupos en una tabla general
+    $tablaGeneral = collect();
+
+    foreach ($grupos as $grupo) {
+        $colors = colorGrupo($grupo->grupo);
+        $grupo->a = $colors['a'];
+        $grupo->b = $colors['b'];
+
+        // Combina las posiciones de los equipos en la tabla general
+        $tablaGeneral = $tablaGeneral->merge($grupo->equiposPosition);
+        // $tablaGeneral = $tablaGeneral->merge($grupo->equiposPosition->map(function($eg) use ($grupo) {
+        //     return [
+        //         'grupo' => $grupo->grupo,
+        //         'equipo' => $eg->equipo->nombre,
+        //         'colorA' => $eg->equipo->colorA,
+        //         'colorB' => $eg->equipo->colorB,
+        //         'colorC' => $eg->equipo->,
+        //         'liga' => $eg->equipo->liga,
+        //         'j' => $eg->pj,
+        //         'g' => $eg->pg,
+        //         'e' => $eg->pe,
+        //         'p' => $eg->pp,
+        //         'gf' => $eg->gf,
+        //         'gc' => $eg->gc,
+        //         'd' => $eg->d,
+        //     ];
+        // }));
+    }
+
+    // Opcional: Ordena la tabla general por puntos, diferencia de goles y goles a favor
+        $tablaGeneral = $tablaGeneral->sort(function ($a, $b) {
+            // Orden descendente por puntos
+            if ($a['puntos'] != $b['puntos']) {
+                return $b['puntos'] <=> $a['puntos'];
+            }
+            // Orden ascendente por diferencia de goles
+            if ($a['dif'] != $b['dif']) {
+                return $a['dif'] <=> $b['dif'];
+            }
+            // Orden descendente por goles a favor
+            return $b['gf'] <=> $a['gf'];
+        })->values();
+
+
+    return $tablaGeneral;
   }
 }

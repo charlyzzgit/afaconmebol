@@ -134,7 +134,15 @@
         <b class="lbl mt-2">en competencia</b>
       </div>
     </div>
-    <div class="menu-item col-8 pt-3 pb-3 pl-5 pr-5" data-option="historial">
+    @if($copa == 'sudamericana' || $copa == 'libertadores')
+    <div class="menu-item col-6 p-3" data-option="general">
+      <div class="inner col-12 flex-col-center-center p-2">
+        <i class="icon fa-solid fa-list-ul"></i>
+        <b class="lbl mt-2">tabla general</b>
+      </div>
+    </div>
+    @endif
+    <div class="menu-item @if($copa == 'sudamericana' || $copa == 'libertadores') col-6 p-3 @else col-8 pt-3 pb-3 pl-5 pr-5 @endif" data-option="historial">
       <div class="inner col-12 flex-col-center-center p-2">
         <i class="icon fa-solid fa-clock-rotate-left"></i>
         <b class="lbl mt-2">historial</b>
@@ -264,6 +272,14 @@
           a = 'amarillo'
           b = 'crema'
         break
+      case 'general':
+          a = 'negro'
+          b = 'gris'
+        break
+      }
+
+      if(a == '' || b == ''){
+        return
       }
 
       //setCristal(getEl($(this), 'inner'), color)
