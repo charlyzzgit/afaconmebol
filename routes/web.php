@@ -82,7 +82,7 @@ Route::prefix('home')->group(function(){
 
    Route::get('goleadores/{copa}/{zona?}', [App\Http\Controllers\GoleadoresController::class, 'index'])->name('home.goleadores');
 
-   Route::get('general/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'tablaGeneral'])->name('home.tabla-general');
+   Route::get('general/{copa_zona}/{fase}/{grupo_id?}', [App\Http\Controllers\CopaController::class, 'index'])->name('home.tabla-general');
 });
 
 

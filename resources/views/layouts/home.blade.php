@@ -114,7 +114,7 @@
           position: fixed;
           top:0;
           right:0;
-          z-index: 1000000;
+          z-index: 1000000000;
           width:50px;
           height: 50px;
           cursor: pointer;

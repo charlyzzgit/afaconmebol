@@ -433,7 +433,8 @@ function colorGrupo($gp){
         case 14: return [ 'a' => Color::where('name', 'violeta')->first(), 'b' => Color::where('name', 'rosa')->first()];
         case 15: return [ 'a' => Color::where('name', 'turquesa')->first(), 'b' => Color::where('name', 'celeste')->first()];
         case 16: return [ 'a' => Color::where('name', 'marron')->first(), 'b' => Color::where('name', 'marronclaro')->first()];
-        default: return ['a' => null, 'b' => null];
+        case 100: return ['a' => Color::where('name', 'negro')->first(), 'b' => Color::where('name', 'gris')->first()];
+        default: return ['a' => Color::where('name', 'blanco')->first(), 'b' => Color::where('name', 'gris')->first()];
       }
 }
 

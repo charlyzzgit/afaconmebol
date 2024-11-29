@@ -242,7 +242,8 @@
       var el = $(this),
           option = el.data('option'),
           a = '',
-          b = ''
+          b = '',
+          extra = null
       switch(option){
         case 'partidos':
           a = 'verde'
@@ -275,6 +276,7 @@
       case 'general':
           a = 'negro'
           b = 'gris'
+          extra = 'general'
         break
       }
 
@@ -288,11 +290,31 @@
 
       textColor(getEl(el, 'lbl'), 'blanco', a, .2)
 
-      getEl(el, 'inner').click(function(){
+      var btn = getEl(el, 'inner')
+      if(extra != null){
+        btn.data('extra', extra)
+      }
+      btn.click(function(){
+        var extra = $(this).data('extra')
+
         if(option == 'goleadores'){
           fase = zona
         }
-        nextPage("{{ route('home') }}", ['home', option, copa, fase], true)
+
+        if(option == 'general'){
+          if(copa == 'libertadores'){
+            fase = 0
+          }
+          
+        }
+
+        var params = ['home', option, copa, fase]
+        log('extra', [extra])
+        if(extra !== undefined){
+          params.push(extra)
+        }
+        log('params', params)
+        nextPage("{{ route('home') }}", params, true)
       })
 
       
