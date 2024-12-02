@@ -58,6 +58,8 @@ class GoleadoresController extends Controller
         $goleadores = $goleadores->where('zona', $zona);
       }
 
+
+      
       $goleadores = $goleadores->groupBy('equipo_id')
                                ->orderBy('goles', 'desc')
                                ->orderBy('updated_at', 'desc')
@@ -67,7 +69,7 @@ class GoleadoresController extends Controller
                                  $g->equipo = Equipo::with(['colorA', 'colorB', 'colorC'])->find($g->equipo_id);
                                  return $g;
                                });
-
+     
 
       return view('home.goleadores', compact('goleadores', 'copa', 'zona'));
 

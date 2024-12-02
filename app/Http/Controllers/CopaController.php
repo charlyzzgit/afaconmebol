@@ -18,11 +18,17 @@ class CopaController extends Controller
     $m = getMain();
     $copa = copaZona($copa_zona, 0);
     $zona = copaZona($copa_zona, 1);
+    // if($zona){
+    //   $zona = strtoupper($zona);
+    // }
     //dd($grupo_id);
     if($grupo_id == 'general'){
 
       $grupos = json_encode((new GrupoController())->getTablaGeneral($m->anio, $copa, $fase, $zona));
 
+    }else if($grupo_id == 'anual'){
+
+      $grupos = json_encode((new GrupoController())->getTablaAnual());
     }else{
       if($fase == '::'){
         $fase = (new GrupoController())->getLastFase($copa, $m->anio, $zona);
@@ -32,6 +38,8 @@ class CopaController extends Controller
     }
     return view('home.copa', compact('copa', 'fase', 'zona', 'grupos'));
    }
+
+
 
    public function newFase(Request $request){
      return processTransaction(function() use($request){

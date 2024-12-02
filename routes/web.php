@@ -83,6 +83,10 @@ Route::prefix('home')->group(function(){
    Route::get('goleadores/{copa}/{zona?}', [App\Http\Controllers\GoleadoresController::class, 'index'])->name('home.goleadores');
 
    Route::get('general/{copa_zona}/{fase}/{grupo_id?}', [App\Http\Controllers\CopaController::class, 'index'])->name('home.tabla-general');
+
+   Route::get('anual', [App\Http\Controllers\GrupoController::class, 'getTablaAnual'])->name('home.tabla-anual');
+
+   Route::get('candidatos/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'candidatos'])->name('home.candidatos');
 });
 
 

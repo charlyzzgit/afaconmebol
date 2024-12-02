@@ -435,8 +435,11 @@ class GrupoController extends Controller
                 ->whereHas('grupo', function($query) use ($anio, $copa, $fase, $zona) {
                 $query->where('anio', $anio)
                       ->where('copa', $copa)
-                      ->where('fase', $fase)
-                      ->where('zona', $zona);
+                      ->where('fase', $fase);
+                if($zona){
+                  $query = $query->where('zona', $zona);
+                }
+                      
             })->orderBy('pos')
               ->orderBy('pts', 'desc')
               ->orderBy('d', 'desc')
@@ -467,4 +470,136 @@ class GrupoController extends Controller
     ];
         
   }
+
+  public function getTablaAnual(){
+    
+    $colors = colorGrupo(1000);
+    $m = getMain();
+    $anio = $m->anio;
+    $eqs = EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC'
+                ])
+                ->select(
+                          'equipo_id',
+                          'estado',
+                          DB::raw('SUM(j) as j'),
+                          DB::raw('SUM(g) as g'),
+                          DB::raw('SUM(e) as e'),
+                          DB::raw('SUM(p) as p'),
+                          DB::raw('SUM(gf) as gf'),
+                          DB::raw('SUM(gc) as gc'),
+                          DB::raw('SUM(gv) as gv'),
+                          DB::raw('SUM(d) as d'),
+                          DB::raw('SUM(pts) as pts')
+                        )
+                ->whereHas('grupo', function($query) use ($anio) {
+                $query->where('anio', $anio)
+                      ->where('copa', 'afa');       
+            })->groupBy('equipo_id')
+              ->orderBy('pos')
+              ->orderBy('pts', 'desc')
+              ->orderBy('d', 'desc')
+              ->orderBy('gf', 'desc')
+              ->orderBy('gc')
+              ->orderBy('gv')
+              ->orderBy('g', 'desc')
+              ->orderBy('p')
+              ->get()
+              ->map(function($e, $index){
+                $e->pos = $index + 1;
+                $e->estado = 0;
+                return $e;
+              });
+      
+    $grupos = json_encode([
+                  [
+                    'anio' => $anio,
+                    'a' => $colors['a'],
+                    'b' => $colors['b'],
+                    'copa' => 'afa',
+                    'equipos_position' => $eqs,
+                    'fase' => 0,
+                    'grupo' => 'tabla anual',
+                    'zona' => null,
+                  
+                  ]
+
+    ]);
+   
+     return view('home.copa', ['copa' => 'afa', 'fase' => 0, 'zona' => null, 'grupos' => $grupos]);   
+  }
+
+  public function candidatos($copa, $zona = null){
+    
+    $colors = colorGrupo(200);
+    $m = getMain();
+    $anio = $m->anio;
+    $eqs = EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC'
+                ])
+                ->select(
+                          'equipo_id',
+                          'estado',
+                          DB::raw('SUM(j) as j'),
+                          DB::raw('SUM(g) as g'),
+                          DB::raw('SUM(e) as e'),
+                          DB::raw('SUM(p) as p'),
+                          DB::raw('SUM(gf) as gf'),
+                          DB::raw('SUM(gc) as gc'),
+                          DB::raw('SUM(gv) as gv'),
+                          DB::raw('SUM(d) as d'),
+                          DB::raw('SUM(pts) as pts')
+                        )
+                ->whereHas('grupo', function($query) use ($anio, $copa, $zona) {
+                $query->where('anio', $anio)
+                      ->where('copa', $copa);  
+
+                 if($zona){
+                    $query->where('zona', $zona);
+                 }     
+            })->groupBy('equipo_id')
+              ->orderBy('pos')
+              ->orderBy('pts', 'desc')
+              ->orderBy('d', 'desc')
+              ->orderBy('gf', 'desc')
+              ->orderBy('gc')
+              ->orderBy('gv')
+              ->orderBy('g', 'desc')
+              ->orderBy('p')
+              ->get()
+              ->map(function($e, $index){
+                $e->pos = $index + 1;
+                $e->estado = 0;
+                return $e;
+              });
+
+    $maxPts = $eqs->max('pts');
+    $eqs = $eqs->filter(function($e) use ($maxPts) {
+        return $e->pts == $maxPts;
+    });
+      
+    $grupos = json_encode([
+                  [
+                    'anio' => $anio,
+                    'a' => $colors['a'],
+                    'b' => $colors['b'],
+                    'copa' => $copa,
+                    'equipos_position' => $eqs,
+                    'fase' => 0,
+                    'grupo' => 'candidatos',
+                    'zona' => $zona,
+                  
+                  ]
+
+    ]);
+   
+     return view('home.copa', ['copa' => $copa, 'fase' => 0, 'zona' => null, 'grupos' => $grupos]);   
+  }
+
+
+  
 }

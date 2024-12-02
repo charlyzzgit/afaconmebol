@@ -1042,6 +1042,7 @@ function getTableCell(text, isheader, first){
         var icon = $('<img>')
         icon.css({height: '20px'}).prop('src', ASSET + 'default/' + text.value + '.png')
         cell.append(icon)
+        cell.addClass('estado')
       }else{
         cell.html(text.value)
       }

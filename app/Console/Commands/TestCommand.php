@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GrupoController;
 use App\Classes\Admin;
+use App\Classes\AutoPartido;
 use App\Classes\Sorteo;
 use DB;
 use \Carbon\Carbon;
@@ -51,11 +52,17 @@ class TestCommand extends Command
     {
        //$eqs = (new GrupoController())->getTablaGeneralFase('afa', -2);
        //dd($eqs->toArray());
-      $this->updateStateGrupos('libertadores', 0);
+      //$this->updateStateGrupos('libertadores', 0);
 
       //$s = new Sorteo('libertadores', 0);
       //dd($s->sortear());
       //dd(getHorarioAfa(24));
+      $p = \App\Models\Partido::with('grupo.equiposPosition')->find(256);
+      $p->local = \App\Models\Equipo::find($p->loc_id);
+      $p->visitante = \App\Models\Equipo::find($p->vis_id);
+      $ap = new AutoPartido($p);
+
+      $ap->jugar();
     }
 
     private function updateStateGrupos($copa, $fase){

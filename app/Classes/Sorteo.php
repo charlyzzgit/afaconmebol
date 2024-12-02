@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Main;
 use App\Models\Calendar;
 use App\Models\Equipo;
+use App\Http\Controllers\GrupoController;
 use DB;
 
 
@@ -139,7 +140,30 @@ class Sorteo{
     }
 
     private function sorteoAfaAB(){
-      
+      $m = getMain();
+      $eqs = (new GrupoController())->getTablaGeneral($m->anio, $this->copa, $this->fase);
+      $bombo1 = $eqs->filter(function($e){
+          return $e->pos == 1;
+      });
+
+      $bombo2 = $eqs->filter(function($e){
+          return $e->pos == 2;
+      });
+
+      $bombo3_1 = $eqs->filter(function($e) {
+          return $e->pos == 3;
+      })->take(8);
+
+      $bombo3_2 = $eqs->filter(function($e) {
+          return $e->pos == 3;
+      })->slice(-4);
+
+      $bombo3 = $bombo3_1->concat($bombo3_2);
+
+      $bombo4 = $eqs->filter(function($e){
+          return $e->pos == 4;
+      });
+
     }
 
     private function nextPos($grupos){

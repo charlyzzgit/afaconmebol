@@ -187,10 +187,11 @@ class PartidoController extends Controller
                             $colors = colorGrupo($row->grupo->grupo);
                             $row->a = $colors['a'];
                             $row->b = $colors['b'];
+                            $row->detalle = $row->detalle ? json_decode($row->detalle) : [];
                             return $row;
                          });
 
-
+                        
     return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos'));
   }
 

@@ -61,6 +61,28 @@
       font-size: 30px;
       border-radius: 10px;
     }
+
+    #modal-detalle{
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top:0;
+      left: 0;
+      z-index: 100000;
+      background: rgba(0,0,0,.7);
+      visibility: hidden;
+    }
+
+    #modal-detalle .inner{
+      border-radius: 5px;
+      background: white;
+      overflow: hidden;
+    }
+
+    #modal-detalle ul{
+      border-radius: 5px;
+     
+    }
 </style>
 <div class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
@@ -80,12 +102,29 @@
 </div>
 
 
+<div id="modal-detalle" class="flex-row-center-center">
+  <div class="inner col-11 flex-col-start-center">
+    <div class="detalle-bar col-12 flex-row-between-center p-1">
+      <img class="d-loc" src="{{ asset('resources/default/escudo.png') }}" height="30">
+      <b>resumen</b>
+      <img class="d-vis" src="{{ asset('resources/default/escudo.png') }}" height="30">
+    </div>
+    <div class="col-12 p-1">
+      <ul id="detalle-list" class="col-12 flex-col-start-center p-1 m-0"></ul>
+    </div>
+    <div class="col-12 flex-row-center-center p-1">
+      <button class="btn-close btn">cerrar</button>
+    </div>
+  </div>
+</div>
+
+
 <script>
    var partidos = {!! $partidos !!},
        copa = '{{ $copa }}',
        fase = parseInt('{{ $fase }}'),
        zona = '{{ $zona }}',
-       src_copa = 'default/' + copa + '.png',
+       src_copa = 'default/' + copa + (zona != null ? '_' + zona : '') + '.png',
        ul = $('#list'),
        E = null
 
@@ -94,7 +133,17 @@
     @endisset
 
    
-   log('partidos', [partidos])
+   log('partidos', [src_copa, partidos])
+
+   function getPartidoFromList(id){
+     var p = null 
+     $.each(partidos, function(i, partido){
+       if(partido.id == id){
+        p = partido
+       }
+     })
+     return p
+   }
 
   function getLiPartido(p){
     var li = $('<li class="partido col-12 flex-col-start-center mb-2">\
@@ -162,7 +211,7 @@
         change = p.is_jugado ? cambiar(p.local, p.visitante) : p.visitante.visitante
 
     setBgGradient(header, cola.rgb, colb.rgb, cola.rgb)
-    setImageCopa(copa, p.copa)
+    setImageCopa(copa, p.copa + (p.zona != null ? '_' + p.zona : ''))
     setImageFlag(flag, p.local.liga.bandera)
     copafase.html([p.copa, getNameFase(p.copa, p.fase, p.zona)].join(' - '))
     grupofecha.html([grupoKey(p.is_define) + ' ' + p.grupo.grupo, getNameFecha(p.fase, p.fecha)].join(' - '))
@@ -199,14 +248,28 @@
 
     borderColor(body, p.local.color_b.rgb, 1)
 
-    if(p.is_judado){
+    if(p.is_jugado){
       vs.css({visibility: 'hidden'})
+      if(p.pa == 0 && p.pb == 0){
+        pa.css({visibility: 'hidden'})
+        pb.css({visibility: 'hidden'})
+      }
+      gl.html(p.gl)
+      gv.html(p.gv)
+      pa.html('(' + p.pa + ')')
+      pb.html('(' + p.pb + ')')
     }else{
       gl.css({visibility: 'hidden'})
       gv.css({visibility: 'hidden'})
       pa.css({visibility: 'hidden'})
       pb.css({visibility: 'hidden'})
     }
+
+    estadio.data('id', p.id).click(function(){
+      var id = $(this).data('id'),
+          partido = getPartidoFromList(id)
+      detalle(partido)
+    })
 
     return li
   }
@@ -219,9 +282,68 @@
     preload()
   }
 
+  function detalle(p){
+    
+    var m = $('#modal-detalle'),
+        bar = getEl(m, 'detalle-bar'),
+        inner = getEl(m, 'inner'),
+        l = getEl(m, 'd-loc'),
+        v = getEl(m, 'd-vis'),
+        ul = getEl(m, 'detalle-list', true),
+        btn = getEl(m, 'btn-close'),
+        detalle = p.detalle != null ? JSON.parse(p.detalle) : []
+
+    setEquipoUI(bar, p.local, 1)
+    bg(inner, p.local.color_a.rgb)
+    bg(btn, p.local.color_b.rgb)
+    bg(ul, p.local.color_b.rgb)
+
+    setText(btn, p.local.color_a, p.local.color_b, .05)
+
+    setText(bar, p.local.color_b, bcColor(p.local), .05)
+
+    btn.unbind('click').click(function(){
+      m.fadeOut(150)
+    })
+
+    setImageEquipo(l, p.local, 'escudo')
+    setImageEquipo(v, p.visitante, 'escudo')
+
+    ul.empty()
+    $.each(detalle, function(i, d){
+      var eq = d.equipo_id == p.loc_id ? p.local : p.visitante
+      ul.append(getLiDetalle(d, eq))
+    })
+
+
+    m.fadeIn(150)
+
+  }
+
+  function getLiDetalle(d, eq){
+    
+    var li = $('<li class="detalle col-12 flex-row-start-center p-1 mb-1">\
+                <b class="minuto"></b>\
+                <b class="tiempo ml-1"></b>\
+                <img class="escudo ml-1" height="20">\
+                <b class="jugador ml-1"></b>\
+                <b class="gol ml-1"></b>\
+              </li>')
+       
+    li.find('.minuto').html(d.minuto + "'")
+    li.find('.tiempo').html(d.tiempo + ' t')
+    li.find('.jugador').html('Nº ' + d.jugador)
+    li.find('.gol').html(d.gol)
+    setImageEquipo(li.find('.escudo'), eq, 'escudo')
+    setEquipoUI(li, eq, .5)
+    setText(li, eq.color_b, bcColor(eq), .05)
+    return li
+  }
+
 
    $(function(){
-    setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'partidos')
+    $('#modal-detalle').css('visibility', 'visible').hide()
+    setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'partidos', zona)
 
     if(E != null){
       setEquipoUI($('#box-equipo'), E, 1)

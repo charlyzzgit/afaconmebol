@@ -3,7 +3,7 @@
       font-size: 25px;
     }
 
-    .escudo, .jugador{
+    .escudo, .jugador, .h-estado{
       height: 30px
     }
 
@@ -134,6 +134,20 @@
         <b class="lbl mt-2">en competencia</b>
       </div>
     </div>
+    @if($copa == 'afa')
+      <div class="menu-item col-6 p-3" data-option="general">
+        <div class="inner col-12 flex-col-center-center p-2">
+          <i class="icon fa-solid fa-list-ul"></i>
+          <b class="lbl mt-2">tabla general</b>
+        </div>
+      </div>
+      <div class="menu-item col-6 p-3" data-option="anual">
+        <div class="inner col-12 flex-col-center-center p-2">
+          <i class="icon fa-solid fa-list-ul"></i>
+          <b class="lbl mt-2">tabla anual</b>
+        </div>
+      </div>
+    @endif
     @if($copa == 'sudamericana' || $copa == 'libertadores')
     <div class="menu-item col-6 p-3" data-option="general">
       <div class="inner col-12 flex-col-center-center p-2">
@@ -171,10 +185,14 @@
       fase = parseInt('{{ $fase }}'),
       zona = '{{ $zona }}',
       ul = $('#list'),
-      src_copa = 'default/' + copa + '.png'
-  log('grupos', [grupos])
+      src_copa = 'default/' + copa + (zona != null && zona != '' ? '_' + zona : '') + '.png',
+      collapse = true,
+      routeName = "{{ Route::currentRouteName() }}",
+      title = [copa, getNameFase(copa, fase, zona)].join(' - '),
+      group_order = 1
+  log('grupos', [src_copa, grupos])
 
- 
+   log('route', ["{{  Route::currentRouteName() }}"])
   
   
   function getLiGrupo(g){
@@ -184,9 +202,9 @@
               </li>'),
         bar = getEl(li, 'bar'),
         ul = getEl(li, 'equipos'),
-        prefix = g.equipos_position.length == 2 ? 'llave ' : 'grupo '
+        prefix = isNaN(g.grupo) ? '' : (g.equipos_position.length == 2 ? 'llave ' : 'grupo ')
     $.each(g.equipos_position, function(i, e){
-       li.find('.equipos').append(getLiEquipo(e))
+       li.find('.equipos').append(getLiEquipo(e, i))
     })
     
     bar.html(prefix + g.grupo)
@@ -197,13 +215,13 @@
     
     setCristalRGB(ul, g.a, g.b)
 
-  
+    li.data('grupo', g.grupo)
 
     return li
   }
 
 
-  function getLiEquipo(eg){
+  function getLiEquipo(eg, index){
     var li = $('<li class="equipo col-12 flex-col-start-center pl-1 pr-1 pt-3 pb-3 mb-1">\
                 <div class="col-12 flex-row-between-center">\
                   <div class="flex-row-start-center">\
@@ -211,11 +229,13 @@
                     <b class="name ml-1"></b>\
                   </div>\
                   <img class="jugador">\
+                  <img class="h-estado">\
                 </div>\
               </li>'),
          escudo = getEl(li, 'escudo'),
           name = getEl(li, 'name'),
-         jugador = getEl(li, 'jugador')
+         jugador = getEl(li, 'jugador'),
+         pos = index + 1
 
     setImageEquipo(escudo, eg.equipo, 'escudo')
     setImageEquipo(jugador, eg.equipo, 'local')
@@ -223,8 +243,114 @@
 
     setEquipoUI(li, eg.equipo)
     eg.estado = getEstado(eg.estado, copa, fase, zona)
-    log('estado', eg.estado)
+    li.find('.h-estado').prop('src', ASSET + 'default/' + eg.estado + '.png').hide()
+    //log('estado', eg.estado)
     li.append(getTable(eg))
+
+    var est = getEl(li, 'estado'),
+          icon = est.find('img'),
+          src = null
+    if(routeName.includes('general')){
+      
+      
+      switch(copa){
+        case 'libertadores':
+          if(pos <= 32){
+            src = 'default/libertadores.png'
+          }else if(pos > 32 && pos <= 48){
+            src = 'default/sudamericana.png'
+          }else{
+            src = 'default/eli.png'
+          }
+        break
+        case 'sudamericana':
+          if(pos <= 16){
+            src = 'default/sudamericana.png'
+          }else{
+            src = 'default/eli.png'
+          }
+        break
+        case 'afa':
+          switch(fase){
+            case -2:
+              if(pos <= 32){
+                src = 'default/afa_a.png'
+              }else{
+                src = 'default/afa_b.png'
+              }
+            break
+            case -1:
+              if(zona == 'A'){
+                if(pos <= 16){
+                  src = 'default/afa_a.png'
+                }else if(pos > 16 && pos <= 24){
+                  src = 'default/afa_b.png'
+                }else{
+                  src = 'default/afa_c.png'
+                }
+              }else{
+                if(pos <= 8){
+                  src = 'default/afa_b.png'
+                }else{
+                  src = 'default/afa_c.png'
+                }
+              }
+            break
+           case 0:
+              if(zona == 'A'){
+                if(pos <= 8){
+                  src = 'default/afa_a.png'
+                }else{
+                  src = 'default/afa_b.png'
+                }
+              }else if(zona == 'B'){
+                if(pos <= 8){
+                  src = 'default/afa_b.png'
+                }else{
+                  src = 'default/afa_c.png'
+                }
+              }else{
+                if(pos <= 8){
+                  src = 'default/afa_c.png'
+                }else{
+                  src = 'default/eli.png'
+                }
+              }
+            break
+           case 1:
+              if(zona == 'A'){
+                if(pos <= 4){
+                  src = 'default/afa_a.png'
+                }else{
+                  src = 'default/afa_b.png'
+                }
+              }else if(zona == 'B'){
+                if(pos <= 8){
+                  src = 'default/afa_b.png'
+                }else{
+                  src = 'default/afa_c.png'
+                }
+              }else{
+                if(pos <= 8){
+                  src = 'default/afa_c.png'
+                }else{
+                  src = 'default/eli.png'
+                }
+              }
+            break
+          }
+        break
+      }
+      if(src != null){
+        icon.prop('src', ASSET + src)
+      }
+      
+    }
+
+    if(routeName.includes('candidatos')){
+      setImageCopa(icon, copa)
+      setImageCopa(li.find('.h-estado'), copa)
+    }
 
     li.find('.jugador').data({equipo_id: eg.equipo_id, grupo_id: eg.grupo_id}).click(function(){
       var equipo_id = $(this).data('equipo_id'),
@@ -273,12 +399,24 @@
           a = 'amarillo'
           b = 'crema'
         break
-      case 'general':
+        case 'general':
           a = 'negro'
           b = 'gris'
           extra = 'general'
         break
+        case 'anual':
+          a = 'azuloscuro'
+          b = 'celeste'
+          
+        break
+      case 'candidatos':
+          a = 'violeta'
+          b = 'rosa'
+          
+        break
+
       }
+    
 
       if(a == '' || b == ''){
         return
@@ -296,19 +434,32 @@
       }
       btn.click(function(){
         var extra = $(this).data('extra')
-
+        var params = []
         if(option == 'goleadores'){
-          fase = zona
+         
+          
+          nextPage("{{ route('home') }}", ['home', option, copa, zona], true)
+          return
+        }
+
+        if(option == 'candidatos'){
+         
+          
+          nextPage("{{ route('home') }}", ['home', option, copa, zona], true)
+          return
         }
 
         if(option == 'general'){
-          if(copa == 'libertadores'){
+          if(copa == 'libertadores' || copa == 'sudamericana'){
             fase = 0
           }
           
         }
-
-        var params = ['home', option, copa, fase]
+        var z = copa == 'afa' ? '-' + zona : ''
+        params = ['home', option, copa + z, fase]
+        if(option == 'anual'){
+          params = ['home', 'anual']
+        }
         log('extra', [extra])
         if(extra !== undefined){
           params.push(extra)
@@ -356,9 +507,38 @@
 
   }
 
+  function toGroup(dir){
+    group_order+= dir
+    if(group_order < 1){
+      group_order = 1
+    }
+
+    if(group_order > grupos.length){
+      group_order = grupos.length
+    }
+
+    log('order', [group_order])
+
+    ul.find('.grupo').each(function(){
+      var li = $(this),
+          gp = li.data('grupo')
+      if(gp == group_order){
+        ul.animate({scrollTop: li.position().top + ul.scrollTop()}, 150)
+      }
+    })
+  }
+
 
    $(function(){
-    setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'grupos', zona)
+    if(routeName.includes('general')){
+      title = [copa, 'tabla general'].join(' - ')
+    }
+
+    if(routeName.includes('anual')){
+      title = [copa, 'tabla anual'].join(' - ')
+      src_copa = 'default/escudo_afa.png'
+    }
+    setBar($('#bar'), src_copa, title, getColorCopa(copa), 'grupos', zona)
     setMenu()
     if(fase == 5){
       if(grupos.length != 0){
@@ -373,16 +553,51 @@
         nextPage("{{ route('home') }}", ['home', 'inicio'])
       }))
 
-    footer.append(getBtnFooter('verde', null, 'fa fa-th', function(){
-        var state = $('#menu-copa').data('state')
-        if(state == 'off'){
-          $('#menu-copa').data('state', 'on')
-          $('#menu-copa').animate({bottom: 0}, 150)
-        }else{
-          $('#menu-copa').data('state', 'off')
-          $('#menu-copa').animate({bottom: '-1000px'}, 150)
-        }
+    if(routeName != 'home.copa'){
+
+      footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
+        goBack(true)
       }))
+
+    }
+    if(routeName == 'home.copa'){
+      footer.append(getBtnFooter('verde', null, 'fa fa-th', function(){
+          var state = $('#menu-copa').data('state')
+          if(state == 'off'){
+            $('#menu-copa').data('state', 'on')
+            $('#menu-copa').animate({bottom: 0}, 150)
+          }else{
+            $('#menu-copa').data('state', 'off')
+            $('#menu-copa').animate({bottom: '-1000px'}, 150)
+          }
+        }))
+    }
+
+    footer.append(getBtnFooter('rojo', null, 'fa-solid fa-arrows-up-down', function(){
+        if(collapse){
+          $('.equipo-table').fadeOut(150)
+          $('.h-estado').show()
+          $('.jugador').hide()
+          $(this).css('color', getRgb(parseColor('verde').rgb))
+        }else{
+          $('.equipo-table').fadeIn(150)
+          $('.h-estado').hide()
+          $('.jugador').show()
+          $(this).css('color', getRgb(parseColor('rojo').rgb))
+        }
+        collapse = !collapse
+      }))
+
+    if(routeName == 'home.copa'){
+
+      footer.append(getBtnFooter('negro', null, 'fas fa-circle-down', function(){
+         toGroup(1)
+      }))
+
+      footer.append(getBtnFooter('negro', null, 'fas fa-circle-up', function(){
+          toGroup(-1)
+        }))
+    }
 
     
 

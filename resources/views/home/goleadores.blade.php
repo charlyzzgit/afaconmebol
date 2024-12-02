@@ -5,7 +5,7 @@
       font-size: 25px;
     }
 
-    .goleador, .jugador, .goleador, .escudo{
+    .jugador, .escudo{
       height: 40px;
     }
 </style>
@@ -26,9 +26,9 @@
       copa = '{{ $copa }}',
       zona = '{{ isset($zona) ? $zona : null }}',
       ul = $('#list'),
-      src_copa = 'default/' + copa + '.png'
+      src_copa = 'default/' + copa + (zona != null ? '_' + zona : '') + '.png'
 
-  log('goleadores', [goleadores])
+  log('goleadores', [zona,src_copa, goleadores])
   function getLiGoleador(g){
     var li = $('<li class="goleador col-12 flex-row-between-center p-2 mb-1">\
                   <div class="col-10 flex-row-start-center">\
@@ -45,7 +45,7 @@
     setImageEquipo(li.find('.escudo'), equipo, 'escudo')
     setImageEquipo(li.find('.jugador'), equipo, 'local')
     setEquipoUI(li, equipo)
-    
+    setText(li.find('.goles'), equipo.color_b, bcColor(equipo), .05)
     
     return li
   }
@@ -67,7 +67,7 @@
       footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
         goBack(true)
       }))
-    setBar($('#bar'), src_copa, copa, 'celeste', 'goleadores')
+    setBar($('#bar'), src_copa, copa + (zona != null ? (' - ' + zona) : ''), 'celeste', 'goleadores', zona)
   setCristal(ul, 'celeste')
      listar()
    })
