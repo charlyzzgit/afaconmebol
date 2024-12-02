@@ -54,15 +54,15 @@ class TestCommand extends Command
        //dd($eqs->toArray());
       //$this->updateStateGrupos('libertadores', 0);
 
-      //$s = new Sorteo('libertadores', 0);
-      //dd($s->sortear());
+      $s = new Sorteo('afa', -2);
+      dd($s->sortear());
       //dd(getHorarioAfa(24));
-      $p = \App\Models\Partido::with('grupo.equiposPosition')->find(256);
-      $p->local = \App\Models\Equipo::find($p->loc_id);
-      $p->visitante = \App\Models\Equipo::find($p->vis_id);
-      $ap = new AutoPartido($p);
+      // $p = \App\Models\Partido::with('grupo.equiposPosition')->find(256);
+      // $p->local = \App\Models\Equipo::find($p->loc_id);
+      // $p->visitante = \App\Models\Equipo::find($p->vis_id);
+      // $ap = new AutoPartido($p);
 
-      $ap->jugar();
+      // $ap->jugar();
     }
 
     private function updateStateGrupos($copa, $fase){

@@ -141,7 +141,9 @@ class Sorteo{
 
     private function sorteoAfaAB(){
       $m = getMain();
-      $eqs = (new GrupoController())->getTablaGeneral($m->anio, $this->copa, $this->fase);
+
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, $this->fase);
+     dd('llego');
       $bombo1 = $eqs->filter(function($e){
           return $e->pos == 1;
       });
@@ -163,6 +165,8 @@ class Sorteo{
       $bombo4 = $eqs->filter(function($e){
           return $e->pos == 4;
       });
+
+      //dd($bombo1[0]->equipo->name);
 
     }
 
