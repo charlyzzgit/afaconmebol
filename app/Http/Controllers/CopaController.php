@@ -50,12 +50,28 @@ class CopaController extends Controller
          $fase = (new GrupoController())->getNextFase($copa);
          
          $s = new Sorteo($copa, $fase);
-         $grupos = $s->sortear();
-         foreach ($grupos as $g => $grupo) {
-            $grupo_id = (new GrupoController())->create($g + 1, $grupo, $copa, $fase, $s->getZona());
-            (new PartidoController())->create($grupo_id);
+         $sorted = $s->sortear();
+         foreach($sorted as $z => $grupos){
+          $zona = null;
+           if(count($sorted) > 1){
+              switch($z){
+                case 0:
+                  $zona = 'A';
+                break;
+                case 1:
+                  $zona = 'B';
+                break;
+                default:
+                  $zona = 'C';
+                break;
+              }
+           }
+           foreach ($grupos as $g => $grupo) {
+              $grupo_id = (new GrupoController())->create($g + 1, $grupo, $copa, $fase, $zona);
+              (new PartidoController())->create($grupo_id);
+           }
+           (new PartidoController())->cronograma($copa, $fase);
          }
-         (new PartidoController())->cronograma($copa, $fase);
        }
 
      }, 'Copa '. $request->copa.' sorteada', 'Error de sorteo');
@@ -68,10 +84,11 @@ class CopaController extends Controller
        (new PartidoController())->updatePartido($request);
        (new GoleadoresController())->saveGoleadores($request);
        
-       $p = (new PartidoController())->nextPartido($request->anio, $request->copa, $request->fase, $request->fecha, $request->zona);
+       $p = (new PartidoController())->nextPartido($request->anio, $request->copa, $request->fase, $request->fecha);
        if(!$p){
          (new Admin())->processed();
+
        }
-     }, 'Grupo, partido, goleadores actualizados', 'Error a guardar');
+     }, 'copa: '.$request->copa.' - fase: '.$request->fase.' - fecha: '.$request->fecha.' - zona: '.$request->zona, 'Error a guardar');
    }
 }

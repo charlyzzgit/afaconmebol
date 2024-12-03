@@ -643,6 +643,74 @@ function getDiasAfa($count){
                 ]
                 
               ];
+      case 16: return [
+                
+                [
+                  'dia' => 4,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 4,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 5,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 14
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 6,
+                  'hora' => 21
+                ],
+                [
+                  'dia' => 7,
+                  'hora' => 17
+                ],
+                [
+                  'dia' => 7,
+                  'hora' => 21
+                ]
+                
+              ];
     case 20: return [
                 
                 [
@@ -908,7 +976,7 @@ function getWeeksDay($d, $h, $count){
 function getHorarioAfa($count){
   $jornadas = [];
   switch($count){
-    case 24: case 20:
+    case 24: case 20: case 16:
       $jornadas = array_merge($jornadas, getWeeksDay(6, 21, $count));
       $jornadas = array_merge($jornadas, getWeeksDay(5, 21, $count));
       $jornadas = array_merge($jornadas, getWeeksDay(6, 17, $count));

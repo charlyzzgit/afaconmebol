@@ -25,6 +25,9 @@ class Admin{
     }
 
     public function processed(){
+      // if($this->calendar->id > 30){
+      //   return;
+      // }
       $this->calendar->procesado = true;
       $this->calendar->save();
     }
@@ -36,6 +39,7 @@ class Admin{
       $next = (new PartidoController())->nextPartido($this->main->anio, $namecopa, $this->calendar->fase, $this->calendar->fecha, null); //zona = getZona(copa)
       
       $data = [
+                'calendar_id' => $this->calendar->id,
                 'action' => $this->calendar->action,
                 'redirect' => $this->redirect_params,
                 'anio' => $this->main->anio,
