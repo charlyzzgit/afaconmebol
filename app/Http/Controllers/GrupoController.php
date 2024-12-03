@@ -475,7 +475,8 @@ class GrupoController extends Controller
     $eqs = EquipoGrupo::with([
                       'equipo.colorA',
                       'equipo.colorB',
-                      'equipo.colorC'
+                      'equipo.colorC',
+                      'equipo'
                 ])
                 ->whereHas('grupo', function($query) use ($anio, $copa, $fase, $zona) {
                 $query->where('anio', $anio)
@@ -493,11 +494,12 @@ class GrupoController extends Controller
               ->orderBy('gv')
               ->orderBy('g', 'desc')
               ->orderBy('p')
-              ->get()
-              ->map(function($e, $index){
-                $e->pos = $index + 1;
-                return $e;
-              });
+              ->get();
+              // ->map(function($e, $index){
+              //   $e->pos = $index + 1;
+
+              //   return $e;
+              // });
 
       return $eqs;
       

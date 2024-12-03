@@ -53,6 +53,7 @@ class Sorteo{
     }
 
     public function sortear(){
+
       switch($this->copa){
         case 'afa': return $this->sorteoAfa();
         case 'argentina' : return $this->sorteoArgentina();
@@ -89,6 +90,7 @@ class Sorteo{
     }
 
     private function sorteoAfaPreliminar(){
+
       $repeat = 0;
       $this->zona = 'A';
       $fin = false;
@@ -142,32 +144,39 @@ class Sorteo{
     private function sorteoAfaAB(){
       $m = getMain();
 
-      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, $this->fase);
-     dd('llego');
-      $bombo1 = $eqs->filter(function($e){
-          return $e->pos == 1;
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, $this->fase - 1);
+      
+      
+
+      $levels = getNivelesByPts($eqs);
+      $d = 0;
+      $a = $this->getLote($eqs, $d, $d+=8, $levels);
+      $b = $this->getLote($eqs, $d, $d+=8, $levels);
+      $b = array_reverse($b);
+      $c = $this->getLote($eqs, $d, $d+=8, $levels);
+      $d = $this->getLote($eqs, $d, $d+=8, $levels);
+      $d = array_reverse($d);
+      dd($a, $b, $c, $d);
+    }
+
+
+
+    private function getLote($eqs, $desde, $hasta, $levels){
+      $equipos = [];
+      for($i = $desde; $i < $hasta; $i++){
+        $equipos[] = [
+          'id' => $eqs[$i]->equipo_id, 
+          'name' => $eqs[$i]->equipo,
+          'nivel' => getNivelByPts($eqs[$i]->pts, $levels)
+        ];
+      }
+      return $equipos;
+    }
+
+    private function filterEquipo($eqs){
+      return $eqs->map(function($e){
+        return ['equipo' => $e->getRelationValue('equipo')->name, 'pts' => $e->pts];
       });
-
-      $bombo2 = $eqs->filter(function($e){
-          return $e->pos == 2;
-      });
-
-      $bombo3_1 = $eqs->filter(function($e) {
-          return $e->pos == 3;
-      })->take(8);
-
-      $bombo3_2 = $eqs->filter(function($e) {
-          return $e->pos == 3;
-      })->slice(-4);
-
-      $bombo3 = $bombo3_1->concat($bombo3_2);
-
-      $bombo4 = $eqs->filter(function($e){
-          return $e->pos == 4;
-      });
-
-      //dd($bombo1[0]->equipo->name);
-
     }
 
     private function nextPos($grupos){

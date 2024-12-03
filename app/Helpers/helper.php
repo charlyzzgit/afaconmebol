@@ -461,6 +461,43 @@ function getNivelCopa($liga_id){
   }
 }
 
+function getNivelesByPts($eqs){
+  $pts = [];
+  $level = 0;
+  $niveles = [];
+  foreach($eqs as $e){
+    if(!in_array($e->pts, $pts)){
+      $pts[] = $e->pts;
+    }
+  }
+
+  sort($pts);
+
+  foreach($pts as $p){
+    $niveles[] = ['pts' => $p, 'nivel' => $level++];
+  }
+
+
+
+  return $niveles;
+
+}
+
+function getNivelByPts($pts, $array){
+  $level = array_filter($array, function($item) use ($pts) {
+    return $item['pts'] == $pts;
+  });
+
+  if ($level) {
+      return array_values($level)[0]['nivel']; // Devuelve el valor de "
+  }
+
+  return 0;
+
+}
+
+
+
 function cantGrupos($grupo){
   $count = \App\Models\Grupo::where('anio', $grupo->anio)
                             ->where('copa', $grupo->copa)
