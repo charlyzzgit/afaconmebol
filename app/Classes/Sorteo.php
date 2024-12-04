@@ -85,6 +85,7 @@ class Sorteo{
       switch($this->fase){
         case -2: return $this->sorteoAfaPreliminar();
         case -1: return $this->sorteoAfaAB();
+        case 0: return $this->sorteoAfaABC();
         default: return null;
       }
     }
@@ -144,7 +145,7 @@ class Sorteo{
     private function sorteoAfaAB(){
       $m = getMain();
       
-      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, $this->fase - 1);
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, -2);
       
       
 
@@ -215,6 +216,120 @@ class Sorteo{
 
 
       return [$a, $b];
+
+   }
+
+
+   private function sorteoAfaABC(){
+      $m = getMain();
+      
+
+      // ------------------A-------------------------
+
+      $grupos = $this->getEmptyGrupos(4, 4);
+      
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, -1, 'A');
+      
+      
+
+      $levels = getNivelesByPts((new GrupoController())->getClasificados($m->anio, $this->copa, -1));
+      $d = 0;
+      $a1 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $a2 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $a2 = array_reverse($a2);
+      $a3 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $a4 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $a4 = array_reverse($a4);
+
+
+      foreach($a1 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+
+      foreach($a2 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($a3 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($a4 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+
+      $a = $grupos;
+     
+    
+      // ------------------B-------------------------
+
+      $b1 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $b2 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $b2 = array_reverse($b2);
+      $c1 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $c2 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $c2 = array_reverse($c2);
+
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, -1, 'B');
+      $d = 0;
+      
+      $b3 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $b4 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $b4 = array_reverse($b4);
+
+      
+
+      $grupos = $this->getEmptyGrupos(4, 4);
+      
+
+      foreach($b1 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+
+      foreach($b2 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($b3 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($b4 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+    
+    $b = $grupos;
+
+     // ------------------C-----------
+
+
+    $c3 = $this->getLote($eqs, $d, $d+=4, $levels);
+    $c4 = $this->getLote($eqs, $d, $d+=4, $levels);
+    $c4 = array_reverse($b4);
+
+  
+
+    $grupos = $this->getEmptyGrupos(4, 4);
+
+    foreach($c1 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($c2 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($c3 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($c4 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+
+      $c = $grupos;
+
+
+      
+      // $this->show($a);
+      // $this->show($b);
+      // $this->show($c);
+
+
+      return [$a, $b, $c];
 
    }
 
@@ -313,6 +428,7 @@ class Sorteo{
     private function sorteoSudamericana(){
       switch($this->fase){
         case 0: return $this->sorteoFaseGrupos('sudamericana');
+        case 1: return $this->fase2SudLib('sudamericana');
         default: return null;
       }
       
@@ -321,6 +437,7 @@ class Sorteo{
     private function sorteoLibertadores(){
       switch($this->fase){
         case 0: return $this->sorteoFaseGrupos('libertadores');
+        case 1: return $this->fase2SudLib('libertadores');
         default: return null;
       }
       
@@ -395,6 +512,30 @@ class Sorteo{
 
       return [$grupos];
 
+    }
+
+    private function fase2SudLib($copa){
+      $grupos = $this->getEmptyGrupos(16, 2);
+      $d = 0;
+      
+        $eqs = (new GrupoController())->getClasificadosSudLib($copa);
+
+        $levels = getNivelesByPts($eqs);
+
+        $s1 = $this->getLote($eqs, $d, $d+=16, $levels);
+        $s2 = $this->getLote($eqs, $d, $d+=16, $levels);
+        $s2 = array_reverse($s2);
+
+        foreach($s1 as $g => $e){
+          $grupos[$g][] = $e;
+        }
+        foreach($s2 as $g => $e){
+          $grupos[$g][] = $e;
+        }
+        $this->show($grupos);
+
+        //reacomodar grupos
+      
     }
 
 

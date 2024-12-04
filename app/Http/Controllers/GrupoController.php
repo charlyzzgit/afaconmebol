@@ -471,6 +471,62 @@ class GrupoController extends Controller
         
   }
 
+  public function getClasificadosSudLib($copa){
+    $m = getMain();
+    $anio = $m->anio;
+    if($copa == 'sudamericana'){
+      return EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC'
+                ])
+                ->where(function($query) {
+                    $query->where('pos', 3)
+                          ->whereHas('grupo', function($q) {
+                              $q->where('copa', 'libertadores');
+                          })
+                          ->orWhere(function($q) {
+                              $q->where('pos', '<', 3)
+                                ->whereHas('grupo', function($q) {
+                                    $q->where('copa', 'sudamericana');
+                                });
+                          });
+                })
+                ->whereHas('grupo', function($query) use ($anio) {
+                    $query->where('anio', $anio);
+                })->orderBy('pos')
+                ->orderBy('pts', 'desc')
+                ->orderBy('d', 'desc')
+                ->orderBy('gf', 'desc')
+                ->orderBy('gc')
+                ->orderBy('gv')
+                ->orderBy('g', 'desc')
+                ->orderBy('p')
+                ->get();
+    }
+
+    return EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC'
+                ])
+                ->where('pos', '<', 3)
+                ->whereHas('grupo', function($query) use ($anio, $copa) {
+                $query->where('anio', $anio)
+                      ->where('copa', $copa)
+                      ->where('fase', 0);
+                      
+            })->orderBy('pos')
+              ->orderBy('pts', 'desc')
+              ->orderBy('d', 'desc')
+              ->orderBy('gf', 'desc')
+              ->orderBy('gc')
+              ->orderBy('gv')
+              ->orderBy('g', 'desc')
+              ->orderBy('p')
+              ->get();
+  }
+
   public function getClasificados($anio, $copa, $fase, $zona = null){
     $eqs = EquipoGrupo::with([
                       'equipo.colorA',
