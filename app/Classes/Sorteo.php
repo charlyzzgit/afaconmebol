@@ -84,11 +84,19 @@ class Sorteo{
     private function sorteoAfa(){
       switch($this->fase){
         case -2: return $this->sorteoAfaPreliminar();
-        case -1: return $this->sorteoAfaAB();
-        case 0: return $this->sorteoAfaABC();
+        case -1: return $this->sorteoAfaFase1();
+        case 0: return $this->sorteoAfaFase2();
         default: return null;
       }
     }
+
+    private function sorteoArgentina(){
+      switch($this->fase){
+        case 1: return $this->sorteoArgentinaDieci();
+        default: return null;
+      }
+    }
+
 
     private function sorteoAfaPreliminar(){
 
@@ -142,7 +150,7 @@ class Sorteo{
       return [$grupos];
     }
 
-    private function sorteoAfaAB(){
+    private function sorteoAfaFase1(){
       $m = getMain();
       
       $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, -2);
@@ -220,7 +228,7 @@ class Sorteo{
    }
 
 
-   private function sorteoAfaABC(){
+   private function sorteoAfaFase2(){
       $m = getMain();
       
 
@@ -345,6 +353,8 @@ class Sorteo{
       return $equipos;
     }
 
+    
+
     private function filterEquipo($eqs){
       return $eqs->map(function($e){
         return ['equipo' => $e->getRelationValue('equipo')->name, 'pts' => $e->pts];
@@ -421,6 +431,38 @@ class Sorteo{
 
       return false;
     }
+
+
+    //***********************************ARGENTINA*****************************************************
+
+    private function sorteoArgentinaDieci(){
+      $m = getMain();
+      $grupos = $this->getEmptyGrupos(16, 2);
+      $levels = getNivelesByPts((new GrupoController())->getClasificados($m->anio, 'afa', -1, 'A'));
+
+      $eqs = (new GrupoController())->getClasificados($m->anio, 'afa', -1, 'A');
+
+      $d = 0;
+      $bombo1 = $this->getLote($eqs, $d, $d+=16, $levels);
+      $bombo2 = $this->getLote($eqs, $d, $d+=16, $levels);
+      $loc = range(0, 15);
+      $vis = range(0, 15);
+      shuffle($loc);
+      shuffle($vis);
+      
+      foreach($loc as $index => $l){
+         $e = $bombo1[$l];
+         $grupos[$index][] = $e;
+
+        $e = $bombo2[$vis[$index]];
+        $grupos[$index][] = $e;
+      }
+
+      //$this->show($grupos);
+
+      return [$grupos];
+    }
+      
 
 
     // *********************************SUDAMERICANA - LIBERTADORES********************************************
@@ -515,27 +557,34 @@ class Sorteo{
     }
 
     private function fase2SudLib($copa){
+      $vs = [0, 31, 8, 23, 7, 24, 15, 16, 3, 28, 11, 20, 4, 27, 12, 19, 1, 30, 9, 22, 6, 25, 14, 17, 2, 29, 10, 21, 5, 26, 13, 18];
       $grupos = $this->getEmptyGrupos(16, 2);
-      $d = 0;
       
-        $eqs = (new GrupoController())->getClasificadosSudLib($copa);
-
-        $levels = getNivelesByPts($eqs);
-
-        $s1 = $this->getLote($eqs, $d, $d+=16, $levels);
-        $s2 = $this->getLote($eqs, $d, $d+=16, $levels);
-        $s2 = array_reverse($s2);
-
-        foreach($s1 as $g => $e){
-          $grupos[$g][] = $e;
-        }
-        foreach($s2 as $g => $e){
-          $grupos[$g][] = $e;
-        }
-        $this->show($grupos);
-
-        //reacomodar grupos
       
+      $eqs = (new GrupoController())->getClasificadosSudLib($copa);
+
+      $levels = getNivelesByPts($eqs);
+      $g = 0;
+      for($i = 0; $i < count($vs); $i+=2){
+        $e = $vs[$i];
+        $grupos[$g][] = [
+          'id' => $eqs[$e]->equipo_id, 
+          'name' => $eqs[$e]->equipo,
+          'nivel' => getNivelByPts($eqs[$e]->pts, $levels)
+        ];
+
+        $e = $vs[$i + 1];
+        $grupos[$g][] = [
+          'id' => $eqs[$e]->equipo_id, 
+          'name' => $eqs[$e]->equipo,
+          'nivel' => getNivelByPts($eqs[$e]->pts, $levels)
+        ];
+        $g++;
+      }
+       // $this->show($grupos);
+
+      
+      return [$grupos];
     }
 
 

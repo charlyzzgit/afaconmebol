@@ -275,6 +275,38 @@ class GrupoController extends Controller
                   break;
                 }
               break;
+              case -1:
+                switch($e->pos){
+                  case 1: case 2: 
+                    $e->estado = $grupo->completed ? 2 : $this->clasifica($e, $grupo);
+                  break;
+                  case 3:
+                    if($grupo->zona == 'A'){
+                      $e->estado = $grupo->completed ? 1 : $this->clasifica($e, $grupo);
+                    }else{
+                      $e->estado = $grupo->completed ? -1 : $this->clasifica($e, $grupo);
+                    }
+                    
+                  break;
+                  default:
+                    $e->estado = $grupo->completed ? -1 : $this->clasifica($e, $grupo);
+                  break;
+                }
+              break;
+              case 0: case 1:
+                switch($e->pos){
+                  case 1: case 2: 
+                    $e->estado = $grupo->completed ? 2 : $this->clasifica($e, $grupo);
+                  break;
+                  
+                  default:
+                    $e->estado = $grupo->completed ? -1 : $this->clasifica($e, $grupo);
+                  break;
+                }
+              break;
+              default:
+                $e->estado = $grupo->completed ? ($e->pos == 1 ? 2 : -1) : 0;
+              break;
             }
              
             $e->save();
@@ -282,7 +314,10 @@ class GrupoController extends Controller
           
         break;
         case 'argentina':
-
+          foreach($grupo->equiposTableOrder as $order => $e){
+            $e->estado = $grupo->completed ? ($e->pos == 1 ? 2 : -1) : 0;
+            $e->save();
+          }
         break;
         case 'sudamericana':
           foreach($grupo->equiposTableOrder as $order => $e){
@@ -297,6 +332,9 @@ class GrupoController extends Controller
                   break;
                   
                 }
+              break;
+              default:
+                $e->estado = $grupo->completed ? ($e->pos == 1 ? 2 : -1) : 0;
               break;
             }
              
@@ -318,6 +356,9 @@ class GrupoController extends Controller
                     $e->estado = $grupo->completed ? -1 : $this->clasifica($e, $grupo);
                   break;
                 }
+              break;
+              default:
+                $e->estado = $grupo->completed ? ($e->pos == 1 ? 2 : -1) : 0;
               break;
             }
              
