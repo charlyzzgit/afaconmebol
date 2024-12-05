@@ -93,7 +93,7 @@ class Sorteo{
     private function sorteoArgentina(){
       switch($this->fase){
         case 1: return $this->sorteoArgentinaDieci();
-        default: return null;
+        default: return $this->sorteoOCSF();
       }
     }
 
@@ -341,13 +341,13 @@ class Sorteo{
 
    }
 
-    private function getLote($eqs, $desde, $hasta, $levels){
+    private function getLote($eqs, $desde, $hasta, $levels = null){
       $equipos = [];
       for($i = $desde; $i < $hasta; $i++){
         $equipos[] = [
           'id' => $eqs[$i]->equipo_id, 
           'name' => $eqs[$i]->equipo,
-          'nivel' => getNivelByPts($eqs[$i]->pts, $levels)
+          'nivel' => $levels ? getNivelByPts($eqs[$i]->pts, $levels) : $eqs[$i]->nivel
         ];
       }
       return $equipos;
@@ -471,7 +471,7 @@ class Sorteo{
       switch($this->fase){
         case 0: return $this->sorteoFaseGrupos('sudamericana');
         case 1: return $this->fase2SudLib('sudamericana');
-        default: return null;
+        default: return $this->sorteoOCSF();
       }
       
     }
@@ -480,7 +480,7 @@ class Sorteo{
       switch($this->fase){
         case 0: return $this->sorteoFaseGrupos('libertadores');
         case 1: return $this->fase2SudLib('libertadores');
-        default: return null;
+       default: return $this->sorteoOCSF();
       }
       
     }
@@ -586,6 +586,67 @@ class Sorteo{
       
       return [$grupos];
     }
+
+    private function sorteoOCSF(){
+      $m = getMain();
+      $fase = $this->fase - 1;
+      $eqs = (new GrupoController())->getClasificadosLlaves($m->anio, $this->copa, $fase);
+
+      
+      $grupos = $this->getEmptyGrupos(count($eqs)/2, 2);
+      $g = 0;
+      for($i = 0; $i < count($eqs); $i+=2){
+        $a = $eqs[$i];
+        $b = $eqs[$i + 1];
+        $swap = $this->swapLocal($this->copa, $a->equipo_id, $b->equipo_id);
+        $loc = $swap ? $b : $a;
+        $vis = $swap ? $a : $b;
+        $grupos[$g][] = [
+          'id' => $loc->equipo_id, 
+          'name' => $loc->equipo,
+          'nivel' => $loc->nivel
+        ];
+        $grupos[$g++][] = [
+          'id' => $vis->equipo_id, 
+          'name' => $vis->equipo,
+          'nivel' => $vis->nivel
+        ];
+      }
+      
+      //$this->show($grupos);
+      return [$grupos];
+    }
+
+
+
+    private function swapLocal($copa, $a, $b){
+      $m = getMain();
+      switch($copa){
+        case 'afa':
+
+        break;
+        case 'argentina':
+          $eqs = (new GrupoController())->getClasificados($m->anio, 'afa', -1, 'A');
+        break;
+        case 'libertadores': case 'sudamericana':
+          $eqs = (new GrupoController())->getClasificadosSudLib($copa);
+        break;
+        
+      }
+      $pos_a = 0;
+      $pos_b = 0;
+      foreach($eqs as $pos => $e){
+        if($e->equipo_id == $a){
+          $pos_a = $pos + 1;
+        }
+        if($e->equipo_id == $b){
+          $pos_b = $pos + 1;
+        }
+      }
+
+      return $pos_a > $pos_b;
+    }
+
 
 
     private function show($grupos){

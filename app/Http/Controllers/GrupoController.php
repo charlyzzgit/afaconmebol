@@ -602,6 +602,34 @@ class GrupoController extends Controller
       
   }
 
+  public function getClasificadosLlaves($anio, $copa, $fase, $zona = null){
+    return EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC',
+                      'equipo'
+                ])
+                ->whereHas('grupo', function($query) use ($anio, $copa, $fase, $zona) {
+                $query->where('anio', $anio)
+                      ->where('copa', $copa)
+                      ->where('fase', $fase);
+                if($zona){
+                  $query = $query->where('zona', $zona);
+                }
+                      
+            })
+              ->where('pos', 1)
+              ->join('grupos', 'equipos_grupo.grupo_id', '=', 'grupos.id') // Unir la tabla `grupos`
+              ->orderBy('grupos.grupo') // Ordenar por el campo `grupo.grupo`
+              ->get(['equipos_grupo.*']) // Seleccionar las columnas deseadas
+              ->load([
+                  'equipo.colorA',
+                  'equipo.colorB',
+                  'equipo.colorC',
+                  'equipo'
+              ]);
+  }
+
   public function getTablaAnual(){
     
     $colors = colorGrupo(1000);
