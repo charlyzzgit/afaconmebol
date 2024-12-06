@@ -87,6 +87,7 @@ class Sorteo{
         case -1: return $this->sorteoAfaFase1();
         case 0: return $this->sorteoAfaFase2();
         case 1: return $this->sorteoAfaFase3();
+        case 2: return $this->sorteoAfaOctavos();
         default: return null;
       }
     }
@@ -461,6 +462,29 @@ class Sorteo{
 
       return [$a, $b, $c];
 
+   }
+
+   private function sorteoAfaOctavos(){
+      $m = getMain();
+      
+
+      // ------------------B-------------------------
+
+      $grupos = $this->getEmptyGrupos(4, 2);
+      
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, 1, 'B');
+      
+      
+
+      $levels = getNivelesByPts((new GrupoController())->getClasificados($m->anio, $this->copa, 1));
+      $d = 0;
+      
+
+       $this->show($b);
+       $this->show($c);
+
+
+      return [$b, $c];
    }
 
 
