@@ -218,7 +218,7 @@ class PartidoController extends Controller
     $partido = Partido::find($data->id);
 
     $partido->gl = $data->gl;
-    $partido->gl = $data->gl;
+    $partido->gv = $data->gv;
     if($data->pa && $data->pb){
       $partido->pa = $data->pa;
       $partido->pb = $data->pb;

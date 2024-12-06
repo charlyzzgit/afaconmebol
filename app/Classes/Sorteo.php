@@ -86,6 +86,7 @@ class Sorteo{
         case -2: return $this->sorteoAfaPreliminar();
         case -1: return $this->sorteoAfaFase1();
         case 0: return $this->sorteoAfaFase2();
+        case 1: return $this->sorteoAfaFase3();
         default: return null;
       }
     }
@@ -340,6 +341,128 @@ class Sorteo{
       return [$a, $b, $c];
 
    }
+
+
+   private function sorteoAfaFase3(){
+      $m = getMain();
+      
+
+      // ------------------A-------------------------
+
+      $grupos = $this->getEmptyGrupos(2, 4);
+      
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, 0, 'A');
+      
+      
+
+      $levels = getNivelesByPts((new GrupoController())->getClasificados($m->anio, $this->copa, -1));
+      $d = 0;
+      $a1 = $this->getLote($eqs, $d, $d+=2, $levels);
+      $a2 = $this->getLote($eqs, $d, $d+=2, $levels);
+      $a2 = array_reverse($a2);
+      $a3 = $this->getLote($eqs, $d, $d+=2, $levels);
+      $a4 = $this->getLote($eqs, $d, $d+=2, $levels);
+      $a4 = array_reverse($a4);
+
+
+      foreach($a1 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+
+      foreach($a2 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($a3 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($a4 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+
+      $a = $grupos;
+     
+    
+      // ------------------B-------------------------
+
+      $b1 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $b2 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $b2 = array_reverse($b2);
+      
+
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, 0, 'B');
+      $d = 0;
+      
+      $b3 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $b4 = $this->getLote($eqs, $d, $d+=4, $levels);
+      $b4 = array_reverse($b4);
+
+      
+
+      $grupos = $this->getEmptyGrupos(4, 4);
+      
+
+      foreach($b1 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+
+      foreach($b2 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($b3 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($b4 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+    
+    $b = $grupos;
+
+     // ------------------C-----------
+
+    
+
+    $c1 = $this->getLote($eqs, $d, $d+=4, $levels);
+    $c2 = $this->getLote($eqs, $d, $d+=4, $levels);
+    $c2 = array_reverse($c2);
+
+    $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, 0, 'C');
+    $d = 0;
+
+
+    $c3 = $this->getLote($eqs, $d, $d+=4, $levels);
+    $c4 = $this->getLote($eqs, $d, $d+=4, $levels);
+    $c4 = array_reverse($b4);
+
+  
+
+    $grupos = $this->getEmptyGrupos(4, 4);
+
+    foreach($c1 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($c2 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($c3 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+      foreach($c4 as $g => $e){
+        $grupos[$g][] = $e;
+      }
+
+      $c = $grupos;
+
+
+      
+       // $this->show($a);
+       // $this->show($b);
+       // $this->show($c);
+
+
+      return [$a, $b, $c];
+
+   }
+
 
     private function getLote($eqs, $desde, $hasta, $levels = null){
       $equipos = [];
