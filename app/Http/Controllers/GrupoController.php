@@ -760,5 +760,45 @@ class GrupoController extends Controller
   }
 
 
+  public function getWaitAfaA($anio){
+    $equipos = $this->getClasificados($anio, 'afa', 1, 'A');
+    $eqs = [];
+    for($i = 4; $i < 8; $i++){
+      $eqs[] = $equipos[$i];
+    }
+
+    return $eqs;
+  }
+
+  public function llavero($copa, $zona = null){
+    $m = getMain();
+    $desde = 1;
+    $fases = [];
+    if($copa == 'afa'){
+      $f = $zona == 'A' ? 4 : 2;
+    }
+
+    for($f = $desde; $f <= 5; $f++){
+      $fases[] = [
+                    'fase' => $f,
+                    'keys' => $this->getGrupos($m->anio, $copa, $f, $zona)->map(function($g){
+                        return $g->equiposPosition->map(function($e){
+                          $eq = $e->getRelation('equipo');
+                          return [
+                            'name' => $eq->name,
+                            'directory' => $eq->directory.'escudo.png'
+                          ];
+                        });
+                    })
+                  ];
+    }
+
+
+    return $fases;
+
+    
+  }
+
+
   
 }

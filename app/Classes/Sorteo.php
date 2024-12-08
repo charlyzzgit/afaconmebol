@@ -474,14 +474,73 @@ class Sorteo{
       
       $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, 1, 'B');
       
-      
+      $vs = [0, 7, 2, 5, 1, 6, 3, 4];
 
       $levels = getNivelesByPts((new GrupoController())->getClasificados($m->anio, $this->copa, 1));
-      $d = 0;
       
 
-       $this->show($b);
-       $this->show($c);
+      $g = 0;
+      for($i = 0; $i < count($vs); $i+=2){
+        $e = $vs[$i];
+        $grupos[$g][] = [
+          'id' => $eqs[$e]->equipo_id, 
+          'name' => $eqs[$e]->equipo,
+          'nivel' => getNivelByPts($eqs[$e]->pts, $levels)
+        ];
+
+        $e = $vs[$i + 1];
+        $grupos[$g][] = [
+          'id' => $eqs[$e]->equipo_id, 
+          'name' => $eqs[$e]->equipo,
+          'nivel' => getNivelByPts($eqs[$e]->pts, $levels)
+        ];
+        $g++;
+      }
+
+      $b = $grupos;
+
+       // ------------------C-------------------------
+
+      $grupos = $this->getEmptyGrupos(8, 2);
+      $equipos = [];
+      for($i = 8; $i < 16; $i++){
+        $equipos[] = $eqs[$i];
+      }
+      
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, 1, 'C');
+
+      for($i = 0; $i < 8; $i++){
+        $equipos[] = $eqs[$i];
+      }
+
+      $eqs = $equipos;
+      
+      $vs = [0,15,7,8,3,12,4,11,1,14,6,9,2,13,5,10];
+
+      $g = 0;
+      for($i = 0; $i < count($vs); $i+=2){
+        $e = $vs[$i];
+        $grupos[$g][] = [
+          'id' => $eqs[$e]->equipo_id, 
+          'name' => $eqs[$e]->equipo,
+          'nivel' => getNivelByPts($eqs[$e]->pts, $levels)
+        ];
+
+        $e = $vs[$i + 1];
+        $grupos[$g][] = [
+          'id' => $eqs[$e]->equipo_id, 
+          'name' => $eqs[$e]->equipo,
+          'nivel' => getNivelByPts($eqs[$e]->pts, $levels)
+        ];
+        $g++;
+      }
+
+      $c = $grupos;
+
+      
+
+      // $this->show($b);
+       //$this->show($c);
 
 
       return [$b, $c];

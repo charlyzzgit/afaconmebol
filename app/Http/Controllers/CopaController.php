@@ -18,6 +18,7 @@ class CopaController extends Controller
     $m = getMain();
     $copa = copaZona($copa_zona, 0);
     $zona = copaZona($copa_zona, 1);
+    $keys = null;
     // if($zona){
     //   $zona = strtoupper($zona);
     // }
@@ -35,8 +36,14 @@ class CopaController extends Controller
       }
       
       $grupos = (new GrupoController())->getGrupos($m->anio, $copa, $fase, $zona);
+
+      $we =  null;
+      if($copa == 'afa' && $fase == 2 && $zona == 'b'){
+        $we = json_encode((new GrupoController())->getWaitAfaA($m->anio));
+      }
+      $keys = json_encode((new GrupoController())->llavero($copa, $zona));
     }
-    return view('home.copa', compact('copa', 'fase', 'zona', 'grupos'));
+    return view('home.copa', compact('copa', 'fase', 'zona', 'grupos', 'we', 'keys'));
    }
 
 
@@ -56,13 +63,13 @@ class CopaController extends Controller
            if(count($sorted) > 1){
               switch($z){
                 case 0:
-                  $zona = 'A';
+                  $zona = count($sorted) == 3 ? 'A' : 'B';
                 break;
                 case 1:
-                  $zona = 'B';
+                  $zona = count($sorted) == 3 ? 'B' : 'C';
                 break;
                 default:
-                  $zona = 'C';
+                  $zona = count($sorted) == 3 ? 'C' : null;
                 break;
               }
            }

@@ -851,9 +851,9 @@ function setBgGradientEq(obj, eq){
   //radialGradient(div.find('.puntos'), a, b)
 }
 
-function setBgGradient(obj, a, b, c){
-
-  setGradient(obj, 180, [b, a, a, c], [0, 20, 80, 100])
+function setBgGradient(obj, a, b, c, vertical){
+  var deg = vertical !== undefined ? 90 : 180
+  setGradient(obj, deg, [b, a, a, c], [0, 20, 80, 100])
   
   //radialGradient(div.find('.puntos'), a, b)
 }
@@ -1005,13 +1005,13 @@ function getNameFecha(fase, fecha){
   return fecha == 1 ? 'partido de ida' : 'partido de vuelta';
 }
 
-function getColorCopa(copa){
+function getColorCopa(copa, duo){
   switch(copa){
-    case 'afa': return 'azuloscuro'
-    case 'argentina': return 'celeste'
-    case 'sudamericana': return 'azul'
-    case 'libertadores': return 'rojo'
-    default: return 'verde' 
+    case 'afa': return duo !== undefined ? {a:'azuloscuro',b: 'azul'} :'azuloscuro'
+    case 'argentina': return duo !== undefined ? {a:'celeste',b: 'cielo'} :'celeste'
+    case 'sudamericana': return duo !== undefined ? {a:'azul',b: 'celeste'} :'azul'
+    case 'libertadores': return duo !== undefined ? {a:'rojo',b: 'naranja'} :'rojo'
+    default: return duo !== undefined ? {a:'verde',b: 'verdeclaro'} :'verde' 
   }
 }
 

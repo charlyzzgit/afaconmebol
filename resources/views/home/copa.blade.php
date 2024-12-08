@@ -62,6 +62,73 @@
       background: linear-gradient(180deg, black, gray, black);
     }
 
+    #keys{
+      position: absolute;
+      top: 0;
+      left:0;
+      height: 100%;
+      z-index: 1000;
+      background: linear-gradient(90deg, rgb(255,0,0), rgb(0,0,255), rgb(255,0,0));
+    }
+
+    .key{
+      position: absolute;
+      border:solid 3px white;
+      border-left: none;
+      width: 67px;
+      z-index: -1;
+    }
+
+    .key-16{
+      height: 25px;
+      left: 30px;
+    }
+
+    .key-8{
+      height: 50px;
+      left: 95px;
+      width: 66px;
+    }
+
+    .key-4{
+      height: 93px;
+      left: 160px;
+      width: 65px;
+    }
+
+    .key-2{
+      height: 182px;
+      left: 225px;
+      width: 65px;
+    }
+
+    .key-1{
+      top:50%;
+      transform: translateY(-50%);
+      height: 350px;
+      left: 290px;
+      width: 65px;
+    }
+
+    #copa{
+      position: absolute;
+      top:50%;
+      left: 50%;
+      height: 150px;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+
+    #campeon{
+      position: absolute;
+      top:50%;
+      left: 50%;
+      height: 70px;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+
+
     @if($fase == 5)
       #list{
         height:auto
@@ -175,6 +242,78 @@
       </div>
     </div>
   </div>
+  <div id="keys" class="col-12 flex-row-between-center">
+    <div class="k-16 col-2 flex-col-center-center p-1">
+      @for($i = 0; $i < 32; $i++)
+        <img src="{{ asset('resources/default/escudo.png') }}" height="18"  style="margin: 2px 0;">
+      @endfor
+    </div>
+    <div class="k-8 col-2 flex-col-center-center p-1">
+      @for($i = 0; $i < 16; $i++)
+        <img src="{{ asset('resources/default/escudo.png') }}" height="18"  style="margin: 13px 0; transform:scale(1.25);">
+      @endfor
+    </div>
+    <div class="k-4 col-2 flex-col-center-center p-1">
+      @for($i = 0; $i < 8; $i++)
+        <img src="{{ asset('resources/default/escudo.png') }}" height="18"  style="margin: 35px 0; transform:scale(1.5);">
+      @endfor
+    </div>
+    <div class="k-2 col-2 flex-col-center-center p-1">
+      @for($i = 0; $i < 4; $i++)
+        <img src="{{ asset('resources/default/escudo.png') }}" height="18"  style="margin: 80px 0;transform:scale(1.75);">
+      @endfor
+    </div>
+    <div class="k-1 col-2 flex-col-center-center p-1">
+      @for($i = 0; $i < 2; $i++)
+        <img src="{{ asset('resources/default/escudo.png') }}" height="18"  style="margin: 165px 0; transform:scale(2);">
+      @endfor
+    </div>
+    <div class="k-0 col-2 flex-col-center-center p-1">
+      <img id="campeon" src="{{ asset('resources/default/escudo.png') }}" >
+      <img id="copa" src="{{ asset('resources/default/libertadores.png') }}">
+    </div>
+    @php 
+      $top = 20;
+    @endphp
+    @for($i = 0; $i < 16; $i++)
+      <div class="key key-16" style="top: {{ $top }}px;"></div>
+      @php 
+        $top += 44;
+      @endphp
+    @endfor
+
+    @php 
+      $top = 30;
+    @endphp
+    @for($i = 0; $i < 8; $i++)
+      <div class="key key-8" style="top: {{ $top }}px;"></div>
+      @php 
+        $top += 88;
+      @endphp
+    @endfor
+
+    @php 
+      $top = 52;
+    @endphp
+    @for($i = 0; $i < 4; $i++)
+      <div class="key key-4" style="top: {{ $top }}px;"></div>
+      @php 
+        $top += 176;
+      @endphp
+    @endfor
+
+    @php 
+      $top = 90;
+    @endphp
+    @for($i = 0; $i < 2; $i++)
+      <div class="key key-2" style="top: {{ $top }}px;"></div>
+      @php 
+        $top += 355;
+      @endphp
+    @endfor
+
+    <div class="key key-1"></div>
+  </div>
 </div>
 
 
@@ -189,7 +328,18 @@
       collapse = true,
       routeName = "{{ Route::currentRouteName() }}",
       title = [copa, getNameFase(copa, fase, zona)].join(' - '),
-      group_order = 1
+      group_order = 1,
+      WE = null,
+      KEYS = null,
+      colorCopa = getColorCopa(copa, true)
+  @if($we)
+      WE = {!! $we !!}
+  @endif
+  @if($keys)
+      KEYS = {!! $keys !!}
+  @endif
+  log('we', [WE])
+  log('keys', [KEYS])
   log('grupos', [src_copa, grupos])
 
    log('route', ["{{  Route::currentRouteName() }}"])
@@ -235,7 +385,7 @@
          escudo = getEl(li, 'escudo'),
           name = getEl(li, 'name'),
          jugador = getEl(li, 'jugador'),
-         pos = index + 1
+         pos = index !== undefined ? index + 1 : 0
 
     setImageEquipo(escudo, eg.equipo, 'escudo')
     setImageEquipo(jugador, eg.equipo, 'local')
@@ -341,9 +491,13 @@
           }
         break
       }
-      if(src != null){
-        icon.prop('src', ASSET + src)
+      if(index !== undefined){
+        if(src != null){
+          icon.prop('src', ASSET + src)
+        }
       }
+      
+        
       
     }
 
@@ -422,6 +576,8 @@
         return
       }
 
+
+
       //setCristal(getEl($(this), 'inner'), color)
 
       radialGradient(getEl(el, 'inner'), a, b)
@@ -472,9 +628,62 @@
     })
   }
 
+  function getKeysFase(f){
+    var ks = null
+    $.each(KEYS, function(i, k){
+      if(k.fase == f){
+        ks = k.keys
+      }
+    })
+    return ks
+  }
+
+  function setLlavero(){
+    if(KEYS == null){
+      return
+    }
+     for(var f = 1; f <= 5; f++){
+      var keyName = null,
+          keys = getKeysFase(f)
+        switch(f){
+          case 1:
+            keyName = '.k-16'
+          break
+          case 2:
+            keyName = '.k-8'
+          break
+          case 3:
+            keyName = '.k-4'
+          break
+          case 4:
+            keyName = '.k-2'
+          break
+          default:
+            keyName = '.k-1'
+          break
+        }
+        if(keys != null){
+          var n = 1
+          $.each(keys, function(i, key){
+            $(keyName + ' img:nth-of-type(' + n + ')').prop('src', ASSET + key[0].directory)
+            n++
+            $(keyName + ' img:nth-of-type(' + n + ')').prop('src', ASSET + key[1].directory)
+            n++
+          })
+        }else{
+          $(keyName).find('img').css('visibility', 'hidden')
+        }
+
+     }
+
+  }
+
   function listar(){
     ul.empty()
     $.each(grupos, function(i, g){
+      if(WE != null){
+        ul.append(getLiEquipo(WE[i]))
+      }
       ul.append(getLiGrupo(g))
     })
   }
@@ -534,6 +743,8 @@
       title = [copa, 'tabla general'].join(' - ')
     }
 
+    $('#keys').css({ background: 'linear-gradient(90deg, ' + ['rgb(' + parseColor(colorCopa.a).rgb + ')', 'rgb(' + parseColor(colorCopa.b).rgb + ')', 'rgb(' + parseColor(colorCopa.a).rgb + ')'].join(',')})
+    setLlavero()
     if(routeName.includes('anual')){
       title = [copa, 'tabla anual'].join(' - ')
       src_copa = 'default/escudo_afa.png'
