@@ -775,7 +775,7 @@ class GrupoController extends Controller
     $desde = 1;
     $fases = [];
     if($copa == 'afa'){
-      $f = $zona == 'A' ? 4 : 2;
+      $desde = $zona == 'A' ? 4 : 2;
     }
 
     for($f = $desde; $f <= 5; $f++){

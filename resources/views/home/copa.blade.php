@@ -114,7 +114,7 @@
       position: absolute;
       top:50%;
       left: 50%;
-      height: 150px;
+      height: 100px;
       transform: translate(-50%, -50%);
       z-index: 0;
     }
@@ -123,7 +123,7 @@
       position: absolute;
       top:50%;
       left: 50%;
-      height: 70px;
+      height: 60px;
       transform: translate(-50%, -50%);
       z-index: 2;
     }
@@ -632,11 +632,35 @@
     var ks = null
     $.each(KEYS, function(i, k){
       if(k.fase == f){
-        ks = k.keys
+        //if(k.keys.length != 0){
+          ks = k.keys
+        //}
+        
       }
     })
+    if(copa == 'afa' && f == 2 && zona == 'b'){
+      var aux = []
+      $.each(ks, function(j, r){
+        aux.push([
+        {
+          name: WE[j].equipo.name,
+          directory: WE[j].equipo.directory + 'escudo.png'
+         },
+        {
+          name: null,
+          directory: null
+         }
+        ])
+        aux.push(r)
+      })
+       ks = aux
+       log('llave', [ks])
+    }
+   
     return ks
   }
+
+  
 
   function setLlavero(){
     if(KEYS == null){
@@ -645,6 +669,7 @@
      for(var f = 1; f <= 5; f++){
       var keyName = null,
           keys = getKeysFase(f)
+          
         switch(f){
           case 1:
             keyName = '.k-16'
@@ -665,15 +690,42 @@
         if(keys != null){
           var n = 1
           $.each(keys, function(i, key){
-            $(keyName + ' img:nth-of-type(' + n + ')').prop('src', ASSET + key[0].directory)
+            let e = $(keyName + ' img:nth-of-type(' + n + ')')
+            if(key[0].directory != null){
+              e.prop('src', ASSET + key[0].directory)
+            }else{
+              e.css('visibility', 'hidden')
+            }
+            
             n++
-            $(keyName + ' img:nth-of-type(' + n + ')').prop('src', ASSET + key[1].directory)
+            e = $(keyName + ' img:nth-of-type(' + n + ')')
+            if(key[1].directory != null){
+              e.prop('src', ASSET + key[1].directory)
+            }else{
+              e.css('visibility', 'hidden')
+            }
             n++
           })
         }else{
           $(keyName).find('img').css('visibility', 'hidden')
+          switch(f){
+            case 1: 
+              $('.key-16').hide()
+            break
+            case 2: 
+              $('.key-8').hide()
+            break
+            case 3: 
+              $('.key-4').hide()
+            break
+          }
         }
 
+     }
+
+     if(copa == 'afa' && zona == 'a'){
+      $('.k-16, .k-8, .k-4').find('img').css('visibility', 'hidden')
+      $('.key-16, .key-8, .key-4').hide()
      }
 
   }
@@ -687,6 +739,8 @@
       ul.append(getLiGrupo(g))
     })
   }
+
+
 
 
   function setPodio(eq){
@@ -809,6 +863,8 @@
           toGroup(-1)
         }))
     }
+
+    setImageCopa($('#copa'), copa == 'afa' ? [copa, zona].join('_') : copa)
 
     
 
