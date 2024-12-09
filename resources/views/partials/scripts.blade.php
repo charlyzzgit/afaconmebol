@@ -707,11 +707,12 @@ function setCristalBorder(obj, cola, colb, stroke){
   
 }
 
-function setBackDuo(obj, cola, colb){
+function setBackDuo(obj, cola, colb, vertical){
 
   var rgbaA = [cola.r, cola.g, cola.b, 1],
-    rgbaB = [colb.r, colb.g, colb.b, 1]
-  $(obj).css('background', 'linear-gradient(0deg, rgba(' + rgbaA.join(', ') + '), rgba(' + rgbaB.join(', ') + '))')
+    rgbaB = [colb.r, colb.g, colb.b, 1],
+    deg = vertical !== undefined ? 90 : 0
+  $(obj).css('background', 'linear-gradient(' + deg + 'deg, rgba(' + rgbaA.join(', ') + '), rgba(' + rgbaB.join(', ') + '))')
 }
 
 

@@ -65,7 +65,7 @@
     #keys{
       position: absolute;
       top: 0;
-      left:0;
+      left:100%;
       height: 100%;
       z-index: 1000;
       background: linear-gradient(90deg, rgb(255,0,0), rgb(0,0,255), rgb(255,0,0));
@@ -242,7 +242,7 @@
       </div>
     </div>
   </div>
-  <div id="keys" class="col-12 flex-row-between-center">
+  <div id="keys" class="col-12 flex-row-between-center" data-state="closed">
     <div class="k-16 col-2 flex-col-center-center p-1">
       @for($i = 0; $i < 32; $i++)
         <img src="{{ asset('resources/default/escudo.png') }}" height="18"  style="margin: 2px 0;">
@@ -332,12 +332,12 @@
       WE = null,
       KEYS = null,
       colorCopa = getColorCopa(copa, true)
-  @if($we)
+  @isset($we)
       WE = {!! $we !!}
-  @endif
-  @if($keys)
+  @endisset
+  @isset($keys)
       KEYS = {!! $keys !!}
-  @endif
+  @endisset
   log('we', [WE])
   log('keys', [KEYS])
   log('grupos', [src_copa, grupos])
@@ -395,7 +395,9 @@
     eg.estado = getEstado(eg.estado, copa, fase, zona)
     li.find('.h-estado').prop('src', ASSET + 'default/' + eg.estado + '.png').hide()
     //log('estado', eg.estado)
-    li.append(getTable(eg))
+    if(pos != 0){
+      li.append(getTable(eg))
+    }
 
     var est = getEl(li, 'estado'),
           icon = est.find('img'),
@@ -666,6 +668,8 @@
     if(KEYS == null){
       return
     }
+
+    setBackDuo($('#keys'), parseColor(colorCopa.b), parseColor(colorCopa.a), true)
      for(var f = 1; f <= 5; f++){
       var keyName = null,
           keys = getKeysFase(f)
@@ -733,7 +737,7 @@
   function listar(){
     ul.empty()
     $.each(grupos, function(i, g){
-      if(WE != null){
+      if(WE != null && fase == 2){
         ul.append(getLiEquipo(WE[i]))
       }
       ul.append(getLiGrupo(g))
@@ -797,7 +801,9 @@
       title = [copa, 'tabla general'].join(' - ')
     }
 
-    $('#keys').css({ background: 'linear-gradient(90deg, ' + ['rgb(' + parseColor(colorCopa.a).rgb + ')', 'rgb(' + parseColor(colorCopa.b).rgb + ')', 'rgb(' + parseColor(colorCopa.a).rgb + ')'].join(',')})
+    //$('#keys').css({ background: 'linear-gradient(90deg, ' + ['rgb(' + parseColor(colorCopa.a).rgb + ')', 'rgb(' + parseColor(colorCopa.b).rgb + ')', 'rgb(' + parseColor(colorCopa.a).rgb + ')'].join(',')})
+    
+
     setLlavero()
     if(routeName.includes('anual')){
       title = [copa, 'tabla anual'].join(' - ')
@@ -861,6 +867,19 @@
 
       footer.append(getBtnFooter('negro', null, 'fas fa-circle-up', function(){
           toGroup(-1)
+        }))
+
+      footer.append(getBtnFooter('negro', null, 'fas fa-sitemap', function(){
+          var k = $('#keys'),
+              position = 0
+          if(k.data('state') == 'closed'){
+            k.data('state', 'open')
+            position = 0
+          }else{
+            k.data('state', 'closed')
+            position = 100
+          }
+          k.animate({left: position + '%'}, 150)
         }))
     }
 

@@ -88,6 +88,9 @@ class Sorteo{
         case 0: return $this->sorteoAfaFase2();
         case 1: return $this->sorteoAfaFase3();
         case 2: return $this->sorteoAfaOctavos();
+        case 3: return $this->sorteoAfaCuartos();
+        case 4: return $this->sorteoAfaSemis();
+        case 5: return $this->sorteoAfaFinal();
         default: return null;
       }
     }
@@ -546,6 +549,117 @@ class Sorteo{
       return [$b, $c];
    }
 
+   private function sorteoAfaCuartos(){
+      $m = getMain();
+
+      // -----------------------------------B-----------------------
+      $fase = $this->fase - 1;
+      $a = (new GrupoController())->getWaitAfaA($m->anio);
+      $eqs = (new GrupoController())->getClasificadosLlaves($m->anio, $this->copa, $fase, 'B');
+      
+      
+      $grupos = $this->getEmptyGrupos(4, 2);
+      foreach($a as $g => $e){
+        $grupos[$g][] = [
+          'id' => $e->equipo_id, 
+          'name' => $e->equipo,
+          'nivel' => $e->nivel
+        ];
+        $grupos[$g][] = [
+          'id' => $eqs[$g]->equipo_id, 
+          'name' => $eqs[$g]->equipo,
+          'nivel' => $eqs[$g]->nivel
+        ];
+      }
+
+      $b = $grupos;
+
+      // -------------------------------------------------C------------------------
+
+      $c = $this->sorteoOCSF('C')[0];
+
+       //$this->show($b);
+       //$this->show($c);
+
+      return [$b, $c];
+   }
+
+
+   private function sorteoAfaSemis(){
+      $m = getMain();
+
+      // -----------------------------------A-----------------------
+      
+      
+      $eqs = (new GrupoController())->getClasificados($m->anio, $this->copa, 1, 'A');
+      
+      
+      $grupos = $this->getEmptyGrupos(2, 2);
+      
+      
+        $grupos[0][] = [
+          'id' => $eqs[0]->equipo_id, 
+          'name' => $eqs[0]->equipo,
+          'nivel' => $eqs[0]->nivel
+        ];
+        $e = $eqs[2]->grupo_id == $eqs[0]->grupo_id ? $eqs[3] : $eqs[2];
+        $grupos[0][] = [
+          'id' => $e->equipo_id, 
+          'name' => $e->equipo,
+          'nivel' => $e->nivel
+        ];
+
+        $grupos[1][] = [
+          'id' => $eqs[1]->equipo_id, 
+          'name' => $eqs[1]->equipo,
+          'nivel' => $eqs[1]->nivel
+        ];
+        $e = $eqs[2]->grupo_id == $eqs[1]->grupo_id ? $eqs[3] : $eqs[2];
+        $grupos[1][] = [
+          'id' => $e->equipo_id, 
+          'name' => $e->equipo,
+          'nivel' => $e->nivel
+        ];
+     
+
+      $a = $grupos;
+
+      // -----------------------------------B-----------------------
+      
+
+      $b = $this->sorteoOCSF('B')[0];
+
+      // -------------------------------------------------C------------------------
+
+      $c = $this->sorteoOCSF('C')[0];
+
+      // $this->show($a);
+      // $this->show($b);
+      // $this->show($c);
+
+      return [$a, $b, $c];
+   }
+
+   private function sorteoAfaFinal(){
+      // -----------------------------------A-----------------------
+      
+
+      $a = $this->sorteoOCSF('A')[0];
+      // -----------------------------------B-----------------------
+      
+
+      $b = $this->sorteoOCSF('B')[0];
+
+      // -------------------------------------------------C------------------------
+
+      $c = $this->sorteoOCSF('C')[0];
+
+      // $this->show($a);
+      // $this->show($b);
+      // $this->show($c);
+
+      return [$a, $b, $c];
+   }
 
     private function getLote($eqs, $desde, $hasta, $levels = null){
       $equipos = [];
@@ -793,10 +907,10 @@ class Sorteo{
       return [$grupos];
     }
 
-    private function sorteoOCSF(){
+    private function sorteoOCSF($zona = null){
       $m = getMain();
       $fase = $this->fase - 1;
-      $eqs = (new GrupoController())->getClasificadosLlaves($m->anio, $this->copa, $fase);
+      $eqs = (new GrupoController())->getClasificadosLlaves($m->anio, $this->copa, $fase, $zona);
 
       
       $grupos = $this->getEmptyGrupos(count($eqs)/2, 2);
@@ -829,7 +943,7 @@ class Sorteo{
       $m = getMain();
       switch($copa){
         case 'afa':
-
+          $eqs = (new GrupoController())->getClasificados($m->anio, 'afa', 1);
         break;
         case 'argentina':
           $eqs = (new GrupoController())->getClasificados($m->anio, 'afa', -1, 'A');
