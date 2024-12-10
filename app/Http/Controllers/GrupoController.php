@@ -799,6 +799,33 @@ class GrupoController extends Controller
     
   }
 
+  private function getCampeon($anio, $copa, $zona = null){
+    return EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC'
+                ])
+                ->whereHas('grupo', function($query) use ($anio, $copa, $zona) {
+                $query->where('completed', true)
+                      ->where('anio', $anio)
+                      ->where('copa', $copa)  
+                      ->where('fase', 5);  
+
+                 if($zona){
+                    $query->where('zona', $zona);
+                 }     
+            })
+              ->where('pos', 1)
+              ->first();
+  }
+
+
+  public function estadisticas($copa, $zona = null){
+    $m = getMain();
+    $campeon = $this->getCampeon($m->anio, $copa, $zona);
+    return view('home.estadisticas', compact('campeon', 'copa', 'zona'));
+  }
+
 
   
 }

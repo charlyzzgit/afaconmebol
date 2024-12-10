@@ -34,6 +34,29 @@ class Admin{
 
 
     public function getData(){
+      if(!$this->calendar){
+        return [
+                'calendar_id' => null,
+                'action' => 'FIN',
+                'redirect' => null,
+                'anio' => $this->main->anio,
+                'copas' => null,
+                'namecopa' => null,
+                'colorcopa' => null,
+                'imagecopa' => null,
+                'fase' => null,
+                'namefase' => null,
+                'fecha' => null,
+                'namefecha' => null,
+                'iniciada' => false,
+                'procesada' => false,
+                'mes' =>null,
+                'semana' => null,
+                'partido' => null,
+                'ida' => null
+
+      ];
+      }
       $c = json_decode($this->calendar->copas);
       $namecopa = count($c) ? $c[0] : null;
       $next = (new PartidoController())->nextPartido($this->main->anio, $namecopa, $this->calendar->fase, $this->calendar->fecha, null); //zona = getZona(copa)

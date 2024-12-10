@@ -112,6 +112,11 @@
             <img src="{{ asset('resources/default/conmebol.png') }}" height="60%">
             <h2><b class="title"></b></h2>
           </div>
+
+          <div id="fin-temporada" class="footer col-12 flex-col-center-center">
+            <img src="{{ asset('resources/default/conmebol.png') }}" height="60%">
+            <h2><b class="title"></b></h2>
+          </div>
         
           <div id="sorteo" class="footer col-12 flex-row-around-center flex-wrap">
             <!-- <img id="afa-c" class="img-cup m-1" src="{{ asset('resources/default/afa_c.png') }}">
@@ -450,6 +455,11 @@
           $('#fecha').show()
         }
         
+      break
+    case 'FIN':
+        setCristal($('#fin-temporada'), 'negro')
+        $('#fin-temporada .title').html('fin temporada ' + MAIN.anio)
+        $('#fin-temporada').show()
       break
     }
     

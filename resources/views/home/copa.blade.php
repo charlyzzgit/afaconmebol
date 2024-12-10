@@ -836,6 +836,10 @@
      
       name.html(eq.equipo.name)
       setEquipoUI(campeon, eq.equipo, 1)
+
+      p.click(function(){
+        nextPage("{{ route('home') }}", ['home', 'estadisticas', copa, zona], true)
+      })
     }
     
 

@@ -286,9 +286,9 @@ class AutoPartidoCommand extends Command
         break;
         case 11: 
         dump('----------------------AFA FINAL--------------------------------');
-          // $this->iniciarFecha();
-          // $this->jugarFecha('afa', 5, 1);
-          // $this->iniciarFecha();
+          $this->iniciarFecha();
+          $this->jugarFecha('afa', 5, 1);
+          $this->iniciarFecha();
           $this->jugarFecha('afa', 5, 2);
           
           dd('----------------------FINALIZADO----------------------------');

@@ -87,6 +87,8 @@ Route::prefix('home')->group(function(){
    Route::get('anual', [App\Http\Controllers\GrupoController::class, 'getTablaAnual'])->name('home.tabla-anual');
 
    Route::get('candidatos/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'candidatos'])->name('home.candidatos');
+
+   Route::get('estadisticas/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'estadisticas'])->name('home.estadisitcas');
 });
 
 
