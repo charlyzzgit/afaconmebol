@@ -36,7 +36,7 @@ class CopaController extends Controller
       }
       
       $grupos = (new GrupoController())->getGrupos($m->anio, $copa, $fase, $zona);
-
+      //dd($m->anio, $copa, $fase, $zona);
       $we =  null;
       if($copa == 'afa' && $fase >= 2 && $zona == 'b'){
         $we = json_encode((new GrupoController())->getWaitAfaA($m->anio));

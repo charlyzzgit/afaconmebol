@@ -113,9 +113,9 @@
     #copa{
       position: absolute;
       top:50%;
-      left: 50%;
-      height: 100px;
-      transform: translate(-50%, -50%);
+      right: 70px;
+      height: 130px;
+      transform: translateY(-50%);
       z-index: 0;
     }
 
@@ -126,6 +126,16 @@
       height: 60px;
       transform: translate(-50%, -50%);
       z-index: 2;
+    }
+
+    #fases{
+      position: absolute;
+      bottom: -100%;
+      left: 0;
+      z-index: 1000000;
+    }
+    .fase{
+      font-size: 40px;
     }
 
 
@@ -313,6 +323,9 @@
     @endfor
 
     <div class="key key-1"></div>
+    
+  </div>
+  <div id="fases" class="col-12 flex-col-start-center cristal" data-state="closed">
   </div>
 </div>
 
@@ -331,6 +344,7 @@
       group_order = 1,
       WE = null,
       KEYS = null,
+      CAMPEON = getCampeon(),
       colorCopa = getColorCopa(copa, true)
   @isset($we)
       WE = {!! $we !!}
@@ -368,6 +382,50 @@
     li.data('grupo', g.grupo)
 
     return li
+  }
+
+  function getLiFase(f){
+    var fs = $('<div class="fase col-12 flex-row-center-center"></div>'),
+        name = getNameFase(copa, f, zona),
+        col = getColorFase(f)
+    fs.html(name)
+    textColor(fs, 'blanco', col.a.name, 1)
+    setGradientDuo(fs, col.a, col.b)
+    fs.data('fase', f).click(function(){
+      var f = $(this).data('fase'),
+          url = "{{ route('home') }}",
+          copazona = copa == 'afa' ? [copa, zona].join('-') : copa,
+          params = ['home', 'copa', copazona, f]
+       
+       nextPage(url, params, true)
+    })
+
+    return fs
+
+  }
+
+  function fasesList(){
+    var desde = 0
+    switch(copa){
+      case 'afa':
+        desde = zona == 'a' ? -2: (zona == 'b' ? -1 : 0)
+      break
+      case 'argentina':
+        desde = 1
+      break
+      case 'sudamericana': case 'libertadores':
+        desde = 0
+      break
+      default:
+        desde = 5
+      break
+    }
+    for(var f = 5; f >= desde; f--){
+      if(!(copa == 'afa' && (f == 2 || f == 3) && zona == 'a')){
+        $('#fases').append(getLiFase(f))
+      }
+      
+    }
   }
 
 
@@ -668,8 +726,8 @@
     if(KEYS == null){
       return
     }
-
-    setBackDuo($('#keys'), parseColor(colorCopa.b), parseColor(colorCopa.a), true)
+    radialGradient($('#keys'),colorCopa.a, colorCopa.b)
+    //setBackDuo($('#keys'), parseColor(colorCopa.b), parseColor(colorCopa.a), true)
      for(var f = 1; f <= 5; f++){
       var keyName = null,
           keys = getKeysFase(f)
@@ -730,6 +788,15 @@
      if(copa == 'afa' && zona == 'a'){
       $('.k-16, .k-8, .k-4').find('img').css('visibility', 'hidden')
       $('.key-16, .key-8, .key-4').hide()
+     }
+
+     if(copa == 'recopa'){
+      $('.k-16, .k-8, .k-4, .k-2').find('img').css('visibility', 'hidden')
+      $('.key-16, .key-8, .key-4, .key-2').hide()
+     }
+
+     if(CAMPEON != null){
+       setImageEquipo($('#campeon'), CAMPEON.equipo, 'escudo')
      }
 
   }
@@ -795,6 +862,18 @@
     })
   }
 
+  function getCampeon(){
+    var cmp = null
+    if(fase == 5){
+      if(grupos.length != 0){
+        if(grupos[0].equipos_position[0].j != 0){
+          cmp = grupos[0].equipos_position[0]
+        }
+      }
+    }
+    return cmp
+  }
+
 
    $(function(){
     if(routeName.includes('general')){
@@ -811,12 +890,8 @@
     }
     setBar($('#bar'), src_copa, title, getColorCopa(copa), 'grupos', zona)
     setMenu()
-    if(fase == 5){
-      if(grupos.length != 0){
-        if(grupos[0].equipos_position[0].j != 0){
-          setPodio(grupos[0].equipos_position[0])
-        }
-      }
+    if(CAMPEON != null){
+      setPodio(CAMPEON)
     }
     
     footer.empty()
@@ -869,6 +944,20 @@
           toGroup(-1)
         }))
 
+      footer.append(getBtnFooter('negro', null, 'fas fa-circle-right', function(){
+          var k = $('#fases'),
+              position = 0
+          if(k.data('state') == 'closed'){
+            k.data('state', 'open')
+            position = 0
+          }else{
+            k.data('state', 'closed')
+            position = -100
+          }
+          k.animate({bottom: position + '%'}, 150)
+        }))
+
+
       footer.append(getBtnFooter('negro', null, 'fas fa-sitemap', function(){
           var k = $('#keys'),
               position = 0
@@ -888,6 +977,7 @@
     
 
     listar()
+    fasesList()
      preload()
    })
 </script>

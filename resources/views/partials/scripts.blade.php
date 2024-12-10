@@ -715,6 +715,14 @@ function setBackDuo(obj, cola, colb, vertical){
   $(obj).css('background', 'linear-gradient(' + deg + 'deg, rgba(' + rgbaA.join(', ') + '), rgba(' + rgbaB.join(', ') + '))')
 }
 
+function setGradientDuo(obj, cola, colb, vertical){
+
+  var rgbaA = cola.rgb + ',1',
+    rgbaB = colb.rgb + ',1',
+    deg = vertical !== undefined ? 90 : 0
+  $(obj).css('background', 'linear-gradient(' + deg + 'deg, rgba(' + rgbaA + '), rgba(' + rgbaB + '))')
+}
+
 
 function parseRGB(rgb){
   var chanels = rgb.split(',')
@@ -976,7 +984,7 @@ function setImageFlag(img, src){
 
 
 function getNameFase(copa, fase, zona){
-  var z = zona != null ? zona + ' - ' : ''
+  var z = (zona != null && zona != '') ? zona + ' - ' : ''
   switch(fase){
     case -2: return 'fase preliminar';
     case -1: return z + '1ª fase';
@@ -1259,6 +1267,19 @@ function bcColor(eq){
     return eq.color_a
   }
   return eq.color_c
+}
+
+function getColorFase(f){
+  switch(f){
+    case -2: return {a: parseColor('azuloscuro'), b: parseColor('azul')}
+    case -1: return {a: parseColor('verdeoscuro'), b: parseColor('verde')}
+    case 0: return {a: parseColor('celeste'), b: parseColor('cielo')}
+    case 1: return {a: parseColor('naranja'), b: parseColor('amarillo')}
+    case 2: return {a: parseColor('marronclaro'), b: parseColor('amarillo')}
+    case 3: return {a: parseColor('verde'), b: parseColor('verdeclaro')}
+    case 4: return {a: parseColor('azul'), b: parseColor('celeste')}
+    default: return {a: parseColor('rojo'), b: parseColor('naranja')}
+  }
 }
 
 
