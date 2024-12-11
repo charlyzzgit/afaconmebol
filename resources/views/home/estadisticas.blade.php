@@ -66,10 +66,44 @@
       z-index: 2000000;
     }
 
+    #escudos{
+      position: absolute;
+      left:0;
+      bottom: 230px;
+      z-index: 1000000;
+    }
+
     .jugador{
       width: 45px;
       height: 150px;
       object-fit: cover;
+    }
+
+    #copa{
+      position: absolute;
+      bottom: 250px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 100px;
+      z-index: 3000000000;
+    }
+
+    #champion-bar{
+      position: absolute;
+      top:50px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      border-radius: 20px;
+    }
+
+    #cup-bar{
+      position: absolute;
+      top:150px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      border-radius: 15px;
     }
 </style>
 <div id="fondo" class="col-12 box-content p-1">
@@ -80,6 +114,24 @@
     </div>
     <b class="subtitle"></b>
   </div>
+  <div id="champion-bar" class="col-11 flex-row-between-center p-2 cristal">
+    <img src="{{ asset('resources/default/escudo.png') }}" class="mr-3" height="50">
+    <h4 class="m-0">
+      <b>independiente medellin</b>
+    </h4>
+    <img src="{{ asset('resources/default/escudo.png') }}" class="ml-3" height="50">
+  </div>
+
+  <div id="cup-bar" class="col-9 flex-row-between-center p-2 cristal">
+    <img src="{{ asset('resources/default/libertadores.png') }}" class="mr-3" height="50">
+    <h5 class="m-0 text-center">
+      <b>campeon</b>
+      <br>
+      <b>libertadores</b>
+    </h5>
+    <img src="{{ asset('resources/default/libertadores.png') }}" class="mr-3" height="50">
+  </div>
+
   <div id="cesped" class="col-12"></div>
   <div id="grada" class="col-12 flex-col-start-center">
     <div class="col-12 plataforma"></div>
@@ -88,6 +140,11 @@
   <div id="jugadores-top" class="col-12 flex-row-center-center">
     @for($i = 0; $i < 11; $i++)
       <img src="{{ asset('resources/default/jugador.png') }}" class="jugador">
+    @endfor
+  </div>
+  <div id="escudos" class="col-12 flex-row-center-center">
+    @for($i = 0; $i < 11; $i++)
+      <img src="{{ asset('resources/default/escudo.png') }}" class="m-2" height="50">
     @endfor
   </div>
   <div id="jugadores-bottom" class="col-12 flex-row-center-center">
@@ -127,6 +184,7 @@
     </div>
     </div>
   </div>
+  <img id="copa" src="{{ asset('resources/default/libertadores.png') }}">
 </div>
 
 
@@ -183,6 +241,8 @@
     setGradient($('.plataforma'), 180, [campeon.equipo.color_b.rgb, campeon.equipo.color_a.rgb, campeon.equipo.color_a.rgb, campeon.equipo.color_a.rgb], [0, 20, 80, 100])
     setGradient($('.escalon'), 180, [campeon.equipo.color_c.rgb, campeon.equipo.color_a.rgb, campeon.equipo.color_a.rgb, campeon.equipo.color_a.rgb], [0, 20, 80, 100])
     setPlantel()
+
+    setImageEquipo($('#escudos img'), campeon.equipo, 'escudo')
 
     preload()
    })
