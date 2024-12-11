@@ -279,4 +279,49 @@ class PartidoController extends Controller
 
     return view('home.partidos', ['equipo' => $equipo, 'copa' => $grupo->copa, 'fase' => $grupo->fase, 'zona' => $grupo->zona, 'partidos' => $partidos]);
   }
+
+
+  public function estadisticas($copa_zona, $filter, $equipo_id = null){
+    $m = getMain();
+    $copa = copaZona($copa_zona, 0);
+    $zona = copaZona($copa_zona, 1);
+    $fase = 500;
+
+    $partidos = Partido::with([
+                                'grupo',
+                                'local.colorA',
+                                'local.colorB',
+                                'local.colorC',
+                                'local.liga',
+                                'local.camiseta',
+                                'local.alternativa',
+                                'visitante.colorA',
+                                'visitante.colorB',
+                                'visitante.colorC',
+                                'visitante.camiseta',
+                                'visitante.alternativa'
+                              ])
+                              ->where('anio', $m->anio)
+                              ->where('copa', $copa)
+                              ->where('fase', $fase);
+
+    if($zona){
+      $partidos = $partidos->where('zona', $zona);
+    }
+
+    $partidos = $partidos->orderBy('fecha')
+                         ->orderBy('dia')
+                         ->orderBy('hora')
+                         ->get()
+                         ->map(function($row){
+                            $colors = colorGrupo($row->grupo->grupo);
+                            $row->a = $colors['a'];
+                            $row->b = $colors['b'];
+                            $row->detalle = $row->detalle ? json_decode($row->detalle) : [];
+                            return $row;
+                         });
+
+                        
+    return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos', 'filter'));
+  }
 }

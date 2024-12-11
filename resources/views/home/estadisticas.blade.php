@@ -127,7 +127,7 @@
     <h5 class="m-0 text-center">
       <b>campeon</b>
       <br>
-      <b>libertadores</b>
+      <b>{{ $zona ? $copa.' - '.$zona : $copa }}</b>
     </h5>
     <img src="{{ asset('resources/default/libertadores.png') }}" class="mr-3" height="50">
   </div>
@@ -154,31 +154,31 @@
   </div>
   <div id="botonera" class="col-12 flex-row-around-center flex-wrap p-2">
     <div class="btn-est col-12 p-2">
-      <div class="inner col-12 flex-row-center-center h-100 p-2 cristal">
+      <div id="btn-campania" class="inner col-12 flex-row-center-center h-100 p-2 cristal">
         <img src="{{ asset('resources/default/escudo.png') }}" height="80%">
       <b class="ml-3">campaña</b>
     </div>
     </div>
     <div class="btn-est col-6 p-2">
-      <div class="inner col-12 flex-row-center-center h-100 p-2 cristal">
+      <div id="btn-posiciones" class="inner col-12 flex-row-center-center h-100 p-2 cristal">
         <img src="{{ asset('resources/default/escudo.png') }}" height="80%">
       <b class="ml-3">posiciones</b>
     </div>
     </div>
     <div class="btn-est col-6 p-2">
-      <div class="inner col-12 flex-row-center-center h-100 p-2 cristal">
+      <div id="btn-equipos" class="inner col-12 flex-row-center-center h-100 p-2 cristal">
         <img src="{{ asset('resources/default/escudo.png') }}" height="80%">
       <b class="ml-3">equipos</b>
     </div>
     </div>
     <div class="btn-est col-6 p-2">
-      <div class="inner col-12 flex-row-center-center h-100 p-2 cristal">
+      <div id="btn-partidos" class="inner col-12 flex-row-center-center h-100 p-2 cristal">
         <img src="{{ asset('resources/default/logo.png') }}" height="80%">
       <b class="ml-3">partidos</b>
     </div>
     </div>
     <div class="btn-est col-6 p-2">
-      <div class="inner col-12 flex-row-start-center h-100 p-2 cristal">
+      <div id="btn-goleadores" class="inner col-12 flex-row-start-center h-100 p-2 cristal">
         <img src="{{ asset('resources/default/jugador.png') }}" height="80%">
       <b class="ml-3">goleadores</b>
     </div>
@@ -225,9 +225,14 @@
     }
    }
 
+   function setBtn(btn, col){
+      setCristalBorder(btn, parseColor(col), parseColor('blanco'), 1)
+      setText(btn, parseColor('blanco'), parseColor(col), .1)
+   }
+
    $(function(){
 
-    setBar($('#bar'), src_copa, 'estadisitcas', 'naranja', '', zona)
+    setBar($('#bar'), src_copa, copa != 'afa' ? copa : [copa, zona].join(' - '), 'naranja', 'estadisitcas', zona)
     footer.empty()
     footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
         nextPage("{{ route('home') }}", ['home', 'inicio'])
@@ -241,9 +246,28 @@
     setGradient($('.plataforma'), 180, [campeon.equipo.color_b.rgb, campeon.equipo.color_a.rgb, campeon.equipo.color_a.rgb, campeon.equipo.color_a.rgb], [0, 20, 80, 100])
     setGradient($('.escalon'), 180, [campeon.equipo.color_c.rgb, campeon.equipo.color_a.rgb, campeon.equipo.color_a.rgb, campeon.equipo.color_a.rgb], [0, 20, 80, 100])
     setPlantel()
-
+    setImageCopa($('#copa'), copa != 'afa' ? copa : [copa, zona].join('_'))
+    setImageCopa($('#cup-bar img'), copa != 'afa' ? copa : [copa, zona].join('_'))
     setImageEquipo($('#escudos img'), campeon.equipo, 'escudo')
+    setImageEquipo($('#champion-bar img'), campeon.equipo, 'escudo')
+    $('#champion-bar b').html(campeon.equipo.name)
+    setCristalBorder($('#champion-bar'), campeon.equipo.color_a, campeon.equipo.color_b, 1)
+    setText($('#champion-bar'), campeon.equipo.color_b, bcColor(campeon.equipo), .1)
 
+    setCristalBorder($('#cup-bar'), parseColor(getColorCopa(copa, true).a), parseColor(getColorCopa(copa, true).b), 1)
+    setText($('#cup-bar'), parseColor('blanco'), parseColor(getColorCopa(copa, true).b), .1)
+    
+
+
+    setCristalBorder($('#btn-campania'), campeon.equipo.color_a, campeon.equipo.color_b, 1)
+    setText($('#btn-campania'), campeon.equipo.color_b, bcColor(campeon.equipo), .1)
+    setImageEquipo($('#btn-campania img'), campeon.equipo, 'escudo')
+
+
+    setBtn($('#btn-posiciones'), 'amarillo')
+    setBtn($('#btn-equipos'), 'rojo')
+    setBtn($('#btn-partidos'), 'verde')
+    setBtn($('#btn-goleadores'), 'celeste')
     preload()
    })
 </script>
