@@ -83,6 +83,12 @@
       border-radius: 5px;
      
     }
+
+    @isset($equipo)
+      #list{
+        height:calc(100% - 90px)
+      }
+    @endisset
 </style>
 <div class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
@@ -93,9 +99,10 @@
     <b class="subtitle">partidos</b>
   </div>
   @isset($equipo)
-    <div id="box-equipo" class="col-12 flex-row-start-center mt-1 mb-1 p-1">
+    <div id="box-equipo" class="col-12 flex-row-between-center mt-1 mb-1 p-1">
       <img class="escudo" src="{{ asset('resources/default/escudo.png') }}" height="30">
       <b class="name ml-3">independiente medellin</b>
+      <img class="jugador" src="{{ asset('resources/default/jugador.png') }}" height="30">
     </div>
   @endisset
   <ul id="list" class="list col-12 flex-col-start-center p-1 m-0"></ul>
@@ -220,8 +227,8 @@
 
     setCristalRGB(body, p.local.color_a)
 
-    nameloc.html(p.local.name)
-    namevis.html(p.visitante.name)
+    nameloc.html(textFormat(p.local.name, 14))
+    namevis.html(textFormat(p.visitante.name, 14))
 
     nameestadio.html('estadio ' + p.local.name)
     diahora.html([getDia(p.dia), p.hora + 'hs.'].join(' - '))
@@ -348,6 +355,7 @@
     if(E != null){
       setEquipoUI($('#box-equipo'), E, 1)
       setImageEquipo($('#box-equipo .escudo'), E, 'escudo')
+      setImageEquipo($('#box-equipo .jugador'), E, 'local')
       $('#box-equipo .name').html(E.name)
     }
     footer.empty()

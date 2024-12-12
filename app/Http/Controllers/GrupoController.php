@@ -826,6 +826,89 @@ class GrupoController extends Controller
     return view('home.estadisticas', compact('campeon', 'copa', 'zona'));
   }
 
+  public function estadisticasEquipos($copa, $filter, $zona = null){
+    $m = getMain();
+    $anio = $m->anio;
+    $campeon = $this->getCampeon($anio, $copa, $zona);
 
-  
+    $eqs = EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC'
+                ])
+                ->select(
+                          'equipo_id',
+                          'estado',
+                          DB::raw('SUM(j) as j'),
+                          DB::raw('SUM(g) as g'),
+                          DB::raw('SUM(e) as e'),
+                          DB::raw('SUM(p) as p'),
+                          DB::raw('SUM(gf) as gf'),
+                          DB::raw('SUM(gc) as gc'),
+                          DB::raw('SUM(gv) as gv'),
+                          DB::raw('SUM(d) as d'),
+                          DB::raw('SUM(pts) as pts')
+                        )
+                ->whereHas('grupo', function($query) use ($anio, $copa, $zona) {
+                $query->where('anio', $anio)
+                      ->where('copa', $copa);  
+                if($zona){
+                  $query = $query->where('zona', $zona);
+                }     
+            })
+            ->groupBy('equipo_id');
+
+    switch($filter){
+      case 'posiciones':
+        $eqs = $this->posicionesFinales($eqs);
+
+      break;
+    }
+
+    $eqs = $eqs->get()
+                ->map(function($e, $index){
+                  $e->pos = $index + 1;
+                  $e->estado = 0;
+                  return $e;
+              });
+    if($filter == 'posiciones'){ 
+      if($campeon->equipo_id == $eqs[1]->equipo_id){
+            $aux = $eqs[1]->equipo_id;
+            $eqs[1] = $eqs[0];
+            $eqs[0] = $aux;
+      }
+    }
+    //$eqs->load('equipo');
+    $colors = colorGrupo(300);
+    $grupos = json_encode([
+                  [
+                    'anio' => $anio,
+                    'a' => $colors['a'],
+                    'b' => $colors['b'],
+                    'copa' => 'afa',
+                    'equipos_position' => $eqs,
+                    'fase' => 0,
+                    'grupo' => 'posiciones finales',
+                    'zona' => null,
+                  
+                  ]
+
+    ]);
+   
+     return view('home.copa', ['copa' => $copa, 'fase' => 0, 'zona' => $zona, 'grupos' => $grupos, 'filter' => $filter]);   
+  }
+
+
+  private function posicionesFinales($eqs){
+     return $eqs->orderBy('j', 'desc')
+                ->orderBy('pts', 'desc')
+                ->orderBy('d', 'desc')
+                ->orderBy('gf', 'desc')
+                ->orderBy('gc')
+                ->orderBy('gv')
+                ->orderBy('g', 'desc')
+                ->orderBy('p');
+  }
+              
+             
 }

@@ -320,9 +320,15 @@ class PartidoController extends Controller
                             $row->detalle = $row->detalle ? json_decode($row->detalle) : [];
                             return $row;
                          });
-
+    $equipo = Equipo::with([
+                  'colorA',
+                  'colorB',
+                  'colorC',
+                  'liga'
+                ])
+                 ->find($equipo_id);
                         
-    return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos', 'filter'));
+    return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos', 'filter', 'equipo'));
   }
 
   private function filterPartidos($partidos, $filter, $equipo_id = null){

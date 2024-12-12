@@ -272,6 +272,10 @@
     $('#btn-campania').click(function(){
       nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos', copa != 'afa' ? copa : [copa, zona].join('-'), 'campania', campeon.equipo.id], true)
     })
+
+    $('#btn-equipos').click(function(){
+      nextPage("{{ route('home') }}", ['home', 'estadisticas-equipos', copa, 'posiciones', zona], true);
+    })
     preload()
    })
 </script>

@@ -850,8 +850,10 @@ function colBordeUI(obj, col){
 }
 
 function setImageEquipo(img, eq, shape){
-  var src = eq.directory + shape + '.png'
-  img.prop('src', ASSET + src)
+  try{
+    var src = eq.directory + shape + '.png'
+    img.prop('src', ASSET + src)
+  }catch(e){}
 }
 
 function setBgGradientEq(obj, eq){
@@ -1002,6 +1004,7 @@ function getNameFase(copa, fase, zona){
     case 3: return z + 'cuartos de final';
     case 4: return z + 'semifinales';
     case 5: return z + 'final';
+    case 500: return 'campaña'
     default: return 'a definir';
   }
 }
@@ -1200,10 +1203,12 @@ function cambiar(loc, vis){
       return false
     }
 
+    return true
+
   }
   log('cambio', ['distinta'])
 
-  return true
+  return false
   
 }
 
@@ -1280,6 +1285,28 @@ function getColorFase(f){
     case 4: return {a: parseColor('azul'), b: parseColor('celeste')}
     default: return {a: parseColor('rojo'), b: parseColor('naranja')}
   }
+}
+
+function textFormat(text, maxCount){
+  var parts = text.split(' '),
+      r = '',
+      d = ''
+  for(var i = 0; i < parts.length; i++){
+    var prefix = i == 0 ? '' : ' '
+    if(r.length > maxCount){
+      d += prefix + parts[i]
+    }else{
+      r += prefix + parts[i]
+    }
+    
+    
+  }
+
+  if(r == '' || d == ''){
+    return r + d
+  }
+
+  return '<span>' + r + '<br>' + d + '</span>'
 }
 
 

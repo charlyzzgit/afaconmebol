@@ -430,6 +430,7 @@
 
 
   function getLiEquipo(eg, index){
+    log('li equipo', [eg])
     var li = $('<li class="equipo col-12 flex-col-start-center pl-1 pr-1 pt-3 pb-3 mb-1">\
                 <div class="col-12 flex-row-between-center">\
                   <div class="flex-row-start-center">\

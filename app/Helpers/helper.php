@@ -417,7 +417,7 @@ function copaZona($str, $index){
 
 function colorGrupo($gp){
       switch($gp){
-        case 1: return [ 'a' => Color::where('name', 'rojo')->first(), 'b' => Color::where('name', 'naranja')->first()];
+        case 1: case 300: return [ 'a' => Color::where('name', 'rojo')->first(), 'b' => Color::where('name', 'naranja')->first()];
         case 2: return [ 'a' => Color::where('name', 'azul')->first(), 'b' => Color::where('name', 'celeste')->first()];
         case 3: return [ 'a' => Color::where('name', 'verde')->first(), 'b' => Color::where('name', 'verdeclaro')->first()];
         case 4: return [ 'a' => Color::where('name', 'amarillo')->first(), 'b' => Color::where('name', 'crema')->first()];
