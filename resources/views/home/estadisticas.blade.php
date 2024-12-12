@@ -268,6 +268,10 @@
     setBtn($('#btn-equipos'), 'rojo')
     setBtn($('#btn-partidos'), 'verde')
     setBtn($('#btn-goleadores'), 'celeste')
+
+    $('#btn-campania').click(function(){
+      nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos', copa != 'afa' ? copa : [copa, zona].join('-'), 'campania', campeon.equipo.id], true)
+    })
     preload()
    })
 </script>

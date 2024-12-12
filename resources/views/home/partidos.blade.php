@@ -124,7 +124,7 @@
        copa = '{{ $copa }}',
        fase = parseInt('{{ $fase }}'),
        zona = '{{ $zona }}',
-       src_copa = 'default/' + copa + (zona != null ? '_' + zona : '') + '.png',
+       src_copa = 'default/' + copa + (zona != null && zona != '' ? '_' + zona : '') + '.png',
        ul = $('#list'),
        E = null
 

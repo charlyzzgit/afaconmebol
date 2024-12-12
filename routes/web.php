@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::get('/{grupo_id?}', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+//Route::get('/{grupo_id?}', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/online', [App\Http\Controllers\HomeController::class, 'onLine'])->name('online');
 
@@ -89,6 +89,8 @@ Route::prefix('home')->group(function(){
    Route::get('candidatos/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'candidatos'])->name('home.candidatos');
 
    Route::get('estadisticas/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'estadisticas'])->name('home.estadisitcas');
+
+   Route::get('estadisticas-partidos/{copa_zona}/{filter}/{id?}', [App\Http\Controllers\PartidoController::class, 'estadisticas'])->name('home.estadisitcas-partidos');
 });
 
 

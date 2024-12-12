@@ -302,17 +302,17 @@ class PartidoController extends Controller
                                 'visitante.alternativa'
                               ])
                               ->where('anio', $m->anio)
-                              ->where('copa', $copa)
-                              ->where('fase', $fase);
+                              ->where('copa', $copa);
+
+
 
     if($zona){
       $partidos = $partidos->where('zona', $zona);
     }
 
-    $partidos = $partidos->orderBy('fecha')
-                         ->orderBy('dia')
-                         ->orderBy('hora')
-                         ->get()
+    $partidos = $this->filterPartidos($partidos, $filter, $equipo_id);
+//sql($partidos);
+    $partidos = $partidos->get()
                          ->map(function($row){
                             $colors = colorGrupo($row->grupo->grupo);
                             $row->a = $colors['a'];
@@ -323,5 +323,20 @@ class PartidoController extends Controller
 
                         
     return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos', 'filter'));
+  }
+
+  private function filterPartidos($partidos, $filter, $equipo_id = null){
+    switch($filter){
+      case 'campania':
+        $partidos = $partidos->where(function($q) use($equipo_id){
+          $q->where('loc_id', $equipo_id)
+            ->orWhere('vis_id', $equipo_id);
+        })
+          ->orderBy('fase')
+          ->orderBy('fecha');
+      break;
+    }
+    
+    return $partidos;
   }
 }

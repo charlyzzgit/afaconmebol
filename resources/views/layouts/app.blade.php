@@ -114,7 +114,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary bg-dark elevation-4">
     <!-- Brand Logo -->
-    <a href="{{ route('home') }}" class="brand-link">
+    <a href="{{ route('admin.home') }}" class="brand-link">
       <img src="{{ asset('images/logo.png') }}" alt="logo" class="brand-image -img-circle -elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">FUTBOL</span>
     </a>
@@ -159,7 +159,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item" data-page="home">
-                <a href="{{ route('home') }}" class="nav-link">
+                <a href="{{ route('admin.home') }}" class="nav-link">
                   <i class="fa fa-home nav-icon"></i>
                   <p>Inicio</p>
                 </a>
@@ -234,7 +234,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
         <div class="col-sm-3 flex-row-end-center">
           <!-- <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="{{ route('home') }}"></a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.home') }}"></a></li>
             
             
           </ol> -->
@@ -343,7 +343,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         evt.preventDefault()
         sendRequest("{{ route('user.logout') }}", { _token: '{{ csrf_token() }}'}, function(data){
            if(data.result == 'OK'){
-             redirect("{{ route('home') }}")
+             redirect("{{ route('admin.home') }}")
            }else{
              Swal.fire('{{ __('auth.logout') }}', data.message, 'error')
            }
