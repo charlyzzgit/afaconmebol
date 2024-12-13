@@ -1,3 +1,4 @@
+{{--@dd(get_defined_vars())--}}
 <style>
     .equipo .name{
       font-size: 25px;
@@ -128,7 +129,7 @@
       z-index: 2;
     }
 
-    #fases{
+    #fases, #estadisticas-equipos{
       position: absolute;
       bottom: -100%;
       left: 0;
@@ -325,8 +326,8 @@
     <div class="key key-1"></div>
     
   </div>
-  <div id="fases" class="col-12 flex-col-start-center cristal" data-state="closed">
-  </div>
+  <div id="fases" class="col-12 flex-col-start-center cristal" data-state="closed"></div>
+  <div id="estadisticas-equipos" class="col-12 flex-col-start-center cristal" data-state="closed"></div>
 </div>
 
 
@@ -345,7 +346,17 @@
       WE = null,
       KEYS = null,
       CAMPEON = getCampeon(),
-      colorCopa = getColorCopa(copa, true)
+      colorCopa = getColorCopa(copa, true),
+      estadisticas = [
+        {filter:'mejor', a:'rojo', b: 'naranja'},
+        {filter:'mas-goleador', a:'azul', b: 'celeste'},
+        {filter:'mas-efectivo', a:'verde', b: 'verdeclaro'},
+        {filter:'mejor-valla', a:'marronclaro', b: 'amarillo'},
+        {filter:'peor-valla', a:'naranja', b: 'amarillo'},
+        {filter:'menos-efectivo', a:'celeste', b: 'cielo'},
+        {filter:'menos-goleador', a:'verdeclaro', b: 'amarillo'},
+        {filter:'peor', a:'amarillo', b: 'crema'}
+        ]
   @isset($we)
       WE = {!! $we !!}
   @endisset
@@ -404,6 +415,25 @@
 
   }
 
+  function getLiEstadistica(e){
+    var fs = $('<div class="fase col-12 flex-row-center-center"></div>'),
+        name = getNameFase(copa, f, zona)
+    fs.html(name)
+    textColor(fs, 'blanco', e.a, 1)
+    setGradientDuo(fs, e.a, e.b)
+    fs.data('fase', f).click(function(){
+      var f = $(this).data('fase'),
+          url = "{{ route('home') }}",
+          copazona = copa == 'afa' ? [copa, zona].join('-') : copa,
+          params = ['home', 'copa', copazona, f]
+       
+       nextPage(url, params, true)
+    })
+
+    return fs
+
+  }
+
   function fasesList(){
     var desde = 0
     switch(copa){
@@ -426,6 +456,12 @@
       }
       
     }
+  }
+
+  function setEstadisticas(){
+    $.each(estadisticas, function(i, e){
+      $('#estadisticas-equipos').append(getLiEstadistica(e))
+    })
   }
 
 
@@ -961,6 +997,25 @@
           }
           k.animate({bottom: position + '%'}, 150)
         }))
+
+
+      @isset($filter)
+
+        setEstadisticas()
+        footer.append(getBtnFooter('naranja', null, 'fas fa-bars', function(){
+          var k = $('#estadisticas-equipos'),
+              position = 0
+          if(k.data('state') == 'closed'){
+            k.data('state', 'open')
+            position = 0
+          }else{
+            k.data('state', 'closed')
+            position = -100
+          }
+          k.animate({bottom: position + '%'}, 150)
+        }))
+
+      @endisset
 
 
       footer.append(getBtnFooter('negro', null, 'fas fa-sitemap', function(){

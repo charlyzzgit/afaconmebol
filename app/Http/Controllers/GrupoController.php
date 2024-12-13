@@ -458,6 +458,7 @@ class GrupoController extends Controller
                       ->orderBy('gc')
                       ->orderBy('gv')
                       ->orderBy('g', 'desc')
+                      ->orderBy('e', 'desc')
                       ->orderBy('p')
                       ->get();
 
@@ -488,6 +489,7 @@ class GrupoController extends Controller
               ->orderBy('gc')
               ->orderBy('gv')
               ->orderBy('g', 'desc')
+              ->orderBy('e', 'desc')
               ->orderBy('p')
               ->get()
               ->map(function($e, $index){
@@ -542,6 +544,7 @@ class GrupoController extends Controller
                 ->orderBy('gc')
                 ->orderBy('gv')
                 ->orderBy('g', 'desc')
+                ->orderBy('e', 'desc')
                 ->orderBy('p')
                 ->get();
     }
@@ -564,6 +567,7 @@ class GrupoController extends Controller
               ->orderBy('gc')
               ->orderBy('gv')
               ->orderBy('g', 'desc')
+              ->orderBy('e', 'desc')
               ->orderBy('p')
               ->get();
   }
@@ -590,6 +594,7 @@ class GrupoController extends Controller
               ->orderBy('gc')
               ->orderBy('gv')
               ->orderBy('g', 'desc')
+              ->orderBy('e', 'desc')
               ->orderBy('p')
               ->get();
               // ->map(function($e, $index){
@@ -664,6 +669,7 @@ class GrupoController extends Controller
               ->orderBy('gc')
               ->orderBy('gv')
               ->orderBy('g', 'desc')
+              ->orderBy('e', 'desc')
               ->orderBy('p')
               ->get()
               ->map(function($e, $index){
@@ -728,6 +734,7 @@ class GrupoController extends Controller
               ->orderBy('gc')
               ->orderBy('gv')
               ->orderBy('g', 'desc')
+              ->orderBy('e', 'desc')
               ->orderBy('p')
               ->get()
               ->map(function($e, $index){
@@ -863,6 +870,8 @@ class GrupoController extends Controller
         $eqs = $this->posicionesFinales($eqs);
 
       break;
+      case 'mejor': 
+        $eqs = $this->mejorEquipo($eqs);
     }
 
     $eqs = $eqs->get()
@@ -907,7 +916,34 @@ class GrupoController extends Controller
                 ->orderBy('gc')
                 ->orderBy('gv')
                 ->orderBy('g', 'desc')
+                ->orderBy('e', 'desc')
                 ->orderBy('p');
+  }
+
+  private function mejorEquipo($eqs){
+     $query = $eqs
+                ->orderBy('pts', 'desc')
+                ->orderBy('d', 'desc')
+                ->orderBy('gf', 'desc')
+                ->orderBy('gc')
+                ->orderBy('gv')
+                ->orderBy('g', 'desc')
+                ->orderBy('e', 'desc')
+                ->orderBy('p')
+                ->orderBy('j', 'desc');
+     $first = clone $query;
+     $e = $first->first();
+     return $query
+                ->where('pts', $e->pts)
+                ->orderBy('pts', 'desc')
+                ->orderBy('d', 'desc')
+                ->orderBy('gf', 'desc')
+                ->orderBy('gc')
+                ->orderBy('gv')
+                ->orderBy('g', 'desc')
+                ->orderBy('e', 'desc')
+                ->orderBy('p')
+                ->orderBy('j', 'desc');
   }
               
              
