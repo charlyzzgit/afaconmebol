@@ -92,6 +92,8 @@ Route::prefix('home')->group(function(){
 
    Route::get('estadisticas-partidos/{copa_zona}/{filter}/{id?}', [App\Http\Controllers\PartidoController::class, 'estadisticas'])->name('home.estadisitcas-partidos');
    Route::get('estadisticas-equipos/{copa}/{filter}/{zona?}', [App\Http\Controllers\GrupoController::class, 'estadisticasEquipos'])->name('home.estadisitcas-equipos');
+
+   Route::get('estadisticas-goleadores/{copa}/{zona?}', [App\Http\Controllers\GoleadoresController::class, 'estadisticas'])->name('home.estadisitcas-goleadores');
 });
 
 

@@ -936,7 +936,7 @@ class GrupoController extends Controller
               });
     if($filter == 'posiciones'){ 
       if($campeon->equipo_id == $eqs[1]->equipo_id){
-            $aux = $eqs[1]->equipo_id;
+            $aux = $eqs[1];
             $eqs[1] = $eqs[0];
             $eqs[0] = $aux;
       }

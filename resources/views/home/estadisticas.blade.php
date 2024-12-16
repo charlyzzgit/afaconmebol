@@ -85,7 +85,7 @@
       left: 50%;
       transform: translateX(-50%);
       height: 100px;
-      z-index: 3000000000;
+      z-index: 30000000;
     }
 
     #champion-bar{
@@ -275,6 +275,14 @@
 
     $('#btn-equipos').click(function(){
       nextPage("{{ route('home') }}", ['home', 'estadisticas-equipos', copa, 'posiciones', zona], true);
+    })
+
+    $('#btn-partidos').click(function(){
+      nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos', copa != 'afa' ? copa : [copa, zona].join('-'), '-'], true)
+    })
+
+    $('#btn-goleadores').click(function(){
+      nextPage("{{ route('home') }}", ['home', 'estadisticas-goleadores', copa, zona], true)
     })
     preload()
    })

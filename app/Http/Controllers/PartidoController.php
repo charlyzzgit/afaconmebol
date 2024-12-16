@@ -332,15 +332,78 @@ class PartidoController extends Controller
   }
 
   private function filterPartidos($partidos, $filter, $equipo_id = null){
+
     switch($filter){
       case 'campania':
         $partidos = $partidos->where(function($q) use($equipo_id){
           $q->where('loc_id', $equipo_id)
             ->orWhere('vis_id', $equipo_id);
-        })
-          ->orderBy('fase')
-          ->orderBy('fecha');
+        });
+
       break;
+      case 'mejor-partido':
+        
+        $s = 5;
+        while($s > 0){
+          $p = clone $partidos;
+          $p->where('s', '>=', $s)
+            ->where('d', '<=', 2)
+            ->orderBy('s', 'desc')
+            ->orderBy('d');
+          if($p->count()){
+            $partidos = $p;
+            break;
+          }else{
+            $s--;
+          }
+        }
+
+        //sql($partidos);
+      case 'maxima-goleada':
+        $query = $partidos->orderBy('d', 'desc')
+                          ->orderBy('s');
+        $first = clone $query;
+        $p = $first->first();
+         $query->having('d', $p->d)     
+               ->orderBy('d', 'desc')
+               ->orderBy('s')  
+               ->orderBy('dia', 'desc')
+               ->orderBy('hora', 'desc');
+      break;
+      case 'mas-goles':
+        $query = $partidos->orderBy('s', 'desc')
+                          ->orderBy('d');
+        $first = clone $query;
+        $p = $first->first();
+         $query->having('s', $p->s)     
+               ->orderBy('s', 'desc')
+               ->orderBy('d')  
+               ->orderBy('dia', 'desc')
+               ->orderBy('hora', 'desc');
+      break;
+      case 'peor-partido':
+        $query = $partidos->orderBy('s')
+                          ->orderBy('d');
+        $first = clone $query;
+        $p = $first->first();
+         $query->having('s', $p->s)     
+               ->orderBy('s')
+               ->orderBy('d')  
+               ->orderBy('dia', 'desc')
+               ->orderBy('hora', 'desc');
+      break;
+      case 'all':
+
+      break;
+      default:
+        $partidos = $partidos->where('fase', -10);
+      break;
+
+
+      $partidos = $partidos->orderBy('fase')
+                           ->orderBy('fecha')
+                           ->orderBy('dia')
+                           ->orderBy('hora');
     }
     
     return $partidos;

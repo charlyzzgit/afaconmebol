@@ -62,6 +62,16 @@
       border-radius: 10px;
     }
 
+    #estadisticas-partidos{
+      position: absolute;
+      bottom: -100%;
+      left: 0;
+      z-index: 1000000;
+    }
+    .e-item{
+      font-size: 40px;
+    }
+
     #modal-detalle{
       width: 100%;
       height: 100%;
@@ -106,6 +116,7 @@
     </div>
   @endisset
   <ul id="list" class="list col-12 flex-col-start-center p-1 m-0"></ul>
+  <div id="estadisticas-partidos" class="col-12 flex-col-start-center cristal" data-state="closed"></div>
 </div>
 
 
@@ -133,10 +144,22 @@
        zona = '{{ $zona }}',
        src_copa = 'default/' + copa + (zona != null && zona != '' ? '_' + zona : '') + '.png',
        ul = $('#list'),
-       E = null
+       E = null,
+       FILTER = null,
+       estadisticas = [
+        {filter:'mejor-partido', name: 'mejor partido', a:'rojo', b: 'naranja'},
+        {filter:'maxima-goleada', name: 'maxima goleada', a:'azul', b: 'celeste'},
+        {filter:'mas-goles', name: 'partido con mas goles', a:'verde', b: 'verdeclaro'},
+        {filter:'peor-partido', name: 'peor partido', a:'marronclaro', b: 'amarillo'},
+        {filter:'all', name: 'todos los partidos', a:'negro', b: 'gris'}
+        ]
 
     @isset($equipo)
       E = {!! $equipo !!}
+    @endisset
+
+    @isset($filter)
+      FILTER = '{{ $filter }}'
     @endisset
 
    
@@ -289,6 +312,29 @@
     preload()
   }
 
+  function getLiEstadistica(e){
+    var es = $('<div class="e-item col-12 flex-row-center-center"></div>')
+    es.html(e.name)
+    textColor(es, 'blanco', e.a, 1)
+    setGradientDuo(es, parseColor(e.a), parseColor(e.b))
+    es.data('filter', e.filter).click(function(){
+      var filter = $(this).data('filter'),
+          url = "{{ route('home') }}",
+          params = ['home', 'estadisticas-partidos', copa, filter, zona]
+       
+       nextPage(url, params, true)
+    })
+
+    return es
+
+  }
+
+  function setEstadisticas(){
+    $.each(estadisticas, function(i, e){
+      $('#estadisticas-partidos').append(getLiEstadistica(e))
+    })
+  }
+
   function detalle(p){
     
     var m = $('#modal-detalle'),
@@ -347,6 +393,19 @@
     return li
   }
 
+  function openMenuEstadisticas(){
+    var m = $('#estadisticas-partidos'),
+        position = 0
+    if(m.data('state') == 'closed'){
+            m.data('state', 'open')
+            position = 0
+    }else{
+            m.data('state', 'closed')
+            position = -100
+    }
+    m.animate({bottom: position + '%'}, 150)
+  }
+
 
    $(function(){
     $('#modal-detalle').css('visibility', 'visible').hide()
@@ -365,6 +424,19 @@
     footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
       goBack(true)
     }))
+
+    if(FILTER != null){
+
+        setEstadisticas()
+        footer.append(getBtnFooter('naranja', null, 'fas fa-bars', function(){
+          openMenuEstadisticas()
+        }))
+
+        if(FILTER == '-'){
+          openMenuEstadisticas()
+        }
+
+    }
      listar()
    })
 </script>

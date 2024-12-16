@@ -500,7 +500,7 @@
           name = getEl(li, 'name'),
          jugador = getEl(li, 'jugador'),
          pos = index !== undefined ? index + 1 : 0
-
+    
     setImageEquipo(escudo, eg.equipo, 'escudo')
     setImageEquipo(jugador, eg.equipo, 'local')
     name.html(eg.equipo.name)
@@ -992,7 +992,12 @@
     if(routeName != 'home.copa'){
 
       footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
-        goBack(true)
+        if(FILTER != null){
+          nextPage("{{ route('home') }}", ['home', 'estadisticas', copa, zona], true)
+        }else{
+          goBack(true)
+        }
+        
       }))
 
     }

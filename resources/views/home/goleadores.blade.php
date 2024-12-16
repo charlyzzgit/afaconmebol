@@ -26,7 +26,8 @@
       copa = '{{ $copa }}',
       zona = '{{ isset($zona) ? $zona : null }}',
       ul = $('#list'),
-      src_copa = 'default/' + copa + (zona != null ? '_' + zona : '') + '.png'
+      src_copa = 'default/' + copa + (zona != null ? '_' + zona : '') + '.png',
+      title = "{{ isset($estadisticas) ? 'maximo goleador' : 'goleadores'}}"
 
   log('goleadores', [zona,src_copa, goleadores])
   function getLiGoleador(g){
@@ -34,6 +35,7 @@
                   <div class="col-10 flex-row-start-center">\
                     <img class="escudo">\
                     <img class="jugador ml-1">\
+                    <b class="num ml-1"></b>\
                     <b class="name ml-1"></b>\
                   </div>\
                   <b class="goles"></b>\
@@ -41,10 +43,12 @@
               </li>'),
         equipo = g.equipo
     li.find('.name').html(equipo.name)
+    li.find('.num').html('N° ' + g.numero + ' - ')
     li.find('.goles').html(g.goles)
     setImageEquipo(li.find('.escudo'), equipo, 'escudo')
     setImageEquipo(li.find('.jugador'), equipo, 'local')
     setEquipoUI(li, equipo)
+    setText(li.find('.num'), equipo.color_b, bcColor(equipo), .05)
     setText(li.find('.goles'), equipo.color_b, bcColor(equipo), .05)
     
     return li
@@ -67,7 +71,7 @@
       footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
         goBack(true)
       }))
-    setBar($('#bar'), src_copa, copa + (zona != null ? (' - ' + zona) : ''), 'celeste', 'goleadores', zona)
+    setBar($('#bar'), src_copa, copa + (zona != null ? (' - ' + zona) : ''), 'celeste', title, zona)
   setCristal(ul, 'celeste')
      listar()
    })
