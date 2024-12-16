@@ -830,14 +830,37 @@ class GrupoController extends Controller
   public function estadisticas($copa, $zona = null){
     $m = getMain();
     $campeon = $this->getCampeon($m->anio, $copa, $zona);
+    
     return view('home.estadisticas', compact('campeon', 'copa', 'zona'));
+  }
+
+  private function maxPartidos($campeon, $anio, $copa, $zona){
+    $e = EquipoGrupo::select(
+                          'equipo_id',
+                          DB::raw('SUM(j) as j'),
+                         
+                        )
+                        ->whereHas('grupo', function($query) use ($anio, $copa, $zona) {
+                                    $query->where('anio', $anio)
+                                          ->where('copa', $copa);  
+                                    if($zona){
+                                      $query = $query->where('zona', $zona);
+                                    }     
+                                })
+                        ->where('equipo_id', $campeon->equipo_id)
+                        ->groupBy('equipo_id')
+                        ->first();
+
+    return $e->j;
+
   }
 
   public function estadisticasEquipos($copa, $filter, $zona = null){
     $m = getMain();
     $anio = $m->anio;
     $campeon = $this->getCampeon($anio, $copa, $zona);
-
+    $maxJ = $this->maxPartidos($campeon, $anio, $copa, $zona);
+    
     $eqs = EquipoGrupo::with([
                       'equipo.colorA',
                       'equipo.colorB',
@@ -870,14 +893,45 @@ class GrupoController extends Controller
         $eqs = $this->posicionesFinales($eqs);
 
       break;
-      case 'mejor': 
+      case 'mejor-equipo': 
         $eqs = $this->mejorEquipo($eqs);
-    }
+      break;
+      case 'mas-goleador':
+        $eqs = $this->masGoleador($eqs);
+      break;
+      case 'mas-efectivo':
+        $efs = $this->efectivo($eqs, $maxJ, true);
+        $ids = array_column($efs, 'equipo_id');
+        
+        $eqs= $eqs->whereIn('equipo_id', $ids);
 
+      break;
+      case 'mejor-valla':
+        $eqs = $this->mejorValla($eqs);
+      break;
+      case 'peor-valla':
+        $eqs = $this->peorValla($eqs);
+      break;
+      case 'menos-efectivo':
+        $efs = $this->efectivo($eqs, $maxJ, false);
+        $ids = array_column($efs, 'equipo_id');
+        
+        $eqs= $eqs->whereIn('equipo_id', $ids);
+
+      break;
+      case 'menos-goleador':
+        $eqs = $this->menosGoleador($eqs);
+      break;
+      case 'peor-equipo': 
+        $eqs = $this->peorEquipo($eqs);
+      break;
+    }
+    //sql($eqs);
     $eqs = $eqs->get()
                 ->map(function($e, $index){
                   $e->pos = $index + 1;
                   $e->estado = 0;
+                  
                   return $e;
               });
     if($filter == 'posiciones'){ 
@@ -887,7 +941,30 @@ class GrupoController extends Controller
             $eqs[0] = $aux;
       }
     }
-    //$eqs->load('equipo');
+    
+    if($filter == 'mas-efectivo' || $filter == 'menos-efectivo'){
+      $efectivos = [];
+      foreach($eqs as $e){
+        $ef = array_filter($efs, function($item) use ($e) {
+                  return $item['equipo_id'] === $e->equipo_id;
+              });
+        if(count($ef)){
+          if(!isset($ef[0])){
+            continue;
+          }
+          $e->gxp = $ef[0]['efectividad'];
+          $efectivos[] = $e;
+        }
+        // if (is_array($ef) && count($ef) > 0) {
+        //       if (isset($ef[0]['efectividad'])) {
+        //           $e->gxp = $ef[0]['efectividad'];
+        //           $efectivos[] = $e;
+        //       }
+        //   }
+      }
+      $eqs = $efectivos;
+      
+    }
     $colors = colorGrupo(300);
     $grupos = json_encode([
                   [
@@ -903,7 +980,7 @@ class GrupoController extends Controller
                   ]
 
     ]);
-   
+        
      return view('home.copa', ['copa' => $copa, 'fase' => 0, 'zona' => $zona, 'grupos' => $grupos, 'filter' => $filter]);   
   }
 
@@ -933,17 +1010,174 @@ class GrupoController extends Controller
                 ->orderBy('j', 'desc');
      $first = clone $query;
      $e = $first->first();
-     return $query
-                ->where('pts', $e->pts)
+      return $query
+                  ->having('pts', $e->pts)
+                  ->orderBy('pts', 'desc')
+                  ->orderBy('d', 'desc')
+                  ->orderBy('gf', 'desc')
+                  ->orderBy('gc')
+                  ->orderBy('gv')
+                  ->orderBy('g', 'desc')
+                  ->orderBy('e', 'desc')
+                  ->orderBy('p')
+                  ->orderBy('j', 'desc');
+  }
+
+  private function masGoleador($eqs){
+     $query = $eqs
+                ->orderBy('gf', 'desc')
                 ->orderBy('pts', 'desc')
                 ->orderBy('d', 'desc')
-                ->orderBy('gf', 'desc')
                 ->orderBy('gc')
                 ->orderBy('gv')
                 ->orderBy('g', 'desc')
                 ->orderBy('e', 'desc')
                 ->orderBy('p')
                 ->orderBy('j', 'desc');
+     $first = clone $query;
+     $e = $first->first();
+      return $query
+                  ->having('gf', $e->gf)
+                  ->orderBy('gf', 'desc')
+                  ->orderBy('pts', 'desc')
+                  ->orderBy('d', 'desc')
+                  ->orderBy('gc')
+                  ->orderBy('gv')
+                  ->orderBy('g', 'desc')
+                  ->orderBy('e', 'desc')
+                  ->orderBy('p')
+                  ->orderBy('j', 'desc');
+  }
+
+
+  private function efectividad($eq, $j){
+     return round(($eq->gf / $j), 2);
+  }
+
+  private function efectivo($eqs, $max, $mas){
+    $efs = [];
+    $equipos = clone $eqs;
+    $equipos = $equipos->get();
+    foreach($equipos as $e){
+      $efs[] = [
+                  'equipo_id' => $e->equipo_id,
+                  'efectividad' => $this->efectividad($e, $max)
+                ];
+    }
+
+    $ls = count($efs) - 1;
+    while($ls > 0){
+      for($i = 0; $i < $ls; $i++){
+        $a = $efs[$i];
+        $b = $efs[$i+1];
+        if($mas){
+          if($a['efectividad'] < $b['efectividad']){
+            $efs[$i] = $b;
+            $efs[$i +1] = $a;
+          }
+        }else{
+          if($a['efectividad'] > $b['efectividad']){
+            $efs[$i] = $b;
+            $efs[$i +1] = $a;
+          }
+        }
+        
+      }
+      $ls--;
+    }
+
+    $eqs = [];
+    $e = $efs[0]['efectividad'];
+    
+    foreach($efs as $ef){
+      if($ef['efectividad'] == $e){
+        $eqs[] = $ef;
+      }
+    }
+    return $eqs;
+  }
+
+  private function mejorValla($eqs){
+     $query = $eqs
+                ->orderBy('gc')
+                ->orderBy('j', 'desc');
+     $first = clone $query;
+     $e = $first->first();
+      return $query
+                  ->having('gc', $e->gc)
+                  ->having('j', $e->j)
+                  ->orderBy('gc')
+                  ->orderBy('j', 'desc');
+  }
+
+  private function peorValla($eqs){
+     $query = $eqs
+                ->orderBy('gc', 'desc')
+                ->orderBy('j');
+     $first = clone $query;
+     $e = $first->first();
+      return $query
+                  ->having('gc', $e->gc)
+                  ->having('j', $e->j)
+                  ->orderBy('gc', 'desc')
+                  ->orderBy('j');
+  }
+
+
+  private function menosGoleador($eqs){
+     $query = $eqs
+                ->orderBy('gf')
+                ->orderBy('pts', 'desc')
+                ->orderBy('d', 'desc')
+                ->orderBy('gc')
+                ->orderBy('gv')
+                ->orderBy('g', 'desc')
+                ->orderBy('e', 'desc')
+                ->orderBy('p')
+                ->orderBy('j', 'desc');
+     $first = clone $query;
+     $e = $first->first();
+      return $query
+                  ->having('gf', $e->gf)
+                  ->orderBy('gf')
+                  ->orderBy('pts', 'desc')
+                  ->orderBy('d', 'desc')
+                  ->orderBy('gc')
+                  ->orderBy('gv')
+                  ->orderBy('g', 'desc')
+                  ->orderBy('e', 'desc')
+                  ->orderBy('p')
+                  ->orderBy('j', 'desc');
+  }
+
+
+  private function peorEquipo($eqs){
+     $query = $eqs
+                ->orderBy('pts')
+                ->orderBy('d')
+                ->orderBy('gf', 'desc')
+                ->orderBy('gc', 'desc')
+                ->orderBy('gv')
+                ->orderBy('p', 'desc')
+                ->orderBy('e')
+                ->orderBy('g')
+                ->orderBy('j');
+                
+                
+                
+     $first = clone $query;
+     $e = $first->first();
+      return $query
+                  ->having('pts', $e->pts)
+                  ->orderBy('pts')
+                  ->orderBy('d')
+                  ->orderBy('gf', 'desc')
+                  ->orderBy('gc', 'desc')
+                  ->orderBy('gv')
+                  ->orderBy('p', 'desc')
+                  ->orderBy('e')
+                  ->orderBy('g')
+                  ->orderBy('j');
   }
               
              

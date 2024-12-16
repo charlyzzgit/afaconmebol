@@ -346,16 +346,18 @@
       WE = null,
       KEYS = null,
       CAMPEON = getCampeon(),
+      FILTER = null
       colorCopa = getColorCopa(copa, true),
       estadisticas = [
-        {filter:'mejor', a:'rojo', b: 'naranja'},
-        {filter:'mas-goleador', a:'azul', b: 'celeste'},
-        {filter:'mas-efectivo', a:'verde', b: 'verdeclaro'},
-        {filter:'mejor-valla', a:'marronclaro', b: 'amarillo'},
-        {filter:'peor-valla', a:'naranja', b: 'amarillo'},
-        {filter:'menos-efectivo', a:'celeste', b: 'cielo'},
-        {filter:'menos-goleador', a:'verdeclaro', b: 'amarillo'},
-        {filter:'peor', a:'amarillo', b: 'crema'}
+        {filter:'posiciones', name: 'posiciones finales', a:'negro', b: 'gris'},
+        {filter:'mejor-equipo', name: 'mejor equipo', a:'rojo', b: 'naranja'},
+        {filter:'mas-goleador', name: 'equipo mas goleador', a:'azul', b: 'celeste'},
+        {filter:'mas-efectivo', name: 'equipo mas efectivo', a:'verde', b: 'verdeclaro'},
+        {filter:'mejor-valla', name: 'valla menos vencida', a:'marronclaro', b: 'amarillo'},
+        {filter:'peor-valla', name: 'valla mas vencida', a:'naranja', b: 'amarillo'},
+        {filter:'menos-efectivo', name: 'equipo menos efectivo', a:'celeste', b: 'cielo'},
+        {filter:'menos-goleador', name: 'equipo menos goleador', a:'verdeclaro', b: 'amarillo'},
+        {filter:'peor-equipo', name: 'peor equipo', a:'amarillo', b: 'crema'}
         ]
   @isset($we)
       WE = {!! $we !!}
@@ -363,8 +365,12 @@
   @isset($keys)
       KEYS = {!! $keys !!}
   @endisset
+  @isset($filter)
+    FILTER = '{{ $filter }}'
+  @endisset
   log('we', [WE])
   log('keys', [KEYS])
+  log('filter', [FILTER])
   log('grupos', [src_copa, grupos])
 
    log('route', ["{{  Route::currentRouteName() }}"])
@@ -384,13 +390,28 @@
     
     bar.html(prefix + g.grupo)
 
-    textColor(bar, 'blanco', g.b.name, 1)
+    if(FILTER != null){
 
-    bg(bar, g.a.rgb)
+      var e = estadisticas.find(est => est.filter === FILTER)
+
+      bar.html(e.name)
+
+      textColor(bar, 'blanco', e.b, 1)
+
+      bg(bar, parseColor(e.a).rgb)
     
-    setCristalRGB(ul, g.a, g.b)
+      setCristalRGB(ul, parseColor(e.a), parseColor(e.b))
+    }else{
+      textColor(bar, 'blanco', g.b.name, 1)
 
-    li.data('grupo', g.grupo)
+      bg(bar, g.a.rgb)
+      
+      setCristalRGB(ul, g.a, g.b)
+
+      li.data('grupo', g.grupo)
+    }
+
+    
 
     return li
   }
@@ -416,21 +437,19 @@
   }
 
   function getLiEstadistica(e){
-    var fs = $('<div class="fase col-12 flex-row-center-center"></div>'),
-        name = getNameFase(copa, f, zona)
-    fs.html(name)
-    textColor(fs, 'blanco', e.a, 1)
-    setGradientDuo(fs, e.a, e.b)
-    fs.data('fase', f).click(function(){
-      var f = $(this).data('fase'),
+    var es = $('<div class="fase col-12 flex-row-center-center"></div>')
+    es.html(e.name)
+    textColor(es, 'blanco', e.a, 1)
+    setGradientDuo(es, parseColor(e.a), parseColor(e.b))
+    es.data('filter', e.filter).click(function(){
+      var filter = $(this).data('filter'),
           url = "{{ route('home') }}",
-          copazona = copa == 'afa' ? [copa, zona].join('-') : copa,
-          params = ['home', 'copa', copazona, f]
+          params = ['home', 'estadisticas-equipos', copa, filter, zona]
        
        nextPage(url, params, true)
     })
 
-    return fs
+    return es
 
   }
 
@@ -491,7 +510,36 @@
     li.find('.h-estado').prop('src', ASSET + 'default/' + eg.estado + '.png').hide()
     //log('estado', eg.estado)
     if(pos != 0){
-      li.append(getTable(eg))
+      if(FILTER != null){
+        var filters = []
+        switch(FILTER){
+          case 'mejor-equipo': case 'peor-equipo':
+            filters.push('pts')
+          break
+          case 'mas-goleador': case 'menos-goleador':
+            filters.push('gf')
+          break
+          case 'mas-efectivo': case 'menos-efectivo':
+            filters.push('j') 
+            filters.push('gf') 
+            filters.push('ef')  
+          break
+          case 'mejor-valla': case 'peor-valla':
+            filters.push('j') 
+            filters.push('gc') 
+            
+          break
+        
+        }
+        if(filters.length != 0){
+          li.append(getTable(eg, filters))
+        }else{
+          li.append(getTable(eg))
+        }
+      }else{
+          li.append(getTable(eg))
+      }
+      
     }
 
     var est = getEl(li, 'estado'),
@@ -602,14 +650,15 @@
       setImageCopa(icon, copa)
       setImageCopa(li.find('.h-estado'), copa)
     }
-
-    li.find('.jugador').data({equipo_id: eg.equipo_id, grupo_id: eg.grupo_id}).click(function(){
-      var equipo_id = $(this).data('equipo_id'),
-          grupo_id = $(this).data('grupo_id'),
-          params = ['home', 'partidos-equipo-grupo', equipo_id, grupo_id],
-          url = "{{ route('home') }}"
-      nextPage(url, params, true)
-    })
+    if(FILTER == null){
+      li.find('.jugador').data({equipo_id: eg.equipo_id, grupo_id: eg.grupo_id}).click(function(){
+        var equipo_id = $(this).data('equipo_id'),
+            grupo_id = $(this).data('grupo_id'),
+            params = ['home', 'partidos-equipo-grupo', equipo_id, grupo_id],
+            url = "{{ route('home') }}"
+        nextPage(url, params, true)
+      })
+    }
     
     return li
   }
@@ -998,24 +1047,8 @@
           k.animate({bottom: position + '%'}, 150)
         }))
 
-
-      @isset($filter)
-
-        setEstadisticas()
-        footer.append(getBtnFooter('naranja', null, 'fas fa-bars', function(){
-          var k = $('#estadisticas-equipos'),
-              position = 0
-          if(k.data('state') == 'closed'){
-            k.data('state', 'open')
-            position = 0
-          }else{
-            k.data('state', 'closed')
-            position = -100
-          }
-          k.animate({bottom: position + '%'}, 150)
-        }))
-
-      @endisset
+      
+      
 
 
       footer.append(getBtnFooter('negro', null, 'fas fa-sitemap', function(){
@@ -1031,6 +1064,24 @@
           k.animate({left: position + '%'}, 150)
         }))
     }
+
+    if(FILTER != null){
+
+        setEstadisticas()
+        footer.append(getBtnFooter('naranja', null, 'fas fa-bars', function(){
+          var k = $('#estadisticas-equipos'),
+              position = 0
+          if(k.data('state') == 'closed'){
+            k.data('state', 'open')
+            position = 0
+          }else{
+            k.data('state', 'closed')
+            position = -100
+          }
+          k.animate({bottom: position + '%'}, 150)
+        }))
+
+      }
 
     setImageCopa($('#copa'), copa == 'afa' ? [copa, zona].join('_') : copa)
 

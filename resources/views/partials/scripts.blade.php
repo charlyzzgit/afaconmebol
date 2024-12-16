@@ -1068,7 +1068,7 @@ function getTableCell(text, isheader, first){
 }
 
 function getTableRow(items, rgb, isheader){
-    var row = $('<div class="col-12 flex-row-start-center"></div>')
+    var row = $('<div class="col-12 flex-row-end-center"></div>')
     $.each(items, function(i, it){
       
       if(i == 0){
@@ -1101,25 +1101,53 @@ function getTableItem(eg, column){
   return it
 }
 
-function getTable(eq){
+function getTable(eq, filters){
   var table = $('<div class="equipo-table col-12 flex-col-start-center mt-1"></div>'),
       items = []
   table.css({border: 'solid thin ' + getRgb(eq.equipo.color_b.rgb)})
-  items.push(getTableItem(eq, 'j'))
-  items.push(getTableItem(eq, 'g'))
-  items.push(getTableItem(eq, 'e'))
-  items.push(getTableItem(eq, 'p'))
-  items.push(getTableItem(eq, 'gf'))
-  items.push(getTableItem(eq, 'gc'))
-  items.push(getTableItem(eq, 'd'))
-  items.push(getTableItem(eq, 'pts'))
-  items.push(getTableItem(eq, 'pos'))
+  if(filters !== undefined){
+    log('filters', [filters])
+    $.each(filters, function(i, f){
+      switch(f){
+      case 'j':
+          items.push(getTableItem(eq, 'j'))
+        break
+        case 'gf':
+          items.push(getTableItem(eq, 'gf'))
+        break
+        case 'gc':
+          items.push(getTableItem(eq, 'gc'))
+        break
+        case 'pts':
+          items.push(getTableItem(eq, 'pts'))
+        break
+        case 'ef':
+          items.push(getTableItem(eq, 'gxp'))
+        break
+      }
+    })
+  }else{
+    items.push(getTableItem(eq, 'j'))
+    items.push(getTableItem(eq, 'g'))
+    items.push(getTableItem(eq, 'e'))
+    items.push(getTableItem(eq, 'p'))
+    items.push(getTableItem(eq, 'gf'))
+    items.push(getTableItem(eq, 'gc'))
+    items.push(getTableItem(eq, 'd'))
+    items.push(getTableItem(eq, 'pts'))
+    items.push(getTableItem(eq, 'pos'))
+    
+  }
   items.push(getTableItem(eq, 'estado'))
 
   table.append(getTableRow(items, eq.equipo.color_b.rgb, true))
 
 
   table.append(getTableRow(items, eq.equipo.color_b.rgb, false))
+
+  if(filters !== undefined){
+    table.find('.table-cell').css({width: '20%'})
+  }
 
   return table
 }
