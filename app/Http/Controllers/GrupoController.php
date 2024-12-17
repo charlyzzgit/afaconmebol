@@ -1187,16 +1187,17 @@ class GrupoController extends Controller
     $array_ligas = Liga::orderBy('id')->get();
     $ligas = [];
     $desde = 5;
+
     switch($copa){
       case 'afa':
         switch($zona){
-          case 'A':
+          case 'a':
             $desde = -2;
           break;
-          case 'B':
+          case 'b':
             $desde = -1;
           break;
-          case 'C':
+          case 'c':
             $desde = 0;
           break;
         }

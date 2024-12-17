@@ -2,7 +2,7 @@
     .goleador{
       border-radius: 10px;
       border:solid thin white;
-      font-size: 25px;
+      font-size: 22px;
     }
 
     .jugador, .escudo{
@@ -26,7 +26,7 @@
       copa = '{{ $copa }}',
       zona = '{{ isset($zona) ? $zona : null }}',
       ul = $('#list'),
-      src_copa = 'default/' + copa + (zona != null ? '_' + zona : '') + '.png',
+      src_copa = 'default/' + copa + (zona != null && zona != '' ? '_' + zona : '') + '.png',
       title = "{{ isset($estadisticas) ? 'maximo goleador' : 'goleadores'}}"
 
   log('goleadores', [zona,src_copa, goleadores])
@@ -71,7 +71,7 @@
       footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
         goBack(true)
       }))
-    setBar($('#bar'), src_copa, copa + (zona != null ? (' - ' + zona) : ''), 'celeste', title, zona)
+    setBar($('#bar'), src_copa, copa + (zona != null && zona != '' ? ' - ' + zona : ''), 'celeste', title, zona)
   setCristal(ul, 'celeste')
      listar()
    })

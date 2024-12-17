@@ -832,6 +832,7 @@ function setEquipoUI(el, eq, stroke){
   textColorUI(el.find('.name'), b, c, stk)
   textColorUI(el.find('.pts'), b, c, stk)
   colBordeUI(el, b)
+  setImageEquipo(el.find('.escudo'), eq, 'escudo')
 }
 
 function textColorUI(obj, a, b, borde){
@@ -1338,7 +1339,9 @@ function textFormat(text, maxCount){
 }
 
 
-
+function isInternacional(copa){
+  return (copa == 'afa' || copa == 'argentina') ? false : true
+}
 
 
 
