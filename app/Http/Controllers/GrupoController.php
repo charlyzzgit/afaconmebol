@@ -1179,6 +1179,74 @@ class GrupoController extends Controller
                   ->orderBy('g')
                   ->orderBy('j');
   }
+
+
+  public function enCompetencia($copa, $zona = null){
+    $m = getMain();
+    $anio = $m->anio;
+    $array_ligas = Liga::orderBy('id')->get();
+    $ligas = [];
+    $desde = 5;
+    switch($copa){
+      case 'afa':
+        switch($zona){
+          case 'A':
+            $desde = -2;
+          break;
+          case 'B':
+            $desde = -1;
+          break;
+          case 'C':
+            $desde = 0;
+          break;
+        }
+      break;
+      case 'argentina':
+        $desde = 1;
+      break;
+      case 'sudamericana': case 'libertadores':
+        $desde = 0;
+      break;
+    }
+    foreach($array_ligas as $liga){
+      $data = [
+                'data' => $liga,
+                'fases' => []
+        ];
+      for($f = $desde; $f <= 5; $f++){
+        if($copa == 'afa' && ($f == 2 || $f == 3)){
+          continue;
+        }
+        
+        $eqs = EquipoGrupo::with([
+                                'equipo.colorA',
+                                'equipo.colorB',
+                                'equipo.colorC'
+                          ])
+                          ->whereHas('grupo', function($query) use ($anio, $copa, $f, $zona) {
+                              $query->where('anio', $anio)
+                                    ->where('copa', $copa)
+                                    ->where('fase', $f); 
+                              if($zona){
+                                $query = $query->where('zona', $zona);
+                              }     
+                          })->whereHas('equipo', function($query) use ($liga) {
+                              $query->where('liga_id', $liga->id);
+                          })
+                          ->get()
+                          ->map(function($e){
+                            return $e->load('equipo.colorA', 'equipo.colorB', 'equipo.colorC')->getRelation('equipo');
+                          });
+        $data['fases'][] = ['fase' => $f, 'equipos' => $eqs];
+        
+      }
+      $ligas[] = $data;
+      
+    }
+
+    $ligas = json_encode($ligas);
+    return view('home.competencia', compact('copa', 'zona', 'ligas'));
+  }
               
              
 }

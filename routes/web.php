@@ -88,12 +88,16 @@ Route::prefix('home')->group(function(){
 
    Route::get('candidatos/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'candidatos'])->name('home.candidatos');
 
+   Route::get('en-competencia/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'enCompetencia'])->name('home.en-competencia');
+
    Route::get('estadisticas/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'estadisticas'])->name('home.estadisitcas');
 
    Route::get('estadisticas-partidos/{copa_zona}/{filter}/{id?}', [App\Http\Controllers\PartidoController::class, 'estadisticas'])->name('home.estadisitcas-partidos');
    Route::get('estadisticas-equipos/{copa}/{filter}/{zona?}', [App\Http\Controllers\GrupoController::class, 'estadisticasEquipos'])->name('home.estadisitcas-equipos');
 
    Route::get('estadisticas-goleadores/{copa}/{zona?}', [App\Http\Controllers\GoleadoresController::class, 'estadisticas'])->name('home.estadisitcas-goleadores');
+
+
 });
 
 

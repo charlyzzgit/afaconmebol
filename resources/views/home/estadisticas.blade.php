@@ -232,7 +232,7 @@
 
    $(function(){
 
-    setBar($('#bar'), src_copa, copa != 'afa' ? copa : [copa, zona].join(' - '), 'naranja', 'estadisitcas', zona)
+    setBar($('#bar'), src_copa, copa != 'afa' ? copa : [copa, zona].join(' - '), 'naranja', 'estadisticas', zona)
     footer.empty()
     footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
         nextPage("{{ route('home') }}", ['home', 'inicio'])

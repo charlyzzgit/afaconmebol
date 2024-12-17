@@ -762,6 +762,9 @@
         if(option == 'anual'){
           params = ['home', 'anual']
         }
+        if(option == 'competencia'){
+          params = ['home', 'en-competencia', copa, zona]
+        }
         log('extra', [extra])
         if(extra !== undefined){
           params.push(extra)
