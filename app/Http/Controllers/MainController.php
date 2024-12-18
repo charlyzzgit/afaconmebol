@@ -114,7 +114,7 @@ class MainController extends Controller
   }
 
   public function calendar(){
-    $rows = Calendar::where('action', '<>', 'INICIO')->orderBy('id')->get();
+    $rows = Calendar::orderBy('id')->get();
     $meses = [];
     foreach($rows as $row){
       $this->addMes($meses, $row);

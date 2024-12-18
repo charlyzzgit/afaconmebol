@@ -850,6 +850,17 @@ function colBordeUI(obj, col){
   }
 }
 
+function setGradientUI(el, a, b, stroke){
+  var a = parseColor(a),
+      b = parseColor(b),
+      c = parseColor('blanco'),
+      stk = stroke !== undefined ? stroke : .2
+ 
+  setGradient(el, 180, [b.rgb, a.rgb, a.rgb, b.rgb], [0, 20, 80, 100])
+  
+  textColorUI(el, c.rgb, b.rgb, stk)
+}
+
 function setImageEquipo(img, eq, shape){
   try{
     var src = eq.directory + shape + '.png'
