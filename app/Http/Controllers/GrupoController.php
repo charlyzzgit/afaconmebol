@@ -1248,6 +1248,11 @@ class GrupoController extends Controller
     $ligas = json_encode($ligas);
     return view('home.competencia', compact('copa', 'zona', 'ligas'));
   }
+
+
+  public function getClasificadosNextAnio(){
+    
+  }
               
              
 }

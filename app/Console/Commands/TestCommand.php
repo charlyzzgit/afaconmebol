@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GrupoController;
+use App\Http\Controllers\LigaController;
 use App\Classes\Admin;
 use App\Classes\AutoPartido;
 use App\Classes\Sorteo;
@@ -65,7 +66,8 @@ class TestCommand extends Command
       // $ap->jugar();
       $a = \App\Models\Equipo::where('name', 'atletico huila')->first();
       $b = \App\Models\Equipo::where('name', 'velez sarsfield')->first();
-      dd($this->cambiar($a, $b));
+      //dd($this->cambiar($a, $b));
+      (new LigaController())->autoFecha();
     }
 
     private function updateStateGrupos($copa, $fase){

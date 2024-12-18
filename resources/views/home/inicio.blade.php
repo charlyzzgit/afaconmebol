@@ -261,6 +261,7 @@
                 </svg>')
         label = 'calendario'
         bg = 'negro'
+        page = 'calendar'
         break
       case 'system':
         isIcon = true

@@ -51,7 +51,7 @@ class LigaController extends Controller
 
    public function getPtsTemporada($nivel){
     $pts = 0;
-      for($i = 0; $i < 28; $i++){
+      for($i = 0; $i < 96; $i++){
           $pts+= $this->ptsFecha($nivel);
       }
       return $pts;
@@ -141,6 +141,18 @@ class LigaController extends Controller
           
         }
 
+      }
+
+
+      public function autoFecha(){
+        $ligas = Liga::with('equipos')->where('id', '<>', 2)->get();
+        foreach($ligas as $liga){
+          foreach($liga->equipos as $e){
+              $eq = Equipo::find($e->id);
+              $eq->pts = $this->getPtsTemporada($e->nivel);
+              $eq->save();
+          }
+        }
       }
         
 }

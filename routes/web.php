@@ -97,6 +97,10 @@ Route::prefix('home')->group(function(){
 
    Route::get('estadisticas-goleadores/{copa}/{zona?}', [App\Http\Controllers\GoleadoresController::class, 'estadisticas'])->name('home.estadisitcas-goleadores');
 
+   Route::get('calendar', [App\Http\Controllers\MainController::class, 'calendar'])->name('home.calendar');
+   
+
+
 
 });
 

@@ -67,8 +67,59 @@ class MainController extends Controller
         $calendar = Calendar::where('procesado', 0)->first();
         $calendar->iniciada = true;
         $calendar->save();
+        (new LigaController())->autoFecha();
     }, 'Fecha iniciada', 'error al iniciar');
 
 
+  }
+
+  private function addMes(&$meses, $row){
+    $e = false;
+    foreach($meses as &$mes){
+      if($mes['name'] == $row->mes){
+        $this->addSemana($mes['semanas'], $row);
+        $e = true;
+      }
+    }
+
+    if(!$e){
+      $meses[] = [
+                    'name' => $row->mes,
+                    'semanas' => [
+                                    [
+                                    'num' => $row->semana,
+                                    'dias' => [$row]
+                                    ]
+                                  ]
+
+                  ];
+    }
+  }
+
+  private function addSemana(&$semanas, $row){
+    $e = false;
+    foreach($semanas as &$semana){
+      if($semana['num'] == $row->semana){
+        $semana['dias'][] = $row;
+        $e = true;
+      }
+    }
+
+    if(!$e){
+      $semanas[] = [
+                    'num' => $row->semana,
+                    'dias' => [$row]
+                    ];
+    }
+  }
+
+  public function calendar(){
+    $rows = Calendar::where('action', '<>', 'INICIO')->orderBy('id')->get();
+    $meses = [];
+    foreach($rows as $row){
+      $this->addMes($meses, $row);
+    }
+    $meses = json_encode($meses);
+    return view('home.calendar', compact('meses'));
   }
 }
