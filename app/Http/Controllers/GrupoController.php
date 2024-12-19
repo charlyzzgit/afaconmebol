@@ -1251,7 +1251,40 @@ class GrupoController extends Controller
 
 
   public function getClasificadosNextAnio(){
-    
+    $m = getMain();
+    $campeones = [
+                    'lib' => $this->getCampeon($m->anio, 'libertadores')->equipo_id,
+                    'sud' => $this->getCampeon($m->anio, 'sudamericana')->equipo_id,
+                    'rec' => $this->getCampeon($m->anio, 'recopa')->equipo_id,
+                    'afa_a' => $this->getCampeon($m->anio, 'afa', 'A')->equipo_id,
+                    'afa_b' => $this->getCampeon($m->anio, 'afa', 'B')->equipo_id,
+                    'afa_c' => $this->getCampeon($m->anio, 'afa', 'C')->equipo_id,
+                    'arg' => $this->getCampeon($m->anio, 'argentina')->equipo_id
+                  ];
+    //cupos afa
+    //LIBERTADORES:
+    // A) C, SC, SF, SF
+    // B) C, SC
+    // C) C 
+    // ARG) C
+    //SUDAMERICANA
+    // B) SF, SF
+    // C) SC  
+    //TABLA ANUAL
+
+    // CA
+    // CB 
+    // CARG 
+    // CC 
+    // SCA 
+    // SCB 
+    // SFA 
+    // SFA 
+    // ---
+    // SFB 
+    // SFB 
+    // SCC 
+    // TA             
   }
               
              

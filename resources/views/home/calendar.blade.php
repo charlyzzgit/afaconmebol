@@ -21,8 +21,21 @@
       border-radius: 10px;
     }
 
-    .state{
-      font-size: 30px;
+   
+    .iniciada{
+      width: 35px;
+      height: 35px;
+      font-size: 25px;
+      border-radius: 5px;
+      color:white;
+    }
+
+    .procesada{
+      width: 35px;
+      height: 35px;
+      font-size: 25px;
+      border-radius: 100%;
+      color:white;
     }
 </style>
 <div class="col-12 box-content p-1">
@@ -72,8 +85,12 @@
                   </div>\
                 <div class="box-inicio col-10 flex-row-start-center p-1"></div>\
                 <div class="col-2 flex-col-center-center p-1 h-100">\
-                  <i class="state iniciada fa fa-check-circle"></i>\
-                  <i class="state procesada fa fa-times-circle mt-3"></i>\
+                  <div class="iniciada flex-row-center-center p-1">\
+                    <i class="state fa"></i>\
+                  </div>\
+                  <div class="procesada flex-row-center-center p-1 mt-3">\
+                    <i class="state fa"></i>\
+                  </div>\
                 </div>\
               </li>'),
           copas = d.copas != null ? JSON.parse(d.copas) : []
@@ -89,6 +106,8 @@
         li.find('.fecha').html(getNameFecha(d.fase, d.fecha))
         li.find('.iniciada').show()
         setCristalBorder(li, parseColor(col.a), parseColor(col.b), 1)
+        li.find('.iniciada .state').addClass(d.iniciada ? 'fa-check' : 'fa-times')
+        li.find('.iniciada').addClass(d.iniciada ? 'bg-success' : 'bg-danger')
        break
        case 'SORTEO':
         $.each(copas, function(i, c){
@@ -105,7 +124,10 @@
        break
      }
 
-     
+     li.find('.procesada .state').addClass(d.procesado ? 'fa-check' : 'fa-times')
+    li.find('.procesada').addClass(d.procesado ? 'bg-success' : 'bg-danger')
+
+     textColor(li.find('.copa-name, .fase, .fecha, .box-sorteo'), 'blanco', col.b, .1)
 
      return li
    }
@@ -115,8 +137,13 @@
                   <div class="bar flex-row-center-center p-1"></div>\
                   <ul class="dias col-12 flex-col-start-center p-1 m-0"></ul>\
                 </li>')
-      li.find('.bar').html(sem.num + 'ª semana')
-
+      if(sem.num != null){
+        li.find('.bar').html(sem.num + 'ª semana')
+      }else{
+        li.find('.bar').hide()
+      }
+      
+      textColor(li.find('.bar'), 'blanco', col.b, .1)
       $.each(sem.dias, function(i, d){
         li.find('.dias').append(getLiDia(d, col))
       })
@@ -137,7 +164,7 @@
       li.find('.bar').html(mes.name != null ? mes.name : 'inicio')
       setGradientUI(li.find('.bar'), col.a, col.b, .1)
       setCristalRGB(li, parseColor(col.a))
-
+      textColor(li.find('.bar'), 'blanco', col.b, .1)
       $.each(mes.semanas, function(i, s){
         li.find('.semanas').append(getLiSemana(s, col))
       })
@@ -158,6 +185,11 @@
     footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
       nextPage("{{ route('home') }}", ['home', 'inicio'])
     }))
+
+    footer.append(getBtnFooter('amarillo', null, 'fas fa-bars', function(){
+      
+    }))
+
     listar()
      
    })
