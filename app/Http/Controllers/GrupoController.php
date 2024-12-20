@@ -635,7 +635,7 @@ class GrupoController extends Controller
               ]);
   }
 
-  public function getTablaAnual(){
+  public function getTablaAnual($filter_ids = null){
     
     $colors = colorGrupo(1000);
     $m = getMain();
@@ -660,9 +660,10 @@ class GrupoController extends Controller
                         )
                 ->whereHas('grupo', function($query) use ($anio) {
                 $query->where('anio', $anio)
-                      ->where('copa', 'afa');       
+                      ->where('copa', 'afa')
+                      ->where('fase', '<', 2);
             })->groupBy('equipo_id')
-              ->orderBy('pos')
+              //->orderBy('pos')
               ->orderBy('pts', 'desc')
               ->orderBy('d', 'desc')
               ->orderBy('gf', 'desc')
@@ -671,7 +672,16 @@ class GrupoController extends Controller
               ->orderBy('g', 'desc')
               ->orderBy('e', 'desc')
               ->orderBy('p')
-              ->get()
+              ->orderBy('j', 'desc');
+
+  if($filter_ids){
+    $eqs = $eqs->whereNotIn('equipo_id', $filter_ids);
+    //sql($eqs);
+      return $eqs->get()->pluck('equipo_id')->toArray();
+    
+  }
+              
+   $eqs = $eqs->get()
               ->map(function($e, $index){
                 $e->pos = $index + 1;
                 $e->estado = 0;
@@ -1249,18 +1259,88 @@ class GrupoController extends Controller
     return view('home.competencia', compact('copa', 'zona', 'ligas'));
   }
 
+  private function liberaCupo($id, $cupos){
+    $copas = [
+                $this->getCampeon($m->anio, 'libertadores')->equipo_id,
+                $this->getCampeon($m->anio, 'sudamericana')->equipo_id
+            ];
+
+    if(in_array($id, $copas) || in_array($id, $cupos)){
+      return true;
+    }
+
+    return false;
+
+  }
+
+
+  private function getEquiposByPos($anio, $copa, $fase, $pos, $zona = null){
+    return EquipoGrupo::whereHas('grupo', function($query) use ($anio, $copa, $fase, $zona) {
+                $query->where('completed', true)
+                      ->where('anio', $anio)
+                      ->where('copa', $copa)  
+                      ->where('fase', $fase);  
+
+                 if($zona){
+                    $query->where('zona', $zona);
+                 }     
+            })
+              ->where('pos', $pos)
+              ->orderBy('pts')
+              ->orderBy('d')
+              ->orderBy('gf', 'desc')
+              ->orderBy('gc', 'desc')
+              ->orderBy('gv')
+              ->orderBy('p', 'desc')
+              ->orderBy('e')
+              ->orderBy('g')
+              ->get()
+              ->pluck('equipo_id');
+  }
+
 
   public function getClasificadosNextAnio(){
     $m = getMain();
+    $a_id = $this->getCampeon($m->anio, 'afa', 'A')->equipo_id;
+    $b_id = $this->getCampeon($m->anio, 'afa', 'B')->equipo_id;
+    $c_id = $this->getCampeon($m->anio, 'afa', 'C')->equipo_id;
+    $arg_id = $this->getCampeon($m->anio, 'argentina')->equipo_id;
     $campeones = [
                     'lib' => $this->getCampeon($m->anio, 'libertadores')->equipo_id,
                     'sud' => $this->getCampeon($m->anio, 'sudamericana')->equipo_id,
                     'rec' => $this->getCampeon($m->anio, 'recopa')->equipo_id,
-                    'afa_a' => $this->getCampeon($m->anio, 'afa', 'A')->equipo_id,
-                    'afa_b' => $this->getCampeon($m->anio, 'afa', 'B')->equipo_id,
-                    'afa_c' => $this->getCampeon($m->anio, 'afa', 'C')->equipo_id,
-                    'arg' => $this->getCampeon($m->anio, 'argentina')->equipo_id
+                    'afa_a' => $a_id,
+                    'afa_b' => $b_id,
+                    'afa_c' => $c_id,
+                    'arg' => $arg_id
                   ];
+    $cupos = [];
+    $a_sub = $this->getEquiposByPos($m->anio, 'afa', 5, 2, 'A')[0];
+    $b_sub = $this->getEquiposByPos($m->anio, 'afa', 5, 2, 'B')[0];
+    $c_sub = $this->getEquiposByPos($m->anio, 'afa', 5, 2, 'C')[0];
+    $a_semis = $this->getEquiposByPos($m->anio, 'afa', 4, 2, 'A');
+    $b_semis = $this->getEquiposByPos($m->anio, 'afa', 4, 2, 'B');
+    $clasificados = [
+                      $a_id, 
+                      $b_id, 
+                      $arg_id, 
+                      $c_id,
+                      $a_sub,
+                      $b_sub,
+                      $a_semis[0],
+                      $a_semis[1],
+                      $c_sub,
+                      $b_semis[0],
+                      $b_semis[1],
+
+                    ];
+
+    $eqs = $this->getTablaAnual($clasificados);
+    
+    $clasificados = array_unique(array_merge($clasificados, $eqs));
+    
+    //dd($clasificados);
+    //if(liberaCupo($id, $cupos)
     //cupos afa
     //LIBERTADORES:
     // A) C, SC, SF, SF

@@ -792,8 +792,8 @@
       $.each(ks, function(j, r){
         aux.push([
         {
-          name: WE[j].equipo.name,
-          directory: WE[j].equipo.directory + 'escudo.png'
+          name: WE != null ? WE[j].equipo.name : '',
+          directory: WE != null ? WE[j].equipo.directory + 'escudo.png' : ''
          },
         {
           name: null,

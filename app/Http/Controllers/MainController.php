@@ -56,15 +56,7 @@ class MainController extends Controller
         //(new LigaController())->autoLigas();
         $calendar->update(['inicada' => false, 'procesado' => false]);
         $m = getMain();
-        getCampeon($m->anio, $copa, $zona = null)
-        $m->lib = (new GrupoController())->getCampeon($m->anio, 'libertadores');
-        $m->sud = (new GrupoController())->getCampeon($m->anio, 'sudamericana');
-        $m->rec = (new GrupoController())->getCampeon($m->anio, 'recopa');
-        $m->afa_a = (new GrupoController())->getCampeon($m->anio, 'afa', 'A');
-        $m->afa_b = (new GrupoController())->getCampeon($m->anio, 'afa', 'B');
-        $m->afa_c = (new GrupoController())->getCampeon($m->anio, 'afa', 'C');
-        $m->arg = (new GrupoController())->getCampeon($m->anio, 'argentina');
-
+        
         //borrar cupos_afa
 
         //get cupos afa

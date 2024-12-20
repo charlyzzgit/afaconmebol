@@ -55,8 +55,8 @@ class TestCommand extends Command
        //dd($eqs->toArray());
       //$this->updateStateGrupos('libertadores', 0);
 
-      //$s = new Sorteo('afa', 5);
-      //dd($s->sortear());
+      //$s = new Sorteo('afa', 0);
+      //$s->sortear();
       //dd(getHorarioAfa(16));
       // $p = \App\Models\Partido::with('grupo.equiposPosition')->find(256);
       // $p->local = \App\Models\Equipo::find($p->loc_id);
@@ -64,10 +64,11 @@ class TestCommand extends Command
       // $ap = new AutoPartido($p);
 
       // $ap->jugar();
-      $a = \App\Models\Equipo::where('name', 'atletico huila')->first();
-      $b = \App\Models\Equipo::where('name', 'velez sarsfield')->first();
+      //$a = \App\Models\Equipo::where('name', 'atletico huila')->first();
+      //$b = \App\Models\Equipo::where('name', 'velez sarsfield')->first();
       //dd($this->cambiar($a, $b));
-      (new LigaController())->autoFecha();
+      //(new LigaController())->autoFecha();
+      (new GrupoController())->getClasificadosNextAnio();
     }
 
     private function updateStateGrupos($copa, $fase){

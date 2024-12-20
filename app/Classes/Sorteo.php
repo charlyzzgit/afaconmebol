@@ -314,7 +314,8 @@ class Sorteo{
 
     $c3 = $this->getLote($eqs, $d, $d+=4, $levels);
     $c4 = $this->getLote($eqs, $d, $d+=4, $levels);
-    $c4 = array_reverse($b4);
+
+    $c4 = array_reverse($c4);
 
   
 
@@ -337,9 +338,9 @@ class Sorteo{
 
 
       
-      // $this->show($a);
-      // $this->show($b);
-      // $this->show($c);
+      $this->show($a);
+      $this->show($b);
+      $this->show($c);
 
 
       return [$a, $b, $c];
@@ -435,7 +436,7 @@ class Sorteo{
 
     $c3 = $this->getLote($eqs, $d, $d+=4, $levels);
     $c4 = $this->getLote($eqs, $d, $d+=4, $levels);
-    $c4 = array_reverse($b4);
+    $c4 = array_reverse($c4);
 
   
 
