@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Equipo;
 use App\Models\Grupo;
 use App\Models\Color;
 use App\Models\EquipoGrupo;
@@ -1260,6 +1261,7 @@ class GrupoController extends Controller
   }
 
   private function liberaCupo($id, $cupos){
+    $m = getMain();
     $copas = [
                 $this->getCampeon($m->anio, 'libertadores')->equipo_id,
                 $this->getCampeon($m->anio, 'sudamericana')->equipo_id
@@ -1338,7 +1340,22 @@ class GrupoController extends Controller
     $eqs = $this->getTablaAnual($clasificados);
     
     $clasificados = array_unique(array_merge($clasificados, $eqs));
+
+    foreach($clasificados as $id){
+      if(!$this->liberaCupo($id, $cupos)){
+        $cupos[] = $id;
+        if(count($cupos) == 12){
+          break;
+        }
+      }
+    }
     
+    $eqs = Equipo::select('name')
+                ->whereIn('id', $cupos)
+                ->orderByRaw('FIELD(id, ' . implode(',', $cupos) . ')')
+                ->get()
+                ->toArray();
+    dd($eqs);
     //dd($clasificados);
     //if(liberaCupo($id, $cupos)
     //cupos afa

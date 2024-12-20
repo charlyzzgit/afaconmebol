@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Color;
 use App\Models\Liga;
 use App\Models\Equipo;
-
+use App\Models\AutoPartido;
 
 
 
@@ -278,6 +278,34 @@ class AdminController extends Controller
           deleteDir('ligas\/'.$equipo->liga.'\equipos\/'.$equipo->directory);
           $equipo->delete();
       }, 'Equipo eliminado con éxito', 'Error al eliminar');
+    }
+
+
+    public function commands(){
+      return view('commands.index');
+    }
+
+    public function commandsJSON(Request $request){
+      $commands = AutoPartido::orderBy('index');
+
+      return getQueryTable($commands, $request);
+    }
+
+
+    public function procesarLote(Request $request){
+      return processTransaction(function() use($request){
+        $ap = AutoPartido::find($request->id);
+        // Capturar la salida del comando
+        ob_start();
+        Artisan::call('autopartido:run', ['lote' => $ap->index]);
+        $output = ob_get_clean();
+        $data = json_decode($output, false);
+        if($data->status){
+          $ap->update(['processed' => true]);
+        }
+
+        return json_decode($output);
+      }, 'Procesado con éxito', 'Error al procesar');
     }
     
 }

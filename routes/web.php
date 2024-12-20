@@ -23,12 +23,12 @@ Route::get('/{grupo_id?}', [App\Http\Controllers\HomeController::class, 'index']
 
 Route::get('/online', [App\Http\Controllers\HomeController::class, 'onLine'])->name('online');
 
-Route::prefix('admin/admin')->group(function(){
-  Route::get('/', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.home');
+Route::prefix('admin')->group(function(){
+  Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.home');
   
 });
 
-Route::prefix('colores')->group(function(){
+Route::prefix('admin/colores')->group(function(){
   Route::get('/', [App\Http\Controllers\AdminController::class, 'colores'])->name('admin.colores');
   Route::post('/coloresListJSON', [App\Http\Controllers\AdminController::class, 'coloresListJSON'])->name('admin.coloresListJSON');
   Route::get('/edit-color/{id}', [App\Http\Controllers\AdminController::class, 'editColor'])->name('admin.edit-color');
@@ -37,7 +37,7 @@ Route::prefix('colores')->group(function(){
   
 });
 
-Route::prefix('ligas')->group(function(){
+Route::prefix('admin/ligas')->group(function(){
   Route::get('/', [App\Http\Controllers\AdminController::class, 'ligas'])->name('admin.ligas');
   
    Route::post('/ligasListJSON', [App\Http\Controllers\AdminController::class, 'ligasListJSON'])->name('admin.ligasListJSON');
@@ -46,13 +46,18 @@ Route::prefix('ligas')->group(function(){
 });
 
 
-Route::prefix('equipos')->group(function(){
+Route::prefix('admin/equipos')->group(function(){
   Route::get('/{liga_id}', [App\Http\Controllers\AdminController::class, 'equipos'])->name('admin.equipos');
   
   Route::post('/equiposListJSON', [App\Http\Controllers\AdminController::class, 'equiposListJSON'])->name('admin.equiposListJSON');
   Route::get('/equipo/edit/{liga_id}/{id?}', [App\Http\Controllers\AdminController::class, 'editEquipo'])->name('admin.edit-equipo');
   Route::post('/save-equipo', [App\Http\Controllers\AdminController::class, 'saveEquipo'])->name('admin.saveEquipo');
   Route::post('/delete-equipo', [App\Http\Controllers\AdminController::class, 'deleteEquipo'])->name('admin.deleteEquipo');
+});
+
+Route::prefix('admin/commands')->group(function(){
+  Route::get('/', [App\Http\Controllers\AdminController::class, 'commands'])->name('admin.commands');
+  Route::post('/commandsJSON', [App\Http\Controllers\AdminController::class, 'commandsJSON'])->name('admin.commandsListJSON');
 });
 
 Route::prefix('main')->group(function(){

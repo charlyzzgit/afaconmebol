@@ -7,7 +7,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FUTBOL - ADMIN</title>
+  <title>AFA CONMEBOL - ADMIN</title>
   
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -116,7 +116,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Brand Logo -->
     <a href="{{ route('admin.home') }}" class="brand-link">
       <img src="{{ asset('images/logo.png') }}" alt="logo" class="brand-image -img-circle -elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">FUTBOL</span>
+      <span class="brand-text font-weight-light">AFA CONMEBOL</span>
     </a>
 
     <!-- Sidebar -->
@@ -197,9 +197,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
               <li class="nav-item" data-page="backgrounds">
-                <a href="" class="nav-link">
-                  <i class="fas fa-image nav-icon"></i>
-                  <p>Otro</p>
+                <a href="{{ route('admin.commands') }}" class="nav-link">
+                  <i class="fas fa-cog nav-icon"></i>
+                  <p>Comandos</p>
                 </a>
               </li>
              
