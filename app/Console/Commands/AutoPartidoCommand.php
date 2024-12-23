@@ -77,9 +77,14 @@ class AutoPartidoCommand extends Command
         $ap = new AutoPartido($partido);
         //dump($ap->jugar());
         $res = $ap->jugar();
-        $this->progress[] = ['copa' => $copa, 'message' => implode(' - ', [$res['result'], $res['message']])];
-        if($res['result'] != 'OK'){
-          $this->status = false;
+        //printf(json_encode($res));
+        $this->progress[] = ['copa' => $copa, 'message' => $res ? implode(' - ', [$res['result'], $res['message']]) : $res];
+        if(!isset($res['result'])){
+         // $this->status = false;
+        }else{
+          if($res['result'] != 'OK'){
+            $this->status = false;
+          }
         }
       }
       //dump('--------------------------------------------------------------------------------');

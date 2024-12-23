@@ -325,7 +325,7 @@ class AdminController extends Controller
         $output = $outputBuffer->fetch();
 
         $response = json_decode($output, true);
-        if ($response['status']) {
+        if (!$response['status']) {
             throw new \Exception($output);
         }
 

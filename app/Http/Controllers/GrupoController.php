@@ -1367,6 +1367,81 @@ class GrupoController extends Controller
   }
 
   public function clasificadosAfa(){
+    $m = getMain();
+    $ids = $this->getEquiposByPos($m->anio, 'afa', 4, 1, 'A')->toArray();
+    $eqs = [];
+    if(count($ids)){
+      foreach($ids as $id){
+        $eqs[] = [
+                    'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
+                    'medio' => 'A - FINAL'
+                  ];
+      }
+    }
+    $ids = array_merge($ids, $this->getEquiposByPos($m->anio, 'afa', 4, 2, 'A')->toArray());
+    if(count($ids)){
+      foreach($ids as $id){
+        $eqs[] = [
+                    'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
+                    'medio' => 'A - SEMIFINAL'
+                  ];
+      }
+    }
+
+    if(count($this->getEquiposByPos($m->anio, 'afa', 5, 1, 'B')->toArray())){
+      $ids = $this->getEquiposByPos($m->anio, 'afa', 4, 1, 'B')->toArray();
+      if(count($ids)){
+        foreach($ids as $id){
+          $eqs[] = [
+                      'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
+                      'medio' => 'B - FINAL'
+                    ];
+        }
+      }
+    }
+
+    $arg = $this->getCampeon($m->anio, 'argentina');
+    if($arg){
+      $eqs[] = [
+                  'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($arg->equipo_id),
+                  'medio' => 'ARGENTINA'
+                ];
+    }
+
+    if(count($this->getEquiposByPos($m->anio, 'afa', 5, 1, 'B')->toArray())){
+      $ids = $this->getEquiposByPos($m->anio, 'afa', 4, 2, 'B')->toArray();
+      if(count($ids)){
+        foreach($ids as $id){
+          $eqs[] = [
+                      'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
+                      'medio' => 'B - SEMIFINAL'
+                    ];
+        }
+      }
+    }
+
+    if(count($this->getEquiposByPos($m->anio, 'afa', 5, 1, 'C')->toArray())){
+      $ids = $this->getEquiposByPos($m->anio, 'afa', 5, 1, 'C')->toArray();
+      if(count($ids)){
+        foreach($ids as $id){
+          $eqs[] = [
+                      'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
+                      'medio' => 'C - CAMPEON'
+                    ];
+        }
+      }
+
+      $ids = $this->getEquiposByPos($m->anio, 'afa', 5, 2, 'C')->toArray();
+      if(count($ids)){
+        foreach($ids as $id){
+          $eqs[] = [
+                      'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
+                      'medio' => 'C - SUBCAMPEON'
+                    ];
+        }
+      }
+    }
+    dd($eqs);
     // fase 4: semifinalistas A => lib 
     // fase 5: no definida: finalistas B => lib, semifinalistas B => sud
     // dase 5: definida: campeon C => lib, subcampeon C => sud, campeon Argentina => lib, primero anual => sud
