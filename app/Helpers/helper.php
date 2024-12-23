@@ -2,6 +2,7 @@
 use App\Models\Color;
 
 
+
 function str_replace_array($search, array $replace, $subject)
 {
     if (0 === $tokenc = substr_count(strtolower($subject), strtolower($search))) {
@@ -84,7 +85,7 @@ function processTransaction($callback, $success, $error){
       return getResponse(true, $success, $data);
    }catch(Exception $e){
       \DB::rollback();
-      dd($e);
+      //dd($e);
       Illuminate\Support\Facades\Log::channel('app')->info($e);
       return getResponse(false, $error.' '.getException($e));
    }

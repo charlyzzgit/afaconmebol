@@ -44,7 +44,7 @@ class AutoPartidoCommand extends Command
      */
     public function handle(){
       $this->progress = [];
-      $this->status = null;
+      $this->status = true;
       $lote = $this->argument('lote'); 
        $this->procesarLote($lote);
 
@@ -58,7 +58,7 @@ class AutoPartidoCommand extends Command
 
     private function jugarFecha($copa, $fase, $fecha){
 
-      $this->progress[] = $copa.' - '.getNameFase($copa, $fase).' - '.getFechaFase($copa, $fase, $fecha);
+      $this->progress[] = ['copa' => $copa, 'message' => $copa.' - '.getNameFase($copa, $fase).' - '.getFechaFase($copa, $fase, $fecha)];
       $m = getMain();
       $partidos = \App\Models\Partido::with('grupo.equiposPosition', 'local', 'visitante')
                          ->where('anio', $m->anio)
@@ -77,8 +77,10 @@ class AutoPartidoCommand extends Command
         $ap = new AutoPartido($partido);
         //dump($ap->jugar());
         $res = $ap->jugar();
-        $this->progress[] = $res;
-        $this->status = $res['result'] == 'OK';
+        $this->progress[] = ['copa' => $copa, 'message' => implode(' - ', [$res['result'], $res['message']])];
+        if($res['result'] != 'OK'){
+          $this->status = false;
+        }
       }
       //dump('--------------------------------------------------------------------------------');
     }

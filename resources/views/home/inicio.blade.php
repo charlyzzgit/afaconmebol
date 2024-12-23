@@ -362,6 +362,9 @@
    }
 
    function setPartido(p){
+    if(p == null){
+      return
+    }
       var footer = $('#partido'),
           header = getEl(footer, 'header'),
           copa = getEl(footer, 'cup'),

@@ -234,7 +234,15 @@
       </div>
     </div>
     @endif
-    <div class="menu-item @if($copa == 'sudamericana' || $copa == 'libertadores') col-6 p-3 @else col-8 pt-3 pb-3 pl-5 pr-5 @endif" data-option="historial">
+    @if($copa == 'afa')
+      <div class="menu-item col-6 p-3" data-option="clasificados">
+        <div class="inner col-12 flex-col-center-center p-2">
+          <i class="icon fa fa-list-ul"></i>
+          <b class="lbl mt-2">Clasificados copas</b>
+        </div>
+      </div>
+    @endif
+    <div class="menu-item @if($copa == 'sudamericana' || $copa == 'libertadores' || $copa == 'afa') col-6 p-3 @else col-8 pt-3 pb-3 pl-5 pr-5 @endif" data-option="historial">
       <div class="inner col-12 flex-col-center-center p-2">
         <i class="icon fa-solid fa-clock-rotate-left"></i>
         <b class="lbl mt-2">historial</b>
@@ -691,6 +699,10 @@
           a = 'verdeoscuro'
           b = 'verde'
         break
+      case 'clasificados':
+          a = 'bordo'
+          b = 'rojo'
+        break
         case 'ranking':
           a = 'azul'
           b = 'celeste'
@@ -748,6 +760,13 @@
          
           
           nextPage("{{ route('home') }}", ['home', option, copa, zona], true)
+          return
+        }
+
+        if(option == 'clasificados'){
+         
+          
+          nextPage("{{ route('home') }}", ['home', option], true)
           return
         }
 

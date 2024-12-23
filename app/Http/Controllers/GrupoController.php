@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Equipo;
 use App\Models\Grupo;
 use App\Models\Color;
 use App\Models\EquipoGrupo;
 use App\Models\Liga;
+use App\Models\Equipo;
 use App\Models\Partido;
 use DB;
 class GrupoController extends Controller
@@ -65,7 +65,7 @@ class GrupoController extends Controller
       $grupo->grupo = $g;
       $grupo->copa = $copa; 
       $grupo->fase = $fase;
-      $grupo->zona = $zona;
+      $grupo->zona = $copa == 'afa' && !$zona ? 'A' : $zona;
       $grupo->save();
 
       $this->addEquipos($grupo->id, $equipos);
@@ -1300,6 +1300,18 @@ class GrupoController extends Controller
               ->pluck('equipo_id');
   }
 
+  private function showClasificadosAfa($ids){
+    dump('************************LIBERTADORES**************************');
+    foreach($ids as $key => $id){
+      if($key == 8){
+        dump('************************SUDAMERICANA**************************');
+      }
+      $e = Equipo::find($id);
+      dump($e->name);
+    }
+    dd('--------------------------------------------------------------------------');
+  }
+
 
   public function getClasificadosNextAnio(){
     $m = getMain();
@@ -1340,48 +1352,25 @@ class GrupoController extends Controller
     $eqs = $this->getTablaAnual($clasificados);
     
     $clasificados = array_unique(array_merge($clasificados, $eqs));
-
-    foreach($clasificados as $id){
-      if(!$this->liberaCupo($id, $cupos)){
-        $cupos[] = $id;
+    
+    foreach($clasificados as $c){
+      if(!$this->liberaCupo($c, $cupos)){
+        $cupos[] = $c;
         if(count($cupos) == 12){
           break;
         }
       }
     }
-    
-    $eqs = Equipo::select('name')
-                ->whereIn('id', $cupos)
-                ->orderByRaw('FIELD(id, ' . implode(',', $cupos) . ')')
-                ->get()
-                ->toArray();
-    dd($eqs);
-    //dd($clasificados);
-    //if(liberaCupo($id, $cupos)
-    //cupos afa
-    //LIBERTADORES:
-    // A) C, SC, SF, SF
-    // B) C, SC
-    // C) C 
-    // ARG) C
-    //SUDAMERICANA
-    // B) SF, SF
-    // C) SC  
-    //TABLA ANUAL
 
-    // CA
-    // CB 
-    // CARG 
-    // CC 
-    // SCA 
-    // SCB 
-    // SFA 
-    // SFA 
-    // ---
-    // SFB 
-    // SFB 
-    // SCC 
-    // TA             
+    $this->showClasificadosAfa($cupos);
+        
+  }
+
+  public function clasificadosAfa(){
+    // fase 4: semifinalistas A => lib 
+    // fase 5: no definida: finalistas B => lib, semifinalistas B => sud
+    // dase 5: definida: campeon C => lib, subcampeon C => sud, campeon Argentina => lib, primero anual => sud
+    return view('home.clasificados-afa');
   }
               
              

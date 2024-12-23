@@ -12,6 +12,7 @@ class MainController extends Controller
    public function backup(){
         set_time_limit(0);
         $system = new System();
+        if(!$system->setBackup('autopartido')) return getResponse(false, 'Error Backup Autopartido');
         if(!$system->setBackup('calendar')) return getResponse(false, 'Error Backup Calendario');
         if(!$system->setBackup('cupos_afa')) return getResponse(false, 'Error Backup Cupos Afa');
         if(!$system->setBackup('ligas')) return getResponse(false, 'Error Backup Ligas');
@@ -28,6 +29,7 @@ class MainController extends Controller
       set_time_limit(0);
 
         $system = new System();
+        if(!$system->getBackup('autopartido')) return getResponse(false, 'Error Restore Autopartido');
         if(!$system->getBackup('calendar')) return getResponse(false, 'Error Restore Calendario');
         if(!$system->getBackup('cupos_afa')) return getResponse(false, 'Error Restore Cupos Afa');
         if(!$system->getBackup('ligas')) return getResponse(false, 'Error Restore Ligas');

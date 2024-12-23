@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Color;
+use App\Models\Calendar;
+use App\Models\Grupo;
+use App\Models\EquipoGrupo;
+use App\Models\Goleador;
+use App\Models\Partido;
 use App\Models\Liga;
 use App\Models\Equipo;
 use App\Models\AutoPartido;
+use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\Console\Output\BufferedOutput;
+use App\Classes\System;
 
 
 
@@ -282,7 +290,8 @@ class AdminController extends Controller
 
 
     public function commands(){
-      return view('commands.index');
+      $cmd = AutoPartido::where('processed', false)->orderBy('index')->first();
+      return view('commands.index', compact('cmd'));
     }
 
     public function commandsJSON(Request $request){
@@ -295,17 +304,64 @@ class AdminController extends Controller
     public function procesarLote(Request $request){
       return processTransaction(function() use($request){
         $ap = AutoPartido::find($request->id);
-        // Capturar la salida del comando
-        ob_start();
-        Artisan::call('autopartido:run', ['lote' => $ap->index]);
-        $output = ob_get_clean();
-        $data = json_decode($output, false);
-        if($data->status){
-          $ap->update(['processed' => true]);
+        if($ap->index != 0){
+          $last = AutoPartido::where('processed', true)
+                                  ->where('id', '<>', $ap->index - 1)
+                                  ->orderBy('index')
+                                  ->first();
+          if(!$last){
+            throw new \Exception('Lote anterior sin procesar');
+          }
+
+        }
+        
+
+
+
+
+        // Capturar la salida del comando usando BufferedOutput
+        $outputBuffer = new BufferedOutput();
+        Artisan::call('autopartido:run', ['lote' => $ap->index], $outputBuffer);
+        $output = $outputBuffer->fetch();
+
+        $response = json_decode($output, true);
+        if ($response['status']) {
+            throw new \Exception($output);
         }
 
-        return json_decode($output);
+        $ap->update(['processed' => true]);
+
+        return ['response' => $response, 'cmd' => AutoPartido::where('processed', false)->orderBy('index')->first()];
       }, 'Procesado con éxito', 'Error al procesar');
+    }
+
+
+    public function resetLotes(Request $request){
+      return processTransaction(function() use($request){
+          AutoPartido::query()->update(['processed' => false]);
+          return  AutoPartido::where('processed', false)->orderBy('index')->first();
+      }, 'Lotes reiniciados con èxito', 'Error al reiniciar lotes');
+    }
+
+    public function resetAll(Request $request){
+      return processTransaction(function() use($request){
+        $m = getMain();
+        $m->anio = 1999;
+        $m->lib = 1;
+        $m->sud = 69;
+        $m->afa_a = 21;
+        $m->afa_b = 22;
+        $m->afa_c = 23;
+        $m->arg = 24;
+        $m->save();
+        Calendar::query()->update(['procesado' => false, 'iniciada' => false]);
+        AutoPartido::query()->update(['processed' => false]);
+        Partido::truncate();
+        EquipoGrupo::truncate();
+        Grupo::truncate();
+        Goleador::truncate();
+        
+      }, 'Sistema reseteado', 'Error resetear');
     }
     
 }

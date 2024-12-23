@@ -36,6 +36,7 @@ class CopaController extends Controller
       }
       
       $grupos = (new GrupoController())->getGrupos($m->anio, $copa, $fase, $zona);
+
       //dd($m->anio, $copa, $fase, $zona);
       $we =  null;
       if($copa == 'afa' && $fase >= 2 && $zona == 'b'){
@@ -63,10 +64,10 @@ class CopaController extends Controller
            if(count($sorted) > 1){
               switch($z){
                 case 0:
-                  $zona = count($sorted) == 3 ? 'A' : 'B';
+                  $zona = count($sorted) == 3 ? 'A' : ($fase == -1 ? 'A' : 'B');
                 break;
                 case 1:
-                  $zona = count($sorted) == 3 ? 'B' : 'C';
+                  $zona = count($sorted) == 3 ? 'B' : ($fase == -1 ? 'B' : 'C');
                 break;
                 default:
                   $zona = count($sorted) == 3 ? 'C' : null;
@@ -93,6 +94,7 @@ class CopaController extends Controller
        
        $p = (new PartidoController())->nextPartido($request->anio, $request->copa, $request->fase, $request->fecha);
        if(!$p){
+         //dump(implode(' - ', [$request->anio, $request->copa, $request->fase, $request->fecha]));
          (new Admin())->processed();
 
        }

@@ -130,10 +130,11 @@ class Admin{
 
     private function getColorCopa(){
       $c = json_decode($this->calendar->copas);
-      $copa = $c[0];
+      
       if(!count($c)){
         return ['a' => null, 'b' => null];
       }
+      $copa = $c[0];
       switch($copa){
         case 'afa': return ['a' => 'azuloscuro', 'b' => 'azul' ];
         case 'argentina': return ['a' => 'celeste', 'b' => 'cielo' ];
@@ -157,11 +158,11 @@ class Admin{
 
     private function getImageCopa(){
       $c = json_decode($this->calendar->copas);
-      $copa = $c[0];
+      
       if(!count($c)){
         return 'default/conmebol.png';
       }
-
+      $copa = $c[0];
       switch($copa){
         case 'afa': return 'default/escudo_afa.png';
         case 'argentina': return 'default/argentina.png';

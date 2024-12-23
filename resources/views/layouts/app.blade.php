@@ -331,7 +331,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <script src="{{ asset('plugins/Form/form.js').refreshCache() }}"></script>
 
-@include('partials.scripts')
+@include('partials.scripts', ['colors' => getColors()])
 @yield('js')
 <script>
 

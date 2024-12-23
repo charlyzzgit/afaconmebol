@@ -338,9 +338,9 @@ class Sorteo{
 
 
       
-      $this->show($a);
-      $this->show($b);
-      $this->show($c);
+      // $this->show($a);
+      // $this->show($b);
+      // $this->show($c);
 
 
       return [$a, $b, $c];
@@ -762,7 +762,7 @@ class Sorteo{
       $levels = getNivelesByPts((new GrupoController())->getClasificados($m->anio, 'afa', -1, 'A'));
 
       $eqs = (new GrupoController())->getClasificados($m->anio, 'afa', -1, 'A');
-
+      
       $d = 0;
       $bombo1 = $this->getLote($eqs, $d, $d+=16, $levels);
       $bombo2 = $this->getLote($eqs, $d, $d+=16, $levels);

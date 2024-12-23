@@ -904,6 +904,7 @@ function setCristal(obj, a, b){
 function parseColor(color){
   var cl = null
   $.each(COLORS, function(i, c){
+    
     if(c.name == color){
       var rgb = c.rgb.split(',')
       cl = c

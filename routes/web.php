@@ -58,6 +58,10 @@ Route::prefix('admin/equipos')->group(function(){
 Route::prefix('admin/commands')->group(function(){
   Route::get('/', [App\Http\Controllers\AdminController::class, 'commands'])->name('admin.commands');
   Route::post('/commandsJSON', [App\Http\Controllers\AdminController::class, 'commandsJSON'])->name('admin.commandsListJSON');
+  Route::post('/procesar-lote', [App\Http\Controllers\AdminController::class, 'procesarLote'])->name('admin.procesar-lote');
+  Route::post('/reset-lotes', [App\Http\Controllers\AdminController::class, 'resetLotes'])->name('admin.reset-lotes');
+  Route::post('/reset-all', [App\Http\Controllers\AdminController::class, 'resetAll'])->name('admin.reset-all');
+
 });
 
 Route::prefix('main')->group(function(){
@@ -94,6 +98,9 @@ Route::prefix('home')->group(function(){
    Route::get('candidatos/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'candidatos'])->name('home.candidatos');
 
    Route::get('en-competencia/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'enCompetencia'])->name('home.en-competencia');
+
+
+   Route::get('clasificados', [App\Http\Controllers\GrupoController::class, 'clasificadosAfa'])->name('home.clasificados-afa');
 
    Route::get('estadisticas/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'estadisticas'])->name('home.estadisitcas');
 

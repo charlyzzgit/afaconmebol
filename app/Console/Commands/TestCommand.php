@@ -55,7 +55,7 @@ class TestCommand extends Command
        //dd($eqs->toArray());
       //$this->updateStateGrupos('libertadores', 0);
 
-      //$s = new Sorteo('afa', 0);
+      //$s = new Sorteo('argentina', 1);
       //$s->sortear();
       //dd(getHorarioAfa(16));
       // $p = \App\Models\Partido::with('grupo.equiposPosition')->find(256);
