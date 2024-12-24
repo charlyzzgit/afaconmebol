@@ -1366,6 +1366,46 @@ class GrupoController extends Controller
         
   }
 
+  private function getRepesca(){
+    $m = getMain();
+    $anio = $m->anio;
+    return EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC'
+                ])
+                ->select(
+                          'equipo_id',
+                          'estado',
+                          DB::raw('SUM(j) as j'),
+                          DB::raw('SUM(g) as g'),
+                          DB::raw('SUM(e) as e'),
+                          DB::raw('SUM(p) as p'),
+                          DB::raw('SUM(gf) as gf'),
+                          DB::raw('SUM(gc) as gc'),
+                          DB::raw('SUM(gv) as gv'),
+                          DB::raw('SUM(d) as d'),
+                          DB::raw('SUM(pts) as pts')
+                        )
+                ->whereHas('grupo', function($query) use ($anio) {
+                $query->where('anio', $anio)
+                      ->where('copa', 'afa')
+                      ->where('fase', '<', 2);
+            })->groupBy('equipo_id')
+              //->orderBy('pos')
+              ->orderBy('pts', 'desc')
+              ->orderBy('d', 'desc')
+              ->orderBy('gf', 'desc')
+              ->orderBy('gc')
+              ->orderBy('gv')
+              ->orderBy('g', 'desc')
+              ->orderBy('e', 'desc')
+              ->orderBy('p')
+              ->orderBy('j', 'desc')
+              ->get()
+              ->pluck('equipo_id');
+  }
+
   public function clasificadosAfa(){
     $m = getMain();
     $ids = $this->getEquiposByPos($m->anio, 'afa', 4, 1, 'A')->toArray();
@@ -1378,15 +1418,18 @@ class GrupoController extends Controller
                   ];
       }
     }
-    $ids = array_merge($ids, $this->getEquiposByPos($m->anio, 'afa', 4, 2, 'A')->toArray());
+    $ids = $this->getEquiposByPos($m->anio, 'afa', 4, 2, 'A');
     if(count($ids)){
       foreach($ids as $id){
+        
         $eqs[] = [
                     'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
                     'medio' => 'A - SEMIFINAL'
                   ];
       }
     }
+
+   
 
     if(count($this->getEquiposByPos($m->anio, 'afa', 5, 1, 'B')->toArray())){
       $ids = $this->getEquiposByPos($m->anio, 'afa', 4, 1, 'B')->toArray();
@@ -1407,6 +1450,17 @@ class GrupoController extends Controller
                   'medio' => 'ARGENTINA'
                 ];
     }
+    if(count($this->getEquiposByPos($m->anio, 'afa', 5, 1, 'C')->toArray())){
+      $ids = $this->getEquiposByPos($m->anio, 'afa', 5, 1, 'C')->toArray();
+      if(count($ids)){
+        foreach($ids as $id){
+          $eqs[] = [
+                      'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
+                      'medio' => 'C - CAMPEON'
+                    ];
+        }
+      }
+    }
 
     if(count($this->getEquiposByPos($m->anio, 'afa', 5, 1, 'B')->toArray())){
       $ids = $this->getEquiposByPos($m->anio, 'afa', 4, 2, 'B')->toArray();
@@ -1419,17 +1473,9 @@ class GrupoController extends Controller
         }
       }
     }
-
+    
     if(count($this->getEquiposByPos($m->anio, 'afa', 5, 1, 'C')->toArray())){
-      $ids = $this->getEquiposByPos($m->anio, 'afa', 5, 1, 'C')->toArray();
-      if(count($ids)){
-        foreach($ids as $id){
-          $eqs[] = [
-                      'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($id),
-                      'medio' => 'C - CAMPEON'
-                    ];
-        }
-      }
+      
 
       $ids = $this->getEquiposByPos($m->anio, 'afa', 5, 2, 'C')->toArray();
       if(count($ids)){
@@ -1440,12 +1486,16 @@ class GrupoController extends Controller
                     ];
         }
       }
+
+      $r = $this->getRepesca();
+
+      $eqs[] = [
+                      'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($r[0]),
+                      'medio' => 'REPESCA'
+                    ];
     }
-    dd($eqs);
-    // fase 4: semifinalistas A => lib 
-    // fase 5: no definida: finalistas B => lib, semifinalistas B => sud
-    // dase 5: definida: campeon C => lib, subcampeon C => sud, campeon Argentina => lib, primero anual => sud
-    return view('home.clasificados-afa');
+    $equipos = json_encode($eqs);
+    return view('home.clasificados-afa', compact('equipos'));
   }
               
              
