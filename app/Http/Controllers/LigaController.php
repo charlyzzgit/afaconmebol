@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Liga;
+use App\Models\CupoAfa;
 use App\Models\Equipo;
+use App\Http\Controllers\GrupoController;
 
 class LigaController extends Controller
 {
@@ -59,7 +61,7 @@ class LigaController extends Controller
 
 
    public function autoLigas(){
-     
+      //DESCARTAR RESTO DE LIGAS EN CUANTO ESTE FUNCIONAL AUTOFECHA
       
       $ligas = Liga::with('equipos')->get();
         foreach($ligas as $liga){
@@ -68,9 +70,9 @@ class LigaController extends Controller
               if($liga->id == 2){
                 // $pts = (new GrupoController())->getPtsTemporada($eq->id);
                 // $eq->pts = $pts != -1 ? $pts : $this->getPtsTemporada($e->nivel);
-                 $eq->pts = $this->getPtsTemporada($e->nivel);
+                 //$eq->pts = $this->getPtsTemporada($e->nivel);
               }else{
-                $eq->pts = $this->getPtsTemporada($e->nivel);
+                $eq->pts_liga = $this->getPtsTemporada($e->nivel);
               }
 
               
@@ -107,39 +109,48 @@ class LigaController extends Controller
           }
         }
         //usar cupos
-        $clasi = getClasificadosAfa();
+        $clasi = CupoAfa::orderBy('pos')->get(); //getClasificadosAfa();
         $equipos = Equipo::where('liga_id', 2)->get();
-        $pos = 1;
-        $id_clasis = [];
-        foreach($clasi['lib'] as $c){
-          foreach($equipos as $e){
+        
+        foreach($equipos as $e){
+          $clasificado = false;
+          foreach($clasi as $c){
             if($e->id == $c->equipo_id){
-              $e->copa = 'libertadores';
-              $e->pos_clasificacion = $pos++;
-              $e->save();
-              $id_clasis[] = $e->id;
+              $e->copa = $c->copa;
+              $e->pos_clasificacion = $c->pos;
+              $clasificado = true;
             }
           }
+          if(!$clasificado){
+            $e->copa = null;
+            $e->pos_clasificacion = 100;
+            
+          }
+
+          $e->pts_liga = (new GrupoController())->getPtsAfaAnual($e->id);
+          $e->save();
+
+
         }
 
-        foreach($clasi['sud'] as $c){
-          foreach($equipos as $e){
-            if($e->id == $c->equipo_id){
-              $e->copa = 'sudamericana';
-              $e->pos_clasificacion = $pos++;
-              $e->save();
-              $id_clasis[] = $e->id;
-            }
-          }
-        }
-        foreach($equipos as $e){
-          if(!in_array($e->id, $id_clasis)){
-            $e->copa = null;
-            $eq->pos_clasificacion = 100;
-            $e->save();
-          }
+        // foreach($clasi['sud'] as $c){
+        //   foreach($equipos as $e){
+        //     if($e->id == $c->equipo_id){
+        //       $e->copa = 'sudamericana';
+        //       $e->pos_clasificacion = $pos++;
+        //       $e->save();
+        //       $id_clasis[] = $e->id;
+        //     }
+        //   }
+        // }
+        // foreach($equipos as $e){
+        //   if(!in_array($e->id, $id_clasis)){
+        //     $e->copa = null;
+        //     $eq->pos_clasificacion = 100;
+        //     $e->save();
+        //   }
           
-        }
+        // }
 
       }
 
@@ -149,7 +160,19 @@ class LigaController extends Controller
         foreach($ligas as $liga){
           foreach($liga->equipos as $e){
               $eq = Equipo::find($e->id);
-              $eq->pts = $this->getPtsTemporada($e->nivel);
+              $eq->pts_liga += $this->ptsFecha($e->nivel);
+              $eq->save();
+          }
+        }
+      }
+
+      public function swapPts(){
+        $ligas = Liga::with('equipos')->get();
+        foreach($ligas as $liga){
+          foreach($liga->equipos as $e){
+              $eq = Equipo::find($e->id);
+              $eq->pts = $eq->pts_liga;
+              $eq->pts_liga = 0;
               $eq->save();
           }
         }

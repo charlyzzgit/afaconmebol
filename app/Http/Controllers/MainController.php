@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\LigaController;
+use App\Http\Controllers\GrupoController;
 use App\Models\Calendar;
 use App\Classes\System;
 
@@ -53,15 +54,12 @@ class MainController extends Controller
       }
   }
 
-  public function finTemporada(){
+  public function finTemporada(Request $request){
     return processTransaction(function() use($request){
-        //(new LigaController())->autoLigas();
-        $calendar->update(['inicada' => false, 'procesado' => false]);
-        $m = getMain();
         
-        //borrar cupos_afa
-
-        //get cupos afa
+        Calendar::query()->update(['iniciada' => false, 'procesado' => false]);
+        (new GrupoController())->setClasificadosNextAnio();
+        (new LigaController())->autoLigas();
         
     }, 'Temporada finalizada', 'error al finalizar');
      
@@ -70,7 +68,7 @@ class MainController extends Controller
   public function newTemporada(Request $request){
     return processTransaction(function() use($request){
         (new LigaController())->autoLigas();//sacar
-        
+        (new LigaController())->swapPts();
         $main = getMain();
         $main->anio++;
         $main->save();

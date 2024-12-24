@@ -15,6 +15,10 @@
     .medio{
       font-size: 20px;
     }
+
+    .equipo{
+      border-radius: 10px;
+    }
 </style>
 <div class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
@@ -26,37 +30,17 @@
   </div>
   <div id="libertadores" class="col-12 flex-col-start-center mt-1">
     <div class="bar-copa col-12 flex-row-start-center pl-2 pr-2">
-      <img src="{{ asset('resources/default/libertadores.png') }}" height="30">
+      <img class="copa" height="30">
       <b class="ml-2 mt-1">libertadores</b>
     </div>
-    <ul  class="col-12 flex-col-start-center p-1 m-0">
-      <li class="equipo col-12 flex-row-between-center p-1 mb-1">
-        <div class="flex-row-start-center">
-          <img src="{{ asset('resources/default/escudo.png') }}" height="30">
-          <b class="name ml-1">san martin san juan</b>
-        </div>
-        <div class="medio">
-          semifinalista A
-        </div>
-      </li>
-    </ul>
+    <ul  class="col-12 flex-col-start-center p-1 m-0"></ul>
   </div>
   <div id="sudamericana" class="col-12 flex-col-start-center mt-1">
       <div class="bar-copa col-12 flex-row-start-center pl-2 pr-2">
-        <img src="{{ asset('resources/default/libertadores.png') }}" height="30">
+        <img class="copa" height="30">
         <b class="ml-2 mt-1">sudamericana</b>
       </div>
-      <ul  class="col-12 flex-col-start-center p-1 m-0">
-        <li class="equipo col-12 flex-row-between-center p-1 mb-1">
-          <div class="flex-row-start-center">
-            <img src="{{ asset('resources/default/escudo.png') }}" height="30">
-            <b class="name ml-1">san martin san juan</b>
-          </div>
-          <div class="medio">
-            semifinalista A
-          </div>
-        </li>
-      </ul>
+      <ul  class="col-12 flex-col-start-center p-1 m-0"></ul>
     </div>
   
 </div>
@@ -73,7 +57,7 @@
         box = $('#' + copa),
         eqs = filter(copa)
      setCristalRGB(box, a)
-     
+     setImageCopa(box.find('.copa'), copa)
      setGradientDuo(box.find('.bar-copa'), a, b)
      setText(box.find('.bar-copa'), parseColor('blanco'), b, .1)
      box.find('ul').empty()
@@ -114,6 +98,15 @@
    $(function(){
 
     setBar($('#bar'), 'default/escudo_afa.png', 'clasificacion copas', getColorCopa('argentina'), '', '')
+
+    footer.empty()
+    footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
+      nextPage("{{ route('home') }}", ['home', 'inicio'])
+    }))
+    footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
+        goBack(true)
+      }))
+
 
     setCopa('libertadores')
     setCopa('sudamericana')

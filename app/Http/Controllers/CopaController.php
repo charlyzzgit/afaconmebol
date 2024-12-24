@@ -80,6 +80,10 @@ class CopaController extends Controller
            }
            (new PartidoController())->cronograma($copa, $fase);
          }
+
+         if($copa == 'afa' && $fase < 2){
+           (new LigaController())->autoFecha();
+         }
        }
 
      }, 'Copa '. $request->copa.' sorteada', 'Error de sorteo');

@@ -9,6 +9,7 @@ use App\Models\EquipoGrupo;
 use App\Models\Liga;
 use App\Models\Equipo;
 use App\Models\Partido;
+use App\Models\CupoAfa;
 use DB;
 class GrupoController extends Controller
 {
@@ -1313,7 +1314,7 @@ class GrupoController extends Controller
   }
 
 
-  public function getClasificadosNextAnio(){
+  public function setClasificadosNextAnio(){
     $m = getMain();
     $a_id = $this->getCampeon($m->anio, 'afa', 'A')->equipo_id;
     $b_id = $this->getCampeon($m->anio, 'afa', 'B')->equipo_id;
@@ -1362,13 +1363,46 @@ class GrupoController extends Controller
       }
     }
 
-    $this->showClasificadosAfa($cupos);
+    $m->lib = $campeones['lib'];
+    $m->sud = $campeones['sud'];
+    $m->rec = $campeones['rec'];
+    $m->afa_a = $campeones['afa_a'];
+    $m->afa_b = $campeones['afa_b'];
+    $m->afa_c = $campeones['afa_c'];
+    $m->arg = $campeones['arg'];
+
+    $m->save();
+
+    CupoAfa::truncate();
+
+    foreach($cupos as $key => $id){
+      $copa = $key < 8 ? 'libertadores' : 'sudamericana';
+      $this->addCupo($id, $copa, $key + 1);
+    }
+    
+
+
+    //$this->showClasificadosAfa($cupos);
         
   }
 
-  private function getRepesca(){
+  private function addCupo($id, $copa, $pos){
+    $e = Equipo::find($id);
+    $ca = new CupoAfa();
+    $ca->equipo_id = $e->id;
+    $ca->name = $e->name;
+    $ca->copa = $copa;
+    $ca->pos = $pos;
+    $ca->save();
+  }
+
+  private function getRepesca($eqs){
     $m = getMain();
     $anio = $m->anio;
+    $ids = [];
+    foreach ($eqs as $e) {
+      $ids[] = $e['data']->id;
+    }
     return EquipoGrupo::with([
                       'equipo.colorA',
                       'equipo.colorB',
@@ -1391,7 +1425,9 @@ class GrupoController extends Controller
                 $query->where('anio', $anio)
                       ->where('copa', 'afa')
                       ->where('fase', '<', 2);
-            })->groupBy('equipo_id')
+            })
+              ->whereNotIn('equipo_id', $ids)
+              ->groupBy('equipo_id')
               //->orderBy('pos')
               ->orderBy('pts', 'desc')
               ->orderBy('d', 'desc')
@@ -1487,7 +1523,7 @@ class GrupoController extends Controller
         }
       }
 
-      $r = $this->getRepesca();
+      $r = $this->getRepesca($eqs);
 
       $eqs[] = [
                       'data' => Equipo::with(['colorA', 'colorB', 'colorC'])->find($r[0]),
@@ -1496,6 +1532,42 @@ class GrupoController extends Controller
     }
     $equipos = json_encode($eqs);
     return view('home.clasificados-afa', compact('equipos'));
+  }
+
+  public function getPtsAfaAnual($id){
+    $m = getMain();
+    $anio = $m->anio;
+    $e = EquipoGrupo::select(
+                          'equipo_id',
+                          'estado',
+                          DB::raw('SUM(j) as j'),
+                          DB::raw('SUM(g) as g'),
+                          DB::raw('SUM(e) as e'),
+                          DB::raw('SUM(p) as p'),
+                          DB::raw('SUM(gf) as gf'),
+                          DB::raw('SUM(gc) as gc'),
+                          DB::raw('SUM(gv) as gv'),
+                          DB::raw('SUM(d) as d'),
+                          DB::raw('SUM(pts) as pts')
+                        )
+                ->whereHas('grupo', function($query) use ($anio) {
+                $query->where('anio', $anio)
+                      ->where('copa', 'afa')
+                      ->where('fase', '<', 2);
+            })
+              ->where('equipo_id', $id)
+              ->groupBy('equipo_id')
+              ->orderBy('pts', 'desc')
+              ->orderBy('d', 'desc')
+              ->orderBy('gf', 'desc')
+              ->orderBy('gc')
+              ->orderBy('gv')
+              ->orderBy('g', 'desc')
+              ->orderBy('e', 'desc')
+              ->orderBy('p')
+              ->orderBy('j', 'desc')
+              ->first();
+    return $e ? $e->pts : 0;
   }
               
              

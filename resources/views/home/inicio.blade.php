@@ -485,6 +485,7 @@
        swalSiNo('nueva temporada', '¿iniciar temporada ' + (MAIN.anio + 1) + '?', function(){
         preload(true)
           sendPostRequest("{{ route('main.new-temporada') }}", null, function(data){
+            preload()
             swalResponse('nueva temporada', data, function(){
               window.location.href = "{{ route('home') }}"
             })
@@ -507,6 +508,22 @@
         window.location.href = "{{ route('home') }}"
 
       })
+     })
+
+     $('#fin-temporada').click(function(){
+      swalSiNo('fin temporada', '¿finalizar temporada ' + MAIN.anio + '?', function(){
+        preload(true)
+         sendPostRequest("{{ route('main.fin-temporada') }}", null, function(data){
+          
+          preload()
+         
+          swalResponse('fin temporada', data, function(){
+           
+            window.location.href = "{{ route('home') }}"
+          })
+
+        })
+       })
      })
 
     preload()

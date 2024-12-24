@@ -336,20 +336,22 @@
               })
   }
 
-  function swalResponse(title, response, callback){
-    Swal.fire(title, response.message, response.result == 'OK' ? 'success' : 'error').then(function(){
-         if(response.result == 'OK'){
-            try{
-                window.callback = function(data){
-                  callback()
+  function swalResponse(title, response, callback) {
+    Swal.fire(title, response.message, response.result === 'OK' ? 'success' : 'error')
+        .then(() => {
+            if (response.result === 'OK') {
+                try {
+                    if (typeof callback === 'function') {
+                        callback(); // Ejecuta el callback directamente
+                    } else {
+                        console.warn('Callback no es una función válida.');
+                    }
+                } catch (error) {
+                    console.error('ERROR CALLBACK AUTO', error);
                 }
-                //window.callback()
-            }catch(error){
-              console.log('ERROR CALLBACK AUTO', error)
             }
-         }
-    })
-  }
+        });
+}
 
   function setForm(form, inputs, url, callback){
     form.form({
