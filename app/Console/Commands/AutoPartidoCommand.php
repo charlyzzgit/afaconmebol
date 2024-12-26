@@ -80,7 +80,7 @@ class AutoPartidoCommand extends Command
         //printf(json_encode($res));
         $this->progress[] = ['copa' => $copa, 'message' => $res ? implode(' - ', [$res['result'], $res['message']]) : $res];
         if(!isset($res['result'])){
-         // $this->status = false;
+          $this->status = false;
         }else{
           if($res['result'] != 'OK'){
             $this->status = false;

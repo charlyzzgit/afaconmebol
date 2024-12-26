@@ -70,8 +70,12 @@
       var desde = copa == 'libertadores' ? 0 : 8,
           hasta = copa == 'libertadores' ? 8 : equipos.length,
           eqs = []
+
       for(var i = desde; i < hasta; i++){
-        eqs.push(equipos[i])
+        if(equipos[i] !== undefined){
+          eqs.push(equipos[i])
+        }
+        
       }
 
       return eqs

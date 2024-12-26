@@ -189,7 +189,7 @@ class AutoPartido{
       //alert($this->partido->local.' - '.$this->gl.' ['.$this->gbl.'] -- ['.$this->gbv.'] '.$this->gv.' - '.$this->partido->visitante);
       if($this->partido->is_vuelta && $this->partido->is_define){
         if($this->gbl == $this->gbv){
-          $this->penales();
+          return $this->penales();
         }else{
           return $this->savePartido();
         }
@@ -266,13 +266,16 @@ class AutoPartido{
       return rand($desde, 11);
     }
 
-    private function getWinner(){
+    private function getWinner($penales){
+      if($penales){
+        return $penales['pa'] > $penales['pb'] ? $this->partido->loc_id : $this->partido->vis_id;
+      }
       
       if($this->gl > $this->gv){
-        return 1;
+        return $this->partido->loc_id;
       }
       if($this->gl < $this->gv){
-        return -1;
+        return $this->partido->vis_id;
       }
 
       return 0;
@@ -288,10 +291,11 @@ class AutoPartido{
         'zona' => $this->partido->zona,
         'gl' => $this->gl,
         'gv' => $this->gv,
-        'winner_id' => $this->getWinner(),
+        'winner_id' => $this->getWinner($penales),
         'goleadores' =>  $this->goleadores,
         'detalle' => json_encode($this->detalle)
       ]);
+
       if($penales){
         $request = $request->merge($penales);
       }

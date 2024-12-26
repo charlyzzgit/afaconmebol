@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\LigaController;
 use App\Http\Controllers\GrupoController;
 use App\Models\Calendar;
 use App\Classes\System;
+use Carbon\Carbon;
 
 class MainController extends Controller
 {
@@ -67,7 +69,7 @@ class MainController extends Controller
 
   public function newTemporada(Request $request){
     return processTransaction(function() use($request){
-        (new LigaController())->autoLigas();//sacar
+        //(new LigaController())->autoLigas();//sacar
         (new LigaController())->swapPts();
         $main = getMain();
         $main->anio++;
@@ -76,12 +78,19 @@ class MainController extends Controller
     }, 'Temporada iniciada', 'error al iniciar');
   }
 
+  
+
   public function initFecha(Request $request){
     return processTransaction(function() use($request){
         $calendar = Calendar::where('procesado', 0)->first();
         $calendar->iniciada = true;
         $calendar->save();
-        (new LigaController())->autoFecha();
+        $copas = json_decode($calendar->copas);
+        $copa = count($copas) ? $copas[0] : null;
+        if($copa == 'afa' && $calendar->fase < 2){
+          (new LigaController())->autoFecha();
+          Log::channel('afa')->info(Carbon::now()->format('d/m/Y H:i:s'));
+        }
     }, 'Fecha iniciada', 'error al iniciar');
 
 

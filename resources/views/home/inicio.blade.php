@@ -183,7 +183,7 @@
   var INDEX = 0,
       modalSorteoResult = $('#sorteo-result')
    function getItem(action){
-     var c = $('<div class="col-6 menu-item p-1">\
+     var c = $('<div class="menu-item p-1">\
                 <div class="inner col-12 flex-col-start-center p-1">\
                   <img class="icon">\
                   <b class="text"></b>\
@@ -204,6 +204,12 @@
         bg = 'amarillo'
         page = 'ligas'
         break
+      case 'campeones':
+        icon = 'conmebol.png'
+        label = 'Campeones'
+        bg = 'violeta'
+        page = 'campeones'
+      break
       case 'afa a':
         icon = 'afa_a.png'
         label = 'afa a'
@@ -293,6 +299,8 @@
         params.push(gv)
       })
      }
+
+     c.addClass(action.includes('afa') ? 'col-4' : 'col-6')
      
     c.data('params', params.join('.'))
      
@@ -469,6 +477,7 @@
     
 
      $('#menu').append(getItem('ligas'))
+     $('#menu').append(getItem('campeones'))
      $('#menu').append(getItem('afa a'))
      $('#menu').append(getItem('afa b'))
      $('#menu').append(getItem('afa c'))

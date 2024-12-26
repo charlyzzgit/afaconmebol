@@ -17,9 +17,9 @@ class LigaController extends Controller
     }
 
      public function equipos($liga_id){
-      $total = Equipo::where('liga_id', $liga_id)->sum('pts');
-      $lib = [];
-      $sud = [];
+      $total = Equipo::where('liga_id', $liga_id)->sum('pts_liga');
+      $lib = json_encode([]);
+      $sud = json_encode([]);
       $equipos = Equipo::with('colorA', 'colorB', 'colorC')
                        ->where('liga_id', $liga_id);
       if($total){
@@ -37,6 +37,7 @@ class LigaController extends Controller
       }
                       
       $equipos = $equipos->orderBy('nivel', 'desc')->get();
+
       $liga = Liga::with('colorA')->find($liga_id);
       return view('home.equipos', compact('liga', 'equipos', 'lib', 'sud'));
     }

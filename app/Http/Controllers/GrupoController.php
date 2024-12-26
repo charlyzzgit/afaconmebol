@@ -1570,5 +1570,51 @@ class GrupoController extends Controller
     return $e ? $e->pts : 0;
   }
               
-             
+  public function campeones(){
+    
+    return view('home.campeones');
+  }   
+
+  public function campeonesJSON(Request $request){
+    $anio = $request->anio;
+    $campeones = [
+                  [
+                    'copa' => 'libertadores',
+                    'zona' => null,
+                    'data' => $this->getCampeon($anio, 'libertadores'),
+                  ],
+                  [
+                    'copa' => 'sudamericana',
+                    'zona' => null,
+                    'data' => $this->getCampeon($anio, 'sudamericana'),
+                  ],
+                  [
+                    'copa' => 'recopa',
+                    'zona' => null,
+                    'data' => $this->getCampeon($anio, 'recopa'),
+                  ],
+                  [
+                    'copa' => 'afa',
+                    'zona' => 'A',
+                    'data' => $this->getCampeon($anio, 'afa', 'A'),
+                  ],
+                  [
+                    'copa' => 'afa',
+                    'zona' => 'B',
+                    'data' => $this->getCampeon($anio, 'afa', 'B'),
+                  ],
+                  [
+                    'copa' => 'afa',
+                    'zona' => 'C',
+                    'data' => $this->getCampeon($anio, 'afa', 'C'),
+                  ],
+                  [
+                    'copa' => 'argentina',
+                    'zona' => null,
+                    'data' => $this->getCampeon($anio, 'argentina')
+                  ],
+                 ];
+
+    return response()->json($campeones);
+  }      
 }
