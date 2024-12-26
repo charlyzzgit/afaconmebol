@@ -120,9 +120,9 @@ return [
             'level' => 'debug',
         ],
 
-        'truko' => [
+        'afa' => [
             'driver' => 'single',
-            'path' => storage_path('logs/truko.log'),
+            'path' => storage_path('logs/afa.log'),
             'level' => 'debug',
         ],
     ],

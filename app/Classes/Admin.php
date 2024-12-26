@@ -8,6 +8,7 @@ use App\Models\Calendar;
 use App\Models\Grupo;
 use DB;
 use App\Http\Controllers\PartidoController;
+use App\Http\Controllers\LigaController;
 
 
 
@@ -25,9 +26,7 @@ class Admin{
     }
 
     public function processed(){
-      // if($this->calendar->id > 30){
-      //   return;
-      // }
+      
       $this->calendar->procesado = true;
       $this->calendar->save();
     }
@@ -85,6 +84,8 @@ class Admin{
 
       return $data;
     }
+
+    
 
     public function setGrupo($grupo_id){
       if($grupo_id){

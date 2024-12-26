@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\PartidoController;
 use App\Http\Controllers\GoleadoresController;
@@ -81,9 +82,7 @@ class CopaController extends Controller
            (new PartidoController())->cronograma($copa, $fase);
          }
 
-         if($copa == 'afa' && $fase < 2){
-           (new LigaController())->autoFecha();
-         }
+         
        }
 
      }, 'Copa '. $request->copa.' sorteada', 'Error de sorteo');

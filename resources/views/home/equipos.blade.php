@@ -40,7 +40,7 @@
                   </div>\
               </li>')
     li.find('.name').html(equipo.name)
-    li.find('.pts').html(equipo.pts)
+    li.find('.pts').html(equipo.pts_liga)
     setImageEquipo(li.find('.escudo'), equipo, 'escudo')
     setImageEquipo(li.find('.jugador'), equipo, 'local')
     setEquipoUI(li, equipo)

@@ -1042,6 +1042,15 @@ function getColorCopa(copa, duo){
   }
 }
 
+function getColorZona(zona, duo){
+  switch(zona){
+    case 'A': return duo !== undefined ? {a:'rojo',b: 'naranja'} :'rojo'
+    case 'B': return duo !== undefined ? {a:'azul',b: 'celeste'} :'azul'
+    case 'C': return duo !== undefined ? {a:'verde',b: 'verdeclaro'} :'verde'
+    default: return duo !== undefined ? {a:'negro',b: 'gris'} :'negro' 
+  }
+}
+
 function grupoKey(isdefine){
   return isdefine ? 'llave' : 'grupo'
 }

@@ -85,6 +85,8 @@ Route::prefix('home')->group(function(){
    Route::get('ligas', [App\Http\Controllers\LigaController::class, 'index'])->name('home.ligas');
    Route::get('equipos/{liga_id}', [App\Http\Controllers\LigaController::class, 'equipos'])->name('home.equipos');
 
+   Route::get('campeones', [App\Http\Controllers\GrupoController::class, 'campeones'])->name('home.campeones');
+
    Route::get('copa/{copa_zona}/{fase}/{id?}', [App\Http\Controllers\CopaController::class, 'index'])->name('home.copa');
    Route::get('partidos/{copa_zona}/{fase}/{grupo_id?}', [App\Http\Controllers\PartidoController::class, 'index'])->name('home.partidos');
    Route::get('estadio/{partido_id}', [App\Http\Controllers\PartidoController::class, 'estadio'])->name('home.estadio');
