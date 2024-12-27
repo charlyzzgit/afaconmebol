@@ -1,0 +1,112 @@
+[2023-06-03 13:08:23] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '1',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-03 13:08:23] local.INFO: 1 > 33  
+[2023-06-03 13:08:23] local.INFO: p: 1  
+[2023-06-03 13:26:29] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '2',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-03 13:29:52] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '7',
+  'bg_position' => '3',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-03 13:39:32] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '4',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-03 13:43:54] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '5',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-03 14:15:54] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '6',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-03 20:47:51] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '7',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-03 21:09:36] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '8',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-04 15:24:54] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '9',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  
+[2023-06-04 15:49:39] local.INFO: array (
+  'id' => '2',
+  'user_id' => '3',
+  'jugador_id' => '9',
+  'game_position' => '6',
+  'bg_position' => '10',
+  'mode' => 'mortaltruko',
+  'level' => 'easy',
+  'fixture' => '1-8-2.5-14-27-47-7-26',
+  'api_token' => '8|0q3FIhnmbMBAsmMDARqsWVE8a1JcU6By8Xpo3mTZ',
+)  

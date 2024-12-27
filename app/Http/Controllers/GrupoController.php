@@ -1637,13 +1637,51 @@ class GrupoController extends Controller
     ->where('grupos.completed', true)
     ->where('grupos.copa', $request->copa)
     ->where('grupos.fase', 5)
-    ->when($request->zona, function ($query, $zona) {
-        $query->where('grupos.zona', $zona);
-    })
+    // ->when($request->zona, function ($query, $zona) {
+    //     $query->where('grupos.zona', $zona);
+    // })
     ->where('equipos_grupo.pos', 1)
-    ->orderBy('grupos.anio', $request->order) // Ordenar por anio
-    ->get();
+    ->orderBy('grupos.anio', $request->order); // Ordenar por anio
+    if($request->zona){
+      $eqs = $eqs->orderBy('grupos.zona', $request->zona);
+    }
 
-    return response()->json($eqs);
+    $eqs = $eqs->get();
+
+    $rows = [];
+
+    foreach($eqs as $e){
+      $this->addCampeon($rows, $e);
+    }
+
+    return response()->json($rows);
+  }
+
+  private function addCampeon(&$rows, $e){
+    $exists = false;
+    foreach($rows as &$row){
+      if($row['anio'] == $e->anio){
+        $row['equipos'][] = $e->load(['equipo' => function ($query) {
+                                                    $query->with(['colorA', 'colorB', 'colorC']);
+                                                }]);
+        $exists = true;
+      }
+    }
+
+    if(!$exists){
+      $rows[] = [
+        'anio' => $e->anio,
+        'equipos' => [$e->load(['equipo' => function ($query) {
+                                                    $query->with(['colorA', 'colorB', 'colorC']);
+                                                }])]
+      ];
+    }
+  }
+
+  public function estadisticasHistorial($anio, $copa, $zona = null){
+    
+    $campeon = $this->getCampeon($anio, $copa, $zona);
+    
+    return view('home.estadisticas', compact('campeon', 'copa', 'zona'));
   }
 }

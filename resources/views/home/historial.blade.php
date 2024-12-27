@@ -8,6 +8,7 @@
 
     .bar-anio{
       border-radius: 10px 10px 0 0;
+      font-size: 20px;
     }
 
     .campeon{
@@ -43,23 +44,56 @@
       src_copa = 'default/escudo_afa.png'
     }
 
-
-
-    function getLiAnio(row){
-      var li = $('<li class="anio col-12 flex-col-start-center p-1 mb-1 cristal">\
-                  <div class="bar-anio col-12 flex-row-center-center p-1 bg-dark">2000</div>\
-                  <div class="campeon col-12 flex-row-between-center p-1 mt-1 bg-secondary">\
-                    <img class="escudo" src="{{ asset('resources/default/escudo.png') }}">\
+    function getCampeon(e, anio, zona){
+      var cmp = $('<div class="campeon col-12 flex-row-between-center p-1 mt-1">\
+                    <img class="escudo">\
                     <div class="flex-col-center-center">\
-                      <b class="zona">zona A</b>\
+                      <b class="zona"></b>\
                       <b class="name">independiente medellin</b>\
                     </div>\
-                    <img class="jugador"  src="{{ asset('resources/default/jugador.png') }}">\
-                  </div>\
-                </li>')
+                    <img class="jugador">\
+                  </div>')
+      setEquipoUI(cmp, e, .1)
+      cmp.find('.name').html(e.name)
+      cmp.data('anio', anio)
+      if(copa != 'afa'){
+        cmp.find('.zona').hide()
+      }else{
+        cmp.find('.zona').html('zona ' + zona)
+        setText(cmp.find('.zona'), e.color_b, bcColor(e), .1)
+        cmp.data('zona', zona)
+      }
 
+      cmp.click(function(){
+        var anio = parseInt($(this).data('anio')),
+            zona = $(this).data('zona')
+
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-historial', anio, copa, zona], true)
+      })
+      
+
+      return cmp
+    }
+
+    function getLiAnio(row){
+      var li = $('<li class="anio col-12 flex-col-start-center p-1 mb-1">\
+                  <div class="bar-anio col-12 flex-row-center-center p-1"></div>\
+                </li>'),
+          col = getColorCopa(copa, true)
+      setCristal(li, col.a, col.b)
+      li.find('.bar-anio').html(row.anio)
+      setText(li.find('.bar-anio'), parseColor('blanco'), parseColor(col.b))
+      setGradientDuo(li.find('.bar-anio'), parseColor(col.a), parseColor(col.b))
+      $.each(row.equipos, function(i, e){
+        li.append(getCampeon(e.equipo, row.anio, e.zona))
+      })
+      
+
+      
       return li
     }
+
+    
 
     function listar(order){
       $('#list').empty()

@@ -835,6 +835,7 @@ function setEquipoUI(el, eq, stroke){
   textColorUI(el.find('.pts'), b, c, stk)
   colBordeUI(el, b)
   setImageEquipo(el.find('.escudo'), eq, 'escudo')
+  setImageEquipo(el.find('.jugador'), eq, 'local')
 }
 
 function textColorUI(obj, a, b, borde){
