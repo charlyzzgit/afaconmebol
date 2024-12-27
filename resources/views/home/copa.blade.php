@@ -776,6 +776,15 @@
           }
           
         }
+
+        if(option == 'historial'){
+         
+          
+          nextPage("{{ route('home') }}", ['home', option, copa, zona], true)
+          return
+        }
+
+
         var z = copa == 'afa' ? '-' + zona : ''
         params = ['home', option, copa + z, fase]
         if(option == 'anual'){

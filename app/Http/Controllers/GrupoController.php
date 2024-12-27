@@ -1617,4 +1617,33 @@ class GrupoController extends Controller
 
     return response()->json($campeones);
   }      
+
+
+
+  public function historial($copa){
+
+    return view('home.historial', compact('copa'));
+  }
+
+
+  public function historialJSON(Request $request){
+
+    $eqs = EquipoGrupo::with([
+        'equipo.colorA',
+        'equipo.colorB',
+        'equipo.colorC'
+    ])
+    ->join('grupos', 'equipos_grupo.grupo_id', '=', 'grupos.id') // Unir con la tabla grupos
+    ->where('grupos.completed', true)
+    ->where('grupos.copa', $request->copa)
+    ->where('grupos.fase', 5)
+    ->when($request->zona, function ($query, $zona) {
+        $query->where('grupos.zona', $zona);
+    })
+    ->where('equipos_grupo.pos', 1)
+    ->orderBy('grupos.anio', $request->order) // Ordenar por anio
+    ->get();
+
+    return response()->json($eqs);
+  }
 }

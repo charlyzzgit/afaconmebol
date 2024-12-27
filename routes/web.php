@@ -114,7 +114,10 @@ Route::prefix('home')->group(function(){
    Route::get('estadisticas-goleadores/{copa}/{zona?}', [App\Http\Controllers\GoleadoresController::class, 'estadisticas'])->name('home.estadisitcas-goleadores');
 
    Route::get('calendar', [App\Http\Controllers\MainController::class, 'calendar'])->name('home.calendar');
+
+   Route::get('historial/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'historial'])->name('home.historial');
    
+   Route::post('historialJSON', [App\Http\Controllers\GrupoController::class, 'historialJSON'])->name('home.historialJSON');
 
 
 
