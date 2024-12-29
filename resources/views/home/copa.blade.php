@@ -453,7 +453,9 @@
       var filter = $(this).data('filter'),
           url = "{{ route('home') }}",
           params = ['home', 'estadisticas-equipos', copa, filter, zona]
-       
+      @isset($anio)
+          params = ['home', 'estadisticas-equipos-historial', '{{ $anio }}', copa, filter, zona]
+      @endisset 
        nextPage(url, params, true)
     })
 
@@ -1009,6 +1011,10 @@
       title = [copa, 'tabla anual'].join(' - ')
       src_copa = 'default/escudo_afa.png'
     }
+    @isset($anio)
+      title += ' - {{ $anio }}'
+    @endisset
+
     setBar($('#bar'), src_copa, title, getColorCopa(copa), 'grupos', zona)
     setMenu()
     if(CAMPEON != null){

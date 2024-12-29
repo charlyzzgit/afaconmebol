@@ -22,8 +22,9 @@ class LigaController extends Controller
       $sud = json_encode([]);
       $equipos = Equipo::with('colorA', 'colorB', 'colorC')
                        ->where('liga_id', $liga_id);
+      $original = clone $equipos;
       if($total){
-        $equipos = $equipos->orderBy('pts', 'desc');
+        $equipos = $equipos->orderBy('pts_liga', 'desc');
         $lib = Equipo::with('colorA', 'colorB', 'colorC')
                       ->where('liga_id', $liga_id)
                       ->where('copa', 'libertadores')
@@ -35,11 +36,15 @@ class LigaController extends Controller
                       ->orderBy('pos_clasificacion')
                       ->get();
       }
+
+      
+
+      $original = $original->orderBy('nivel', 'desc')->get();
                       
       $equipos = $equipos->orderBy('nivel', 'desc')->get();
 
       $liga = Liga::with('colorA')->find($liga_id);
-      return view('home.equipos', compact('liga', 'equipos', 'lib', 'sud'));
+      return view('home.equipos', compact('liga', 'equipos', 'original', 'lib', 'sud'));
     }
 
     public function ptsFecha($nivel){
@@ -178,5 +183,17 @@ class LigaController extends Controller
           }
         }
       }
+
+  public function equipo($id){
+    $equipo = Equipo::with([
+                      'colorA',
+                      'colorB',
+                      'colorC'
+                ])->find($id);
+
+    return view('home.equipo', compact('equipo'));
+  }
+
+  
         
 }

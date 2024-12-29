@@ -53,6 +53,15 @@
       height: 70px;
     }
 
+    .partido .copa-fase{
+      font-size: 18px;
+    }
+
+    .partido .grupo-fecha{
+      font-size: 18px;
+    }
+
+
     .partido .body{
        border-radius: 0 0 10px 10px;
     }
@@ -243,7 +252,7 @@
     setBgGradient(header, cola.rgb, colb.rgb, cola.rgb)
     setImageCopa(copa, p.copa + (p.zona != null ? '_' + p.zona : ''))
     setImageFlag(flag, p.local.liga.bandera)
-    copafase.html([p.copa, getNameFase(p.copa, p.fase, p.zona)].join(' - '))
+    copafase.html([p.copa + ' ' + p.anio, getNameFase(p.copa, p.fase, p.zona)].join(' - '))
     grupofecha.html([grupoKey(p.is_define) + ' ' + p.grupo.grupo, getNameFecha(p.fase, p.fecha)].join(' - '))
     textColor(copafase, 'blanco', colb.name, .1)
     textColor(grupofecha, 'blanco', colb.name, .1)
@@ -321,6 +330,10 @@
       var filter = $(this).data('filter'),
           url = "{{ route('home') }}",
           params = ['home', 'estadisticas-partidos', copa, filter, zona]
+
+      @isset($anio)
+          params = ['home', 'estadisticas-partidos-historial', '{{ $anio }}', copa, filter, zona]
+      @endisset
        
        nextPage(url, params, true)
     })

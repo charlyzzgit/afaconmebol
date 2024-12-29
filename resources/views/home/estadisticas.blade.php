@@ -106,6 +106,12 @@
       border-radius: 15px;
     }
 </style>
+@php
+  $title = ($zona ? $copa.' - '.$zona : $copa);
+  if(isset($anio)){
+    $title .= ' '.$anio;
+  }
+@endphp
 <div id="fondo" class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
     <div class="flex-row-start-center h-100">
@@ -127,7 +133,7 @@
     <h5 class="m-0 text-center">
       <b>campeon</b>
       <br>
-      <b>{{ $zona ? $copa.' - '.$zona : $copa }}</b>
+      <b>{{ $title }}</b>
     </h5>
     <img src="{{ asset('resources/default/libertadores.png') }}" class="mr-3" height="50">
   </div>
@@ -153,18 +159,13 @@
     @endfor
   </div>
   <div id="botonera" class="col-12 flex-row-around-center flex-wrap p-2">
-    <div class="btn-est col-12 p-2">
+    <div class="btn-est col-6 p-2">
       <div id="btn-campania" class="inner col-12 flex-row-center-center h-100 p-2 cristal">
         <img src="{{ asset('resources/default/escudo.png') }}" height="80%">
       <b class="ml-3">campaña</b>
     </div>
     </div>
-    <div class="btn-est col-6 p-2">
-      <div id="btn-posiciones" class="inner col-12 flex-row-center-center h-100 p-2 cristal">
-        <img src="{{ asset('resources/default/escudo.png') }}" height="80%">
-      <b class="ml-3">posiciones</b>
-    </div>
-    </div>
+    
     <div class="btn-est col-6 p-2">
       <div id="btn-equipos" class="inner col-12 flex-row-center-center h-100 p-2 cristal">
         <img src="{{ asset('resources/default/escudo.png') }}" height="80%">
@@ -270,19 +271,37 @@
     setBtn($('#btn-goleadores'), 'celeste')
 
     $('#btn-campania').click(function(){
-      nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos', copa != 'afa' ? copa : [copa, zona].join('-'), 'campania', campeon.equipo.id], true)
+      @if(isset($anio))
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos-historial', '{{ $anio}}', copa != 'afa' ? copa : [copa, zona].join('-'), 'campania', campeon.equipo.id], true)
+      @else
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos', copa != 'afa' ? copa : [copa, zona].join('-'), 'campania', campeon.equipo.id], true)
+      @endif
     })
 
     $('#btn-equipos').click(function(){
-      nextPage("{{ route('home') }}", ['home', 'estadisticas-equipos', copa, 'posiciones', zona], true);
+      @if(isset($anio))
+
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-equipos-historial', '{{ $anio }}', copa, 'posiciones', zona], true);
+      @else
+
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-equipos', copa, 'posiciones', zona], true);
+      @endif
     })
 
     $('#btn-partidos').click(function(){
-      nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos', copa != 'afa' ? copa : [copa, zona].join('-'), '-'], true)
+      @if(isset($anio))
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos-historial', '{{ $anio }}', copa != 'afa' ? copa : [copa, zona].join('-'), '-'], true)
+      @else
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos', copa != 'afa' ? copa : [copa, zona].join('-'), '-'], true)
+      @endif
     })
 
     $('#btn-goleadores').click(function(){
-      nextPage("{{ route('home') }}", ['home', 'estadisticas-goleadores', copa, zona], true)
+      @if(isset($anio))
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-goleadores-historial', '{{ $anio }}', copa, zona], true)
+      @else
+        nextPage("{{ route('home') }}", ['home', 'estadisticas-goleadores', copa, zona], true)
+      @endif
     })
     preload()
    })

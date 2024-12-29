@@ -24,10 +24,11 @@
   var ul = $('#list'),
       liga = {!! $liga !!},
       equipos = {!! $equipos !!},
+      original = {!! $original !!},
       lib = {!! $lib !!},
       sud = {!! $sud !!}
   
-  function getLiEquipo(equipo){
+  function getLiEquipo(equipo, isOriginal){
     var li = $('<li class="equipo col-12 flex-row-between-center p-2 mb-1">\
                   <div class="col-10 flex-row-start-center">\
                     <img class="escudo">\
@@ -51,8 +52,14 @@
     }
     li.data('id', equipo.id).click(function(){
       var id = $(this).data('id')
-      //nextPage("{{ route('home') }}", ['home', 'equipos', id], true)
+      nextPage("{{ route('home') }}", ['home', 'equipo', id], true)
     })
+
+    if(isOriginal !== undefined){
+      li.find('.pts, .copa').hide()
+    }else{
+      li.find('.pts, .copa').show()
+    }
     return li
   }
 
@@ -70,6 +77,17 @@
     }
     
     preload()
+  }
+
+  function listarOriginal(){
+    ul.empty()
+    
+      $.each(original, function(i, e){
+        ul.append(getLiEquipo(e, true))
+      })
+    
+    
+    
   }
 
 
@@ -94,7 +112,14 @@
         listar('libertadores')
       }))
 
-    setBar($('#bar'), liga.bandera, liga.name, liga.color_a.name)
+      footer.append(getBtnFooter(liga.color_a.name, null, 'fa fa-shield', function(){
+        listarOriginal()
+      }))
+
+
+     
+
+    setBar($('#bar'), liga.bandera, liga.name, liga.color_a.name, 'equipos', '')
 
     setCristal(ul, liga.color_a.name)
     

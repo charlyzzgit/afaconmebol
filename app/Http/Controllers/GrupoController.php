@@ -1681,7 +1681,156 @@ class GrupoController extends Controller
   public function estadisticasHistorial($anio, $copa, $zona = null){
     
     $campeon = $this->getCampeon($anio, $copa, $zona);
-    //comment
-    return view('home.estadisticas', compact('campeon', 'copa', 'zona'));
+    
+    return view('home.estadisticas', compact('campeon', 'anio', 'copa', 'zona'));
+  }
+
+  public function estadisticasEquiposHistorial($anio, $copa, $filter, $zona = null){
+   
+    $campeon = $this->getCampeon($anio, $copa, $zona);
+    $maxJ = $this->maxPartidos($campeon, $anio, $copa, $zona);
+    
+    $eqs = EquipoGrupo::with([
+                      'equipo.colorA',
+                      'equipo.colorB',
+                      'equipo.colorC'
+                ])
+                ->select(
+                          'equipo_id',
+                          'estado',
+                          DB::raw('SUM(j) as j'),
+                          DB::raw('SUM(g) as g'),
+                          DB::raw('SUM(e) as e'),
+                          DB::raw('SUM(p) as p'),
+                          DB::raw('SUM(gf) as gf'),
+                          DB::raw('SUM(gc) as gc'),
+                          DB::raw('SUM(gv) as gv'),
+                          DB::raw('SUM(d) as d'),
+                          DB::raw('SUM(pts) as pts')
+                        )
+                ->whereHas('grupo', function($query) use ($anio, $copa, $zona) {
+                $query->where('anio', $anio)
+                      ->where('copa', $copa);  
+                if($zona){
+                  $query = $query->where('zona', $zona);
+                }     
+            })
+            ->groupBy('equipo_id');
+
+    switch($filter){
+      case 'posiciones':
+        $eqs = $this->posicionesFinales($eqs);
+
+      break;
+      case 'mejor-equipo': 
+        $eqs = $this->mejorEquipo($eqs);
+      break;
+      case 'mas-goleador':
+        $eqs = $this->masGoleador($eqs);
+      break;
+      case 'mas-efectivo':
+        $efs = $this->efectivo($eqs, $maxJ, true);
+        $ids = array_column($efs, 'equipo_id');
+        
+        $eqs= $eqs->whereIn('equipo_id', $ids);
+
+      break;
+      case 'mejor-valla':
+        $eqs = $this->mejorValla($eqs);
+      break;
+      case 'peor-valla':
+        $eqs = $this->peorValla($eqs);
+      break;
+      case 'menos-efectivo':
+        $efs = $this->efectivo($eqs, $maxJ, false);
+        $ids = array_column($efs, 'equipo_id');
+        
+        $eqs= $eqs->whereIn('equipo_id', $ids);
+
+      break;
+      case 'menos-goleador':
+        $eqs = $this->menosGoleador($eqs);
+      break;
+      case 'peor-equipo': 
+        $eqs = $this->peorEquipo($eqs);
+      break;
+    }
+    //sql($eqs);
+    $eqs = $eqs->get()
+                ->map(function($e, $index){
+                  $e->pos = $index + 1;
+                  $e->estado = 0;
+                  
+                  return $e;
+              });
+    if($filter == 'posiciones'){ 
+      if($campeon->equipo_id == $eqs[1]->equipo_id){
+            $aux = $eqs[1];
+            $eqs[1] = $eqs[0];
+            $eqs[0] = $aux;
+      }
+    }
+    
+    if($filter == 'mas-efectivo' || $filter == 'menos-efectivo'){
+      $efectivos = [];
+      foreach($eqs as $e){
+        $ef = array_filter($efs, function($item) use ($e) {
+                  return $item['equipo_id'] === $e->equipo_id;
+              });
+        if(count($ef)){
+          if(!isset($ef[0])){
+            continue;
+          }
+          $e->gxp = $ef[0]['efectividad'];
+          $efectivos[] = $e;
+        }
+        // if (is_array($ef) && count($ef) > 0) {
+        //       if (isset($ef[0]['efectividad'])) {
+        //           $e->gxp = $ef[0]['efectividad'];
+        //           $efectivos[] = $e;
+        //       }
+        //   }
+      }
+      $eqs = $efectivos;
+      
+    }
+    $colors = colorGrupo(300);
+    $grupos = json_encode([
+                  [
+                    'anio' => $anio,
+                    'a' => $colors['a'],
+                    'b' => $colors['b'],
+                    'copa' => 'afa',
+                    'equipos_position' => $eqs,
+                    'fase' => 0,
+                    'grupo' => 'posiciones finales',
+                    'zona' => null,
+                  
+                  ]
+
+    ]);
+        
+     return view('home.copa', ['anio' => $anio, 'copa' => $copa, 'fase' => 0, 'zona' => $zona, 'grupos' => $grupos, 'filter' => $filter]);  
+  }
+
+
+  public function historialEquipo($id, $copa){
+    $equipo = Equipo::with([
+                      'colorA',
+                      'colorB',
+                      'colorC'
+                ])->find($id);
+    $ligas = Liga::with([
+                  'colorA',
+                  'colorB',
+                  'colorC',
+                  'equipos' => function ($query) use($id){
+                      $query->where('id', '!=', $id); 
+                  }
+              ])
+              ->get();
+
+
+    return view('home.historial-equipo', compact('copa', 'equipo', 'ligas'));
   }
 }

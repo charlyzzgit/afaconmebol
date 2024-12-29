@@ -71,6 +71,9 @@
       footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
         goBack(true)
       }))
+    @isset($anio)
+      title += ' - {{ $anio }}'
+    @endisset
     setBar($('#bar'), src_copa, copa + (zona != null && zona != '' ? ' - ' + zona : ''), 'celeste', title, zona)
   setCristal(ul, 'celeste')
      listar()
