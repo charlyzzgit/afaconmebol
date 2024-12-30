@@ -6,6 +6,16 @@
       display: none !important;
     }
 
+    .equipo{
+      border-radius: 10px;
+      border:solid thin white;
+      font-size: 25px;
+    }
+
+    .equipo .jugador, .equipo .escudo{
+      height: 40px;
+    }
+
     .bar-title{
       font-size: 17px;
       font-weight: bold;
@@ -67,6 +77,28 @@
     .fase-anio{
       border-radius: 5px 0 0 5px;
     }
+
+    .copa{
+      border-radius: 5px;
+    }
+
+    .copa .icon{
+      height: 20px;
+    }
+
+    #menu-equipos{
+      position: absolute;
+      top:100%;
+      left: 0;
+      height: 100%;
+      z-index: 1000;
+    }
+
+    #menu-equipos #equipos{
+      height: calc(100% - 56px);
+      overflow-y: auto;
+    }
+
 </style>
 <div class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
@@ -83,28 +115,21 @@
   </div> -->
   <div class="section col-12 flex-col-start-center mt-1 cristal">
     <div class="bar-title col-12 flex-row-center-center p-1">todas las copas</div>
-    <ul id="list-copas" class="col-12 flex-col-start-center m-0 p-1">
-      @for($i = 0; $i < 5; $i++)
-      <li class="copa col-12 flex-row-start-center p-1 mb-1 cristal">
-        <b class="anio-copa">2000</b>
-        <b class="ml-2">eliminado en dieciseisavos de final</b>
-      </li>
-      @endfor
-    </ul>
+    <ul id="list-copas" class="col-12 flex-col-start-center m-0 p-1"></ul>
     <div class="col-12 flex-row-between-center mt-0">
-      <div id="btn-all" class="btn-copa col-4 p-1">
+      <div id="btn-all" class="btn-copa col-4 p-1" data-filter="all">
         <div class="btn-inner bar-title col-12 flex-row-center-center p-1 cristal">
           <img src="{{ asset('resources/default/logo.png') }}" height="20">
           <b class="ml-1">todas</b>
         </div>
       </div>
-      <div id="btn-jugadas" class="btn-copa col-4 p-1">
+      <div id="btn-jugadas" class="btn-copa col-4 p-1" data-filter="jugadas">
         <div class="btn-inner bar-title col-12 flex-row-center-center p-1 cristal">
           <img src="{{ asset('resources/default/jugador.png') }}" height="20">
           <b class="ml-1">jugadas</b>
         </div>
       </div>
-      <div id="btn-ganadas" class="btn-copa col-4 p-1">
+      <div id="btn-ganadas" class="btn-copa col-4 p-1" data-filter="ganadas">
         <div class="btn-inner bar-title col-12 flex-row-center-center p-1 cristal">
           <img src="{{ asset('resources/default/libertadores.png') }}" height="20">
           <b class="ml-1">ganadas</b>
@@ -115,14 +140,14 @@
   <div id="box-logro" class="section col-12 flex-row-center-center mt-1 p-1 cristal">
     <div class="flex-row-start-center bar-title pl-3 pr-3 pt-1 pb-1">
       <b>maximo logro:</b>
-      <b id="logro" class="ml-1">eliminado en dieciseisavos de final</b>
+      <b id="logro" class="ml-1">{{ $logro }}</b>
     </div>
   </div>
   <div id="vs" class="section col-12 flex-col-start-center mt-1 cristal">
     <div class="col-12 flex-row-center-center bar-title">enfrentamientos</div>
     <ul id="ligas" class="col-12 flex-row-between-start flex-wrap m-0 p-1">
       @foreach($ligas as $liga)
-      <li class="liga flex-row-center-center p-1">
+      <li class="liga flex-row-center-center p-1" data-id="{{ $liga->id }}">
         <img src="{{ asset('resources').'/'.$liga->bandera }}" width="100%">
       </li>
       @endforeach
@@ -161,12 +186,116 @@
       </div>
     </div>
   </div>
+  <div id="menu-equipos" class="col-12 flex-col-start-center">
+    <div class="bar-liga col-12 flex-row-start-center p-1">
+      <img src="{{ asset('resources/default/flag.png') }}" height="30">
+      <b class="liga-name ml-1">argentina</b>
+    </div>
+    <ul id="equipos" class="col-12 flex-col-start-center m-0 p-1"></ul>
+  </div>
+  
 </div>
 
 
 <script>
   var equipo = {!! $equipo !!},
-      copa = '{{ $copa }}'
+      copa = '{{ $copa }}',
+      copas = {!! $copas !!},
+      ligas = {!! $ligas !!}
+
+  log('copas', [copas])
+
+  function getLiEquipo(equipo){
+    var li = $('<li class="equipo col-12 flex-row-between-center p-2 mb-1">\
+                  <div class="col-12 flex-row-start-center">\
+                    <img class="escudo">\
+                    <img class="jugador ml-1">\
+                    <b class="name ml-1"></b>\
+                  </div>\
+              </li>')
+    li.find('.name').html(equipo.name)
+    setImageEquipo(li.find('.escudo'), equipo, 'escudo')
+    setImageEquipo(li.find('.jugador'), equipo, 'local')
+    setEquipoUI(li, equipo)
+    
+    li.data('id', equipo.id).click(function(){
+      var id = $(this).data('id')
+      //nextPage("{{ route('home') }}", ['home', 'equipo', id], true)
+    })
+
+   
+    return li
+  }
+
+  function getLiCopa(c){
+    var li = $('<li class="copa col-12 flex-row-start-center p-1 mb-1 cristal">\
+                  <img class="icon">\
+                  <b class="anio-copa ml-2"></b>\
+                  <b class="ml-1 mr-1">-</b>\
+                  <b class="fase-copa"></b>\
+                </li>'),
+        text = ''
+    if(c.isGanada){
+      text = 'campeon'
+      setImageCopa(li.find('.icon'), copa)
+    }else{
+      if(c.isJugada){
+        text = c.fase == 'final' ? 'subcampeon' : 'eliminado en ' + c.fase
+        li.find('.icon').prop('src', ASSET + 'default/jugador.png')
+      }else{
+        text = 'no clasifico'
+        li.find('.icon').prop('src', ASSET + 'default/logo.png')
+      }
+    }
+
+    setBgGradient(li, equipo.color_a.rgb, equipo.color_b.rgb, equipo.color_c.rgb)
+
+    li.find('.anio-copa').html(c.anio)
+    li.find('.fase-copa').html(text)
+
+    return li
+  }
+
+  function listarCopas(filter){
+    var ul = $('#list-copas')
+    ul.empty()
+    $.each(copas, function(i, c){
+      switch(filter){
+        case 'jugadas':
+          if(c.isJugada){
+            ul.append(getLiCopa(c))
+          }
+        break
+        case 'ganadas':
+          if(c.isGanada){
+            ul.append(getLiCopa(c))
+          }
+        break
+        default:
+          ul.append(getLiCopa(c))
+        break
+      }
+    })
+  }
+
+  function getLiga(id){
+    var liga = null
+    $.each(ligas, function(i, l){
+      if(l.id == id){
+        liga = l
+      }
+    })
+    return liga
+  }
+
+  function listarEquipos(eqs){
+    $('#equipos').empty()
+    $.each(eqs, function(i, e){
+      $('#equipos').append(getLiEquipo(e))
+    })
+  }
+
+
    $(function(){
     setBar($('#bar'), equipo.directory + 'escudo.png', equipo.name, equipo.color_a.name, 'historial - ' + copa, '')
     setText($('#bar .title, #bar .subtitle'), equipo.color_b, bcColor(equipo), .1)
@@ -179,6 +308,24 @@
     setBgGradient($('.fase-anio'), equipo.color_a.rgb, equipo.color_b.rgb, equipo.color_c.rgb, true)
 
     setText($('.fase-anio'), equipo.color_b, bcColor(equipo), .5)
+
+    $('.btn-copa').click(function(){
+      listarCopas($(this).data('filter'))
+    })
+
+
+    $('#ligas .liga').each(function(){
+       $(this).click(function(){
+         var id = $(this).data('id'),
+           liga = getLiga(id)
+
+          listarEquipos(liga.equipos)
+          $('#menu-equipos').animate({top:0}, 150)
+       })
+    })
+
+
+
     footer.empty()
     footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){
       nextPage("{{ route('home') }}", ['home', 'inicio'])
@@ -186,6 +333,8 @@
     footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
         goBack(true)
     }))
+
+    listarCopas('all')
       preload()
    })
 </script>

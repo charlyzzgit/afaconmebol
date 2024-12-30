@@ -1818,23 +1818,88 @@ class GrupoController extends Controller
     $m = getMain();
     $rows = [];
     for($a = 2000; $a <= $m->anio; $a++){
-      $eg =  EquipoGrupo::select('gps.fase')
+      $eg =  EquipoGrupo::select('gps.fase', 'equipos_grupo.equipo_id')
                         ->join('grupos as gps', 'gps.id', 'equipos_grupo.grupo_id')
                         ->where('equipos_grupo.equipo_id', $id)
+                        ->where('gps.anio', $a)
                         ->where('gps.copa', $copa);
       if($zona) {
           $eg = $eg->where('gpszona', $zona);
       }
-      $eg = $eg->orderBy('gps.fase', 'desc')
-         ->first();
+      $eg = $eg->orderBy('gps.fase', 'desc');
+
+      $eg = $eg->first();
+
+      $cmp = $this->getCampeon($a, $copa, $zona);
+
+      $iscampeon = false;
+      if($cmp && $eg){
+        $iscampeon = $eg->equipo_id == $cmp->equipo_id;
+      }
 
       $rows[] = [
                   'anio' => $a,
                   'fase' => $eg ? getNameFase($copa, $eg->fase) : null,
                   'isJugada' => $eg ? true : false,
-                  'isGanada' => $this->getCampeon($a, $copa, $zona) != null ? true : false
+                  'isGanada' =>  $iscampeon
                 ];
     }
+
+    return $rows;
+  }
+
+  private function maximoLogro($id, $copa){
+                        $eg =  EquipoGrupo::select(
+                          'gps.anio', 
+                          'gps.fase', 
+                          'gps.completed', 
+                          'equipos_grupo.equipo_id',
+                          'equipos_grupo.j',
+                          'equipos_grupo.pos'
+                        )
+                        ->join('grupos as gps', 'gps.id', 'equipos_grupo.grupo_id')
+                        ->where('equipos_grupo.equipo_id', $id)
+                        ->where('gps.copa', $copa)
+                        ->orderBy('fase', 'desc')
+                        ->orderBy('zona', 'desc')
+                        ->orderBy('anio', 'desc')
+                        ->first();
+    if(!$eg){
+      return implode(' - ', [$eg->anio,'nunca clasifico']);
+    }
+
+    if($eg->fase == 5 && $eg->j == 2 && $eg->completed && $eg->pos == 1){
+      $anio = $eg->anio;
+      $count = $this->multicampeon($id, $anio - 1, $copa); //zona null
+      switch($count){
+        case 0: return implode(' - ', [$eg->anio, 'campeon']);
+        case 1: return implode(' - ', [$eg->anio, 'bicampeon']);
+        case 2: return implode(' - ', [$eg->anio, 'tricampeon']);
+        case 3: return implode(' - ', [$eg->anio, 'tetracampeon']);
+        case 4: return implode(' - ', [$eg->anio, 'pentacampeon']);
+        default: return implode(' - ', [$eg->anio, 'multicampeon']);
+          
+      }
+    }
+
+    if($eg->fase == 5){
+      return implode(' - ', [$eg->anio, 'subcampeon']);
+    }
+
+    return implode(' - ', [$eg->anio, 'eliminado en '.getNameFase($copa, $eg->fase)]);
+  }
+
+  private function multicampeon($id, $anio, $copa, $zona = null){
+    $count = 0;
+    for($a = $anio; $a >= 2000; $a--){
+      $c = $this->getCampeon($anio, $copa, $zona);
+      if($c){
+        if($c->equipo_id == $id){
+          $count++;
+        }
+      }
+    }
+    return $count;
   }
 
 
@@ -1844,18 +1909,33 @@ class GrupoController extends Controller
                       'colorB',
                       'colorC'
                 ])->find($id);
+    // $ligas = Liga::with([
+    //               'colorA',
+    //               'colorB',
+    //               'colorC',
+    //               'equipos' => function ($query) use($id){
+    //                   $query->where('id', '!=', $id); 
+    //               }
+    //           ])
+    //           ->get();
     $ligas = Liga::with([
-                  'colorA',
-                  'colorB',
-                  'colorC',
-                  'equipos' => function ($query) use($id){
-                      $query->where('id', '!=', $id); 
-                  }
-              ])
-              ->get();
+                            'colorA',
+                            'colorB',
+                            'colorC',
+                            'equipos' => function ($query) use ($id) {
+                                $query->where('id', '!=', $id);
+                            },
+                            'equipos.colorA', // Relación colorA de equipos
+                            'equipos.colorB', // Relación colorB de equipos
+                            'equipos.colorC', // Relación colorC de equipos
+                        ])
+                          ->get();
     $copas = json_encode($this->allCopas($id, $copa, $zona));
 
+    $logro = $this->maximoLogro($id, $copa);
 
-    return view('home.historial-equipo', compact('copa', 'equipo', 'ligas', 'copas'));
+    return view('home.historial-equipo', compact('copa', 'equipo', 'ligas', 'copas', 'logro'));
   }
+
+
 }
