@@ -396,18 +396,21 @@
 
   }
 
-  function nextPage(url, params, footer){
+  function nextPage(url, params, footer, prev){
     var p = params.join(',')
     stopTimer(RAIN)
     stopTimer(PAPELITOS)
     if(p == 'home,inicio'){
       PAGES = []
     }
-    PAGES.push({
-      url: url,
-      params:params,
-      footer:footer
-    })
+    if(prev === undefined){
+      PAGES.push({
+        url: url,
+        params:params,
+        footer:footer
+      })
+    }
+    
     if(params != null){
       url += '/' + params.join('/')
     }
@@ -435,11 +438,12 @@
            $('footer').hide()
          }
          PAGES.pop()
+         log('PAGES BACK', PAGES)
          if(PAGES.length == 0){
           return
          }
          var prev = PAGES[PAGES.length - 1]
-         nextPage(prev.url, prev.params, prev.footer)
+         nextPage(prev.url, prev.params, prev.footer, true)
     }
 
    

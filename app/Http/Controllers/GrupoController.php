@@ -1814,7 +1814,31 @@ class GrupoController extends Controller
   }
 
 
-  public function historialEquipo($id, $copa){
+  private function allCopas($id, $copa, $zona = null){
+    $m = getMain();
+    $rows = [];
+    for($a = 2000; $a <= $m->anio; $a++){
+      $eg =  EquipoGrupo::select('gps.fase')
+                        ->join('grupos as gps', 'gps.id', 'equipos_grupo.grupo_id')
+                        ->where('equipos_grupo.equipo_id', $id)
+                        ->where('gps.copa', $copa);
+      if($zona) {
+          $eg = $eg->where('gpszona', $zona);
+      }
+      $eg = $eg->orderBy('gps.fase', 'desc')
+         ->first();
+
+      $rows[] = [
+                  'anio' => $a,
+                  'fase' => $eg ? getNameFase($copa, $eg->fase) : null,
+                  'isJugada' => $eg ? true : false,
+                  'isGanada' => $this->getCampeon($a, $copa, $zona) != null ? true : false
+                ];
+    }
+  }
+
+
+  public function historialEquipo($id, $copa, $zona = null){
     $equipo = Equipo::with([
                       'colorA',
                       'colorB',
@@ -1829,8 +1853,9 @@ class GrupoController extends Controller
                   }
               ])
               ->get();
+    $copas = json_encode($this->allCopas($id, $copa, $zona));
 
 
-    return view('home.historial-equipo', compact('copa', 'equipo', 'ligas'));
+    return view('home.historial-equipo', compact('copa', 'equipo', 'ligas', 'copas'));
   }
 }

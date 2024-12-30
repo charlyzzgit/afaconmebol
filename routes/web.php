@@ -129,7 +129,7 @@ Route::prefix('home')->group(function(){
    Route::get('estadisticas-goleadores-historial/{anio}/{copa}/{zona?}', [App\Http\Controllers\GoleadoresController::class, 'estadisticasHistorial'])->name('home.estadisitcas-goleadores-historial');
 
    Route::get('equipo/{id}', [App\Http\Controllers\LigaController::class, 'equipo'])->name('home.equipo');
-   Route::get('historial-equipo/{id}/{copa}', [App\Http\Controllers\GrupoController::class, 'historialEquipo'])->name('home.historial-equipo');
+   Route::get('historial-equipo/{id}/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'historialEquipo'])->name('home.historial-equipo');
 });
 
 
