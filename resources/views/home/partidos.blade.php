@@ -172,7 +172,7 @@
     @endisset
 
    
-   log('partidos', [src_copa, partidos])
+   log('partidos', [partidos])
 
    function getPartidoFromList(id){
      var p = null 

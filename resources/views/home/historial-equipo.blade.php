@@ -91,12 +91,16 @@
       top:100%;
       left: 0;
       height: 100%;
-      z-index: 1000;
+      z-index: 1000000001;
     }
 
     #menu-equipos #equipos{
-      height: calc(100% - 56px);
+      height: calc(100% - 50px);
       overflow-y: auto;
+    }
+
+    .bar-liga{
+      font-size: 25px;
     }
 
 </style>
@@ -187,11 +191,14 @@
     </div>
   </div>
   <div id="menu-equipos" class="col-12 flex-col-start-center">
-    <div class="bar-liga col-12 flex-row-start-center p-1">
-      <img src="{{ asset('resources/default/flag.png') }}" height="30">
-      <b class="liga-name ml-1">argentina</b>
+    <div class="bar-liga col-12 flex-row-between-center p-2">
+      <div class="flex-row-start-center">
+        <img src="{{ asset('resources/default/flag.png') }}" height="30">
+        <b class="liga-name ml-1"></b>
+      </div>
+      <i id="close-menu" class="fas fa-times-circle"></i>
     </div>
-    <ul id="equipos" class="col-12 flex-col-start-center m-0 p-1"></ul>
+    <ul id="equipos" class="col-12 flex-col-start-center m-0 p-4"></ul>
   </div>
   
 </div>
@@ -205,7 +212,7 @@
 
   log('copas', [copas])
 
-  function getLiEquipo(equipo){
+  function getLiEquipo(eq){
     var li = $('<li class="equipo col-12 flex-row-between-center p-2 mb-1">\
                   <div class="col-12 flex-row-start-center">\
                     <img class="escudo">\
@@ -213,14 +220,15 @@
                     <b class="name ml-1"></b>\
                   </div>\
               </li>')
-    li.find('.name').html(equipo.name)
-    setImageEquipo(li.find('.escudo'), equipo, 'escudo')
-    setImageEquipo(li.find('.jugador'), equipo, 'local')
-    setEquipoUI(li, equipo)
+    li.find('.name').html(eq.name)
+    setImageEquipo(li.find('.escudo'), eq, 'escudo')
+    setImageEquipo(li.find('.jugador'), eq, 'local')
+    setEquipoUI(li, eq)
     
-    li.data('id', equipo.id).click(function(){
+    li.data('id', eq.id).click(function(){
       var id = $(this).data('id')
-      //nextPage("{{ route('home') }}", ['home', 'equipo', id], true)
+      $('#close-menu').click()
+      nextPage("{{ route('home') }}", ['home', 'vs', equipo.id, id, copa], true)
     })
 
    
@@ -318,13 +326,19 @@
        $(this).click(function(){
          var id = $(this).data('id'),
            liga = getLiga(id)
-
+          setBgGradient($('.bar-liga'), liga.color_a.rgb, liga.color_b.rgb, liga.color_c.rgb)
+          setText($('.bar-liga'), liga.color_b, liga.color_c, .1)
           listarEquipos(liga.equipos)
+          $('.liga-name').html(liga.name)
+          setCristalRGB($('#menu-equipos'), liga.color_a, liga.color_b)
+          setImageFlag($('.bar-liga img'), liga.bandera)
           $('#menu-equipos').animate({top:0}, 150)
        })
     })
 
-
+    $('#close-menu').click(function(){
+      $('#menu-equipos').animate({top:'100%'}, 150)
+    })
 
     footer.empty()
     footer.append(getBtnFooter('azul', null, 'fas fa-home', function(){

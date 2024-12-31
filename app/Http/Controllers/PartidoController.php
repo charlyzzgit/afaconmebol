@@ -458,4 +458,57 @@ class PartidoController extends Controller
                         
     return view('home.partidos', compact('anio', 'copa', 'fase', 'zona', 'partidos', 'filter', 'equipo'));
   }
+
+
+
+
+
+  public function vs($equipo_id, $vs_id, $copa){
+    
+       $partidos = Partido::with([
+                                'grupo',
+                                'local.colorA',
+                                'local.colorB',
+                                'local.colorC',
+                                'local.liga',
+                                'local.camiseta',
+                                'local.alternativa',
+                                'visitante.colorA',
+                                'visitante.colorB',
+                                'visitante.colorC',
+                                'visitante.camiseta',
+                                'visitante.alternativa'
+                              ])
+                              ->where('copa', $copa)
+                              ->where(function($q) use($equipo_id, $vs_id) {
+                                  $q->where(function($q2) use($equipo_id, $vs_id) {
+                                      $q2->where('loc_id', $equipo_id)
+                                         ->where('vis_id', $vs_id);
+                                  })->orWhere(function($q2) use($equipo_id, $vs_id) {
+                                      $q2->where('loc_id', $vs_id)
+                                         ->where('vis_id', $equipo_id);
+                                  });
+                              });
+        // if($zona){
+        //   $partidos = $partidos->where('zona', $zona);
+        // }
+      //sql($partidos);
+      $partidos = $partidos->orderBy('anio', 'desc')
+                           ->orderBy('fase', 'desc')
+                           ->orderBy('fecha')
+                           ->orderBy('dia')
+                           ->orderBy('hora')
+                           ->get()
+                           ->map(function($row){
+                              $colors = colorGrupo($row->grupo->grupo);
+                              $row->a = $colors['a'];
+                              $row->b = $colors['b'];
+                              $row->detalle = $row->detalle ? json_decode($row->detalle) : [];
+                              return $row;
+                           });
+      $fase = null;
+      $vs = true;
+      $zona = null;
+      return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos', 'vs'));
+  }
 }
