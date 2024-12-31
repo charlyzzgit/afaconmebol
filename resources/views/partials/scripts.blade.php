@@ -962,6 +962,10 @@ function setBar(bar, icon, title, color, text, zona){
   if(zona != ''){
     icon = 'default/afa_' + zona + '.png'
   }
+
+  if(zona == 'abc'){
+    icon = 'default/escudo_afa.png'
+  }
   bar.find('.icon').prop('src', ASSET + icon)
   bar.find('.title').html(title)
   if(text !== undefined){
@@ -1340,7 +1344,8 @@ function getColorFase(f){
     case 2: return {a: parseColor('marronclaro'), b: parseColor('amarillo')}
     case 3: return {a: parseColor('verde'), b: parseColor('verdeclaro')}
     case 4: return {a: parseColor('azul'), b: parseColor('celeste')}
-    default: return {a: parseColor('rojo'), b: parseColor('naranja')}
+    case 5: return {a: parseColor('rojo'), b: parseColor('naranja')}
+    default: return {a: parseColor('negro'), b: parseColor('gris')}
   }
 }
 

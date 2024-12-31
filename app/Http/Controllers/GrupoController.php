@@ -818,7 +818,7 @@ class GrupoController extends Controller
     
   }
 
-  private function getCampeon($anio, $copa, $zona = null){
+  public function getCampeon($anio, $copa, $zona = null){
     return EquipoGrupo::with([
                       'equipo.colorA',
                       'equipo.colorB',
@@ -1817,29 +1817,44 @@ class GrupoController extends Controller
   private function allCopas($id, $copa, $zona = null){
     $m = getMain();
     $rows = [];
+    
     for($a = 2000; $a <= $m->anio; $a++){
-      $eg =  EquipoGrupo::select('gps.fase', 'equipos_grupo.equipo_id')
+      $fases = [];
+      $egs =  EquipoGrupo::select('gps.fase', 'gps.zona', 'equipos_grupo.equipo_id')
                         ->join('grupos as gps', 'gps.id', 'equipos_grupo.grupo_id')
                         ->where('equipos_grupo.equipo_id', $id)
                         ->where('gps.anio', $a)
                         ->where('gps.copa', $copa);
       if($zona) {
-          $eg = $eg->where('gpszona', $zona);
+          $egs = $egs->where('gpszona', $zona);
       }
-      $eg = $eg->orderBy('gps.fase', 'desc');
+      $egs = $egs->orderBy('gps.fase', 'desc');
 
-      $eg = $eg->first();
+      $egs = $egs->get();
+
+      foreach($egs as $row){
+        $fases[] = $row->fase;
+      }
+
+      $fases = array_reverse($fases);
 
       $cmp = $this->getCampeon($a, $copa, $zona);
+
+      $eg = count($egs) ? $egs[0] : null;
 
       $iscampeon = false;
       if($cmp && $eg){
         $iscampeon = $eg->equipo_id == $cmp->equipo_id;
       }
-
+      $nameFase = $eg ? getNameFase($copa, $eg->fase) : null;
+      if($nameFase && $copa == 'afa'){
+        $nameFase .= ' - zona '.$eg->zona;
+      }
       $rows[] = [
                   'anio' => $a,
-                  'fase' => $eg ? getNameFase($copa, $eg->fase) : null,
+                  'fases' => $fases,
+                  'fase' => $nameFase,
+                  'zona' => $eg ? $eg->zona : null,
                   'isJugada' => $eg ? true : false,
                   'isGanada' =>  $iscampeon
                 ];
@@ -1852,6 +1867,7 @@ class GrupoController extends Controller
                         $eg =  EquipoGrupo::select(
                           'gps.anio', 
                           'gps.fase', 
+                          'gps.zona', 
                           'gps.completed', 
                           'equipos_grupo.equipo_id',
                           'equipos_grupo.j',
@@ -1861,32 +1877,36 @@ class GrupoController extends Controller
                         ->where('equipos_grupo.equipo_id', $id)
                         ->where('gps.copa', $copa)
                         ->orderBy('fase', 'desc')
-                        ->orderBy('zona', 'desc')
+                        ->orderBy('zona')
+                        
                         ->orderBy('anio', 'desc')
                         ->first();
     if(!$eg){
-      return implode(' - ', [$eg->anio,'nunca clasifico']);
+      return 'nunca clasifico';
     }
+
+    $zona = $eg->zona ? 'zona '.$eg->zona : '';
 
     if($eg->fase == 5 && $eg->j == 2 && $eg->completed && $eg->pos == 1){
       $anio = $eg->anio;
       $count = $this->multicampeon($id, $anio - 1, $copa); //zona null
+      
       switch($count){
-        case 0: return implode(' - ', [$eg->anio, 'campeon']);
-        case 1: return implode(' - ', [$eg->anio, 'bicampeon']);
-        case 2: return implode(' - ', [$eg->anio, 'tricampeon']);
-        case 3: return implode(' - ', [$eg->anio, 'tetracampeon']);
-        case 4: return implode(' - ', [$eg->anio, 'pentacampeon']);
-        default: return implode(' - ', [$eg->anio, 'multicampeon']);
+        case 0: return implode(' - ', [$eg->anio, 'campeon', $zona]);
+        case 1: return implode(' - ', [$eg->anio, 'bicampeon', $zona]);
+        case 2: return implode(' - ', [$eg->anio, 'tricampeon', $zona]);
+        case 3: return implode(' - ', [$eg->anio, 'tetracampeon', $zona]);
+        case 4: return implode(' - ', [$eg->anio, 'pentacampeon', $zona]);
+        default: return implode(' - ', [$eg->anio, 'multicampeon', $zona]);
           
       }
     }
 
     if($eg->fase == 5){
-      return implode(' - ', [$eg->anio, 'subcampeon']);
+      return implode(' - ', [$eg->anio, 'subcampeon', $zona]);
     }
 
-    return implode(' - ', [$eg->anio, 'eliminado en '.getNameFase($copa, $eg->fase)]);
+    return implode(' - ', [$eg->anio, 'eliminado en '.getNameFase($copa, $eg->fase), $zona]);
   }
 
   private function multicampeon($id, $anio, $copa, $zona = null){
@@ -1928,8 +1948,11 @@ class GrupoController extends Controller
                             'equipos.colorA', // Relación colorA de equipos
                             'equipos.colorB', // Relación colorB de equipos
                             'equipos.colorC', // Relación colorC de equipos
-                        ])
-                          ->get();
+                        ]);
+    if($copa == 'afa'){
+      $ligas = $ligas->where('id', 2);
+    }
+    $ligas = $ligas->get();
     $copas = json_encode($this->allCopas($id, $copa, $zona));
 
     $logro = $this->maximoLogro($id, $copa);

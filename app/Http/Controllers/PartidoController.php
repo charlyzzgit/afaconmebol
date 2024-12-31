@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Grupo;
 use App\Models\Equipo;
 use App\Models\Partido;
+use App\Http\Controllers\GrupoController;
 use DB;
 
 class PartidoController extends Controller
@@ -334,7 +335,7 @@ class PartidoController extends Controller
   private function filterPartidos($partidos, $filter, $equipo_id = null){
 
     switch($filter){
-      case 'campania':
+      case 'campania': case 'jugados':
         $partidos = $partidos->where(function($q) use($equipo_id){
           $q->where('loc_id', $equipo_id)
             ->orWhere('vis_id', $equipo_id);
@@ -414,6 +415,8 @@ class PartidoController extends Controller
     $copa = copaZona($copa_zona, 0);
     $zona = copaZona($copa_zona, 1);
     $fase = 500;
+    $hasta = null;
+    $faseHasta = null;
 
     $partidos = Partido::with([
                                 'grupo',
@@ -455,8 +458,29 @@ class PartidoController extends Controller
                   'liga'
                 ])
                  ->find($equipo_id);
-                        
-    return view('home.partidos', compact('anio', 'copa', 'fase', 'zona', 'partidos', 'filter', 'equipo'));
+
+    if($filter == 'jugados'){
+      if(count($partidos)){
+        $p = $partidos[count($partidos) - 1];
+        if($p->fase == 5){
+          $cmp = (new GrupoController())->getCampeon($p->anio, $p->copa, $p->zona);
+          if($cmp){
+            if($equipo_id == $cmp->equipo_id){
+              $hasta = 'campeon';
+            }else{
+              $hasta = 'subcampeon';
+            }
+          }
+        }else{
+          $hasta = 'eliminado en '.getNameFase($p->copa, $p->fase);
+        }
+        $faseHasta = $p->fase;
+      }else{
+        $hasta = 'no compitio';
+      }
+    }
+                      ;
+    return view('home.partidos', compact('anio', 'copa', 'fase', 'zona', 'partidos', 'filter', 'equipo', 'hasta', 'faseHasta'));
   }
 
 
@@ -507,8 +531,26 @@ class PartidoController extends Controller
                               return $row;
                            });
       $fase = null;
-      $vs = true;
+      
       $zona = null;
+
+      $vs = json_encode([
+              'loc' => Equipo::with([
+                          'colorA',
+                          'colorB',
+                          'colorC',
+                          'liga'
+                        ])
+                         ->find($equipo_id),
+              'vis' => Equipo::with([
+                              'colorA',
+                              'colorB',
+                              'colorC',
+                              'liga'
+                            ])
+                             ->find($vs_id)
+            ]);
+
       return view('home.partidos', compact('copa', 'fase', 'zona', 'partidos', 'vs'));
   }
 }

@@ -44,11 +44,11 @@
     }
 
     .fase-anio{
-      width: 20%
+      width: 35%
     }
 
     #anios{
-       width: 80%;
+       width: 65%;
       overflow-y: hidden;
       overflow-x: auto;
     }
@@ -103,6 +103,15 @@
       font-size: 25px;
     }
 
+    .anio .fase, .fase-anio .fase{
+      height: 20px;
+    }
+
+    .percent{
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
 </style>
 <div class="col-12 box-content p-1">
   <div class="title-bar col-12 flex-row-between-center p-1" id="bar">
@@ -149,7 +158,7 @@
   </div>
   <div id="vs" class="section col-12 flex-col-start-center mt-1 cristal">
     <div class="col-12 flex-row-center-center bar-title">enfrentamientos</div>
-    <ul id="ligas" class="col-12 flex-row-between-start flex-wrap m-0 p-1">
+    <ul id="ligas" class="col-12 @if(count($ligas) == 1) flex-row-center-center @else flex-row-between-start flex-wrap @endif m-0 p-1">
       @foreach($ligas as $liga)
       <li class="liga flex-row-center-center p-1" data-id="{{ $liga->id }}">
         <img src="{{ asset('resources').'/'.$liga->bandera }}" width="100%">
@@ -158,9 +167,12 @@
     </ul>
   </div>
   <div id="box-progress" class="section col-12 flex-col-start-center mt-1 cristal">
-    <div class="col-12 flex-row-center-center bar-title">progreso</div>
+    <div class="col-12 flex-row-between-center bar-title p-1">
+      <b>progreso</b>
+      <div class="percent p-1"></div>
+    </div>
     <div class="col-12 flex-row-between-center p-1">
-      <div class="fase-anio flex-col-end-center cristal h-100 p-1">
+      <div id="fixed-anios" class="fase-anio flex-col-end-center cristal h-100 p-1">
         <div class="col-12 fase flex-row-center-center">c</div>
         <div class="col-12 fase flex-row-center-center">final</div>
         <div class="col-12 fase flex-row-center-center">semis</div>
@@ -170,11 +182,11 @@
         <div class="col-12 fase flex-row-center-center">2ª fase</div>
         <div class="col-12 fase flex-row-center-center">1ª fase</div>
         <div class="col-12 fase flex-row-center-center">preliminar</div>
-        <div class="col-12 fase flex-row-center-center">fase / año</div>
+        <div class="col-12 fase flex-row-center-center">fase / anio</div>
       </div>
       <div id="anios" class="flex-row-start-center">
         @for($i = 0; $i < 10; $i++)
-          <div class="flex-col-end-center h-100 anio">
+          <div class="flex-col-end-center anio p-1">
             <div class="col-12 fase flex-row-center-center">c</div>
             <div class="col-12 fase flex-row-center-center">final</div>
             <div class="col-12 fase flex-row-center-center">semis</div>
@@ -261,6 +273,13 @@
     li.find('.anio-copa').html(c.anio)
     li.find('.fase-copa').html(text)
 
+    li.data({anio:c.anio, copa:copa, id: equipo.id})
+    li.click(function(){
+      var anio = $(this).data('anio')
+
+      nextPage("{{ route('home') }}", ['home', 'estadisticas-partidos-historial', anio, copa, 'jugados', equipo.id], true);
+    })
+
     return li
   }
 
@@ -303,6 +322,108 @@
     })
   }
 
+  function getItem(text){
+    
+    var d = $('<div class="col-12 fase flex-row-center-center"></div>');
+    if(text == '0'){
+      d.css({opacity: 0})
+      return d
+    }
+    if(text == '1'){
+      setBgGradient(d, equipo.color_a.rgb, equipo.color_b.rgb, equipo.color_c.rgb, true)
+      
+      d.css({opacity: .5})
+      return d
+    }
+    if(text == 'campeon'){
+      var img = $('<img>')
+      img.css({height: '90%'})
+      setImageCopa(img, copa)
+      d.append(img)
+    }else{
+      d.html(text)
+    }
+    
+    setBgGradient(d, equipo.color_a.rgb, equipo.color_b.rgb, equipo.color_c.rgb, true)
+    setText(d, equipo.color_b, bcColor(equipo), .5)
+    return d
+  }
+  function setFases(copas){
+    bg($('.percent'), equipo.color_b.rgb)
+    setText($('.percent'), equipo.color_a, bcColor(equipo), .1)
+    var fases = []
+    switch(copa){
+      case 'afa':
+        fases = [-2,-1, 0, 1, 2, 3, 4, 5]
+      break
+      case 'argentina':
+        fases = [1, 2, 3, 4, 5]
+      break
+      case 'sudamericana': case 'libertadores':
+        fases = [0, 1, 2, 3, 4, 5]
+      break
+      default:
+        fases = [5]
+      break
+    }
+
+    fases.reverse()
+
+    if(copas !== undefined){
+
+      $('#anios').empty()
+      $.each(copas, function(c, cup){
+        log('fases', [cup.fases])
+        var a = $('<div class="flex-col-end-center h-100 anio"></div>'),
+            fs = cup.fases,
+            jugo = false
+        $.each(fases, function(i, f){
+          if(fs.includes(f)){
+            a.append(getItem(f == 5 && cup.isGanada ? 'campeon' : (copa == 'afa' ? cup.zona : '')))
+            jugo = true
+          }else{
+            a.append(getItem(jugo ? '1' : '0'))
+          }
+          
+        })
+        a.append(getItem(cup.anio))
+        $('#anios').append(a)
+
+
+      })
+      $('#anios').css({height: $('#fixed-anios').height() + 'px'})
+      $('#anios .anio').css({height: $('#fixed-anios').height() + 'px'})
+
+      rendimiento(copas, fases.length)
+    }else{
+      $('.fase-anio').empty()
+      $.each(fases, function(i, f){
+        $('.fase-anio').append(getItem(getNameFase(copa, f)))
+      })
+      $('.fase-anio').append(getItem('fase / anio'))
+
+      
+    }
+    
+  }
+
+  function rendimiento(copas, fases) {
+    if (copas.length === 0) {
+        return 0; // No hay anios jugados
+    }
+
+    let totalPorcentaje = 0;
+
+    $.each(copas, function(i, copa){
+        if (fases > 0) {
+            const porcentajeanio = (copa.fases.length / fases) * 100;
+            totalPorcentaje += porcentajeanio;
+        }
+    })
+
+    $('.percent').html((totalPorcentaje / copas.length).toFixed(2) + ' %')
+}
+
 
    $(function(){
     setBar($('#bar'), equipo.directory + 'escudo.png', equipo.name, equipo.color_a.name, 'historial - ' + copa, '')
@@ -313,9 +434,7 @@
     setText($('.section'), equipo.color_b, bcColor(equipo), .1)
 
     setCristalBorder($('.section'), equipo.color_a, equipo.color_b, 1)
-    setBgGradient($('.fase-anio'), equipo.color_a.rgb, equipo.color_b.rgb, equipo.color_c.rgb, true)
-
-    setText($('.fase-anio'), equipo.color_b, bcColor(equipo), .5)
+    
 
     $('.btn-copa').click(function(){
       listarCopas($(this).data('filter'))
@@ -347,6 +466,9 @@
     footer.append(getBtnFooter('negro', null, 'fas fa-circle-left', function(){
         goBack(true)
     }))
+
+    setFases()
+    setFases(copas)
 
     listarCopas('all')
       preload()

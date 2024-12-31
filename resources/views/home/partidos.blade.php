@@ -103,6 +103,24 @@
      
     }
 
+    .escudo-vs{
+      height: 40px;
+    }
+
+    .name-vs{
+      font-size: 20px;
+      color: white;
+      line-height: 1.2;
+    }
+
+    #vs-loc{
+      border-radius: 10px 0 0 10px;
+    }
+
+    #vs-vis{
+      border-radius: 0 10px 10px 0;
+    }
+
     @isset($equipo)
       #list{
         height:calc(100% - 90px)
@@ -122,6 +140,18 @@
       <img class="escudo" src="{{ asset('resources/default/escudo.png') }}" height="30">
       <b class="name ml-3">independiente medellin</b>
       <img class="jugador" src="{{ asset('resources/default/jugador.png') }}" height="30">
+    </div>
+  @endisset
+  @isset($vs)
+    <div id="box-vs" class="col-12 flex-row-between-center">
+      <div id="vs-loc" class="col-6 flex-row-start-center p-1">
+        <img src="{{ asset('resources/default/escudo.png') }}"  class="escudo-vs">
+        <b class="name-vs ml-1" style="text-align: left;">independiente medellin</b>
+      </div>
+      <div id="vs-vis" class="col-6 flex-row-end-center p-1">
+        <b class="name-vs mr-1" style="text-align: right;">independiente medellin</b>
+        <img src="{{ asset('resources/default/escudo.png') }}"  class="escudo-vs">
+      </div>
     </div>
   @endisset
   <ul id="list" class="list col-12 flex-col-start-center p-1 m-0"></ul>
@@ -151,6 +181,7 @@
        copa = '{{ $copa }}',
        fase = parseInt('{{ $fase }}'),
        zona = '{{ $zona }}',
+       title = [copa, getNameFase(copa, fase, zona)].join(' - '),
        src_copa = 'default/' + copa + (zona != null && zona != '' ? '_' + zona : '') + '.png',
        ul = $('#list'),
        E = null,
@@ -162,13 +193,13 @@
         {filter:'peor-partido', name: 'peor partido', a:'marronclaro', b: 'amarillo'},
         {filter:'all', name: 'todos los partidos', a:'negro', b: 'gris'}
         ]
-
     @isset($equipo)
       E = {!! $equipo !!}
     @endisset
 
     @isset($filter)
       FILTER = '{{ $filter }}'
+      title = FILTER
     @endisset
 
    
@@ -313,11 +344,32 @@
     return li
   }
 
+  function getLiFase(){
+    var li = $('<li class="col-12 flex-row-center-center p-2"></li>'),
+    fs = '{{ !empty($hasta) ? $hasta : null }}',
+    col = getColorFase('{{ !empty($faseHasta) ? $faseHasta : null }}')
+    li.css({
+      height:'100px',
+      borderRadius:'10px',
+      fontSize: '40px',
+      fontWeight: 'bold'
+    })
+    li.html(fs)
+    setBgGradient(li, col.a.rgb, col.b.rgb, col.b.rgb)
+    setText(li, parseColor('blanco'), col.b, 1)
+    colBordeUI(li, col.b)
+
+    return li
+  }
+
   function listar(){
     ul.empty()
     $.each(partidos, function(i, p){
       ul.append(getLiPartido(p))
     })
+    if(FILTER == 'jugados'){
+      ul.append(getLiFase())
+    }
     preload()
   }
 
@@ -419,10 +471,36 @@
     m.animate({bottom: position + '%'}, 150)
   }
 
+  function setVS(){
+    var data = {!! isset($vs) ? $vs : '[]' !!},
+        loc = $('#vs-loc'),
+        vis = $('#vs-vis')
+    setBgGradient(loc, data.loc.color_a.rgb, data.loc.color_b.rgb, data.loc.color_c.rgb)
+    setText(loc, data.loc.color_b, bcColor(data.loc), .1)
+    colBordeUI(loc, data.loc.color_b)
+    loc.find('.name-vs').html(data.loc.name)
+    setImageEquipo(loc.find('.escudo-vs'), data.loc, 'escudo')
+
+    setBgGradient(vis, data.vis.color_a.rgb, data.vis.color_b.rgb, data.vis.color_c.rgb)
+    setText(vis, data.vis.color_b, bcColor(data.vis), .1)
+    colBordeUI(vis, data.vis.color_b)
+    vis.find('.name-vs').html(data.vis.name)
+    setImageEquipo(vis.find('.escudo-vs'), data.vis, 'escudo')
+  }
+
 
    $(function(){
     $('#modal-detalle').css('visibility', 'visible').hide()
-    setBar($('#bar'), src_copa, [copa, getNameFase(copa, fase, zona)].join(' - '), getColorCopa(copa), 'partidos', zona)
+
+    @isset($vs)
+      setVS()
+      if(copa == 'afa'){
+        zona = 'abc'
+        title = 'enfrentamientos'
+      }
+    @endisset
+
+    setBar($('#bar'), src_copa, title, getColorCopa(copa), 'partidos', zona)
 
     if(E != null){
       setEquipoUI($('#box-equipo'), E, 1)
@@ -438,7 +516,7 @@
       goBack(true)
     }))
 
-    if(FILTER != null){
+    if(FILTER != null && FILTER != 'jugados'){
 
         setEstadisticas()
         footer.append(getBtnFooter('naranja', null, 'fas fa-bars', function(){
@@ -450,6 +528,17 @@
         }
 
     }
+
+    
+
+    footer.append(getBtnFooter('negro', null, 'fas fa-circle-down', function(){
+      $('#list').animate({scrollTop: 30000}, 150)
+    }))
+
+    footer.append(getBtnFooter('negro', null, 'fas fa-circle-up', function(){
+      $('#list').animate({scrollTop: 0}, 150)
+    }))
+
      listar()
    })
 </script>
