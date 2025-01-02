@@ -43,7 +43,7 @@ class LigaController extends Controller
                       
       $equipos = $equipos->orderBy('nivel', 'desc')->get();
 
-      $liga = Liga::with('colorA')->find($liga_id);
+      $liga = Liga::with('colorA', 'colorB')->find($liga_id);
       return view('home.equipos', compact('liga', 'equipos', 'original', 'lib', 'sud'));
     }
 

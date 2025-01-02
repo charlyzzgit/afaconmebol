@@ -112,7 +112,7 @@
         listar('libertadores')
       }))
 
-      footer.append(getBtnFooter(liga.color_a.name, null, 'fa fa-shield', function(){
+      footer.append(getBtnFooter(liga.color_a.name != 'blanco' ? liga.color_a.name : liga.color_b.name , null, 'fa fa-shield', function(){
         listarOriginal()
       }))
 

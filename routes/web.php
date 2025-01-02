@@ -120,6 +120,8 @@ Route::prefix('home')->group(function(){
    Route::post('historialJSON', [App\Http\Controllers\GrupoController::class, 'historialJSON'])->name('home.historialJSON');
 
    Route::get('estadisticas-historial/{anio}/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'estadisticasHistorial'])->name('home.estadisticas-historial');
+
+   Route::get('ranking/{copa}', [App\Http\Controllers\GrupoController::class, 'ranking'])->name('home.ranking');
    
 
    Route::get('estadisticas-partidos-historial/{anio}/{copa_zona}/{filter}/{id?}', [App\Http\Controllers\PartidoController::class, 'estadisticasHistorial'])->name('home.estadisitcas-partidos-historial');

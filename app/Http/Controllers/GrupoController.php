@@ -1847,9 +1847,9 @@ class GrupoController extends Controller
         $iscampeon = $eg->equipo_id == $cmp->equipo_id;
       }
       $nameFase = $eg ? getNameFase($copa, $eg->fase) : null;
-      if($nameFase && $copa == 'afa'){
-        $nameFase .= ' - zona '.$eg->zona;
-      }
+      // if($nameFase && $copa == 'afa'){
+      //   $nameFase .= ' - zona '.$eg->zona;
+      // }
       $rows[] = [
                   'anio' => $a,
                   'fases' => $fases,
@@ -1958,6 +1958,145 @@ class GrupoController extends Controller
     $logro = $this->maximoLogro($id, $copa);
 
     return view('home.historial-equipo', compact('copa', 'equipo', 'ligas', 'copas', 'logro'));
+  }
+
+
+  private function addEquipoRanking(&$eqs, $eq){
+    $e = false;
+    foreach($eqs as &$row){
+      if($row['equipo_id'] == $eq->equipo_id){
+        if($row['fase'] < $eq->fase){
+          $row['fase'] = $eq->fase;
+          $row['zona'] = $eq->zona;
+          $row['pos'] = $eq->pos;
+        }
+        $row['cmp'] += $eq->cmp;
+        $row['j'] += $eq->j;
+        $row['g'] += $eq->g;
+        $row['e'] += $eq->e;
+        $row['p'] += $eq->p;
+        $row['gf'] += $eq->gf;
+        $row['gc'] += $eq->gc;
+        $row['gv'] += $eq->gv;
+        $row['d'] += $row['gf'] - $row['gc'];
+        $row['pts'] += $eq->pts;
+        $e = true;
+      }
+    }
+
+    if(!$e){
+      $equipo = Equipo::with('colorA', 'colorB', 'colorC')->find($eq->equipo_id);
+
+      $eqs[] = [
+                  'fase' => $eq->fase, 
+                  'cmp' => $eq->cmp, 
+                  'zona' => $eq->zona, 
+                  'equipo_id' => $eq->equipo_id,
+                  'equipo' => $equipo->name,
+                  'liga_id' => $equipo->liga_id,
+                  'data' => $equipo,
+                  'j' => $eq->j,
+                  'g' => $eq->g,
+                  'e' => $eq->e,
+                  'p' => $eq->p,
+                  'gf' => $eq->gf,
+                  'gc' => $eq->gc,
+                  'gv' => $eq->gv,
+                  'd' => $eq->d,
+                  'pts' => $eq->pts,
+                  'pos' => $eq->pos
+               ];
+    }
+  }
+
+  private function sortByTabla(&$eqs){
+    $sorted = collect($eqs)
+                          ->sortBy([
+                              ['cmp', 'desc'],
+                              ['fase', 'desc'],
+                              ['zona', 'asc'],
+                              ['pts', 'desc'],
+                              ['d', 'desc'],
+                              ['gf', 'desc'],
+                              ['gc', 'asc'],
+                              ['gv', 'asc'],
+                              ['g', 'desc'],
+                              ['e', 'desc'],
+                              ['p', 'asc'],
+                              ['j', 'desc'],
+                          ])
+                          ->values(); // Reindexar la colección
+  $eqs = $sorted;
+ }
+
+ private function sortLigas(&$ligas){
+    $sorted = collect($ligas)
+                          ->sortBy([
+                              ['copas', 'desc'],
+                              ['pts', 'desc'],
+                          ])
+                          ->values(); // Reindexar la colección
+  $ligas = $sorted;
+ }
+
+
+  public function ranking($copa){
+    $rows = EquipoGrupo::select(
+                          DB::raw(
+                                  'CASE 
+                                      WHEN gps.fase = 5 AND gps.completed AND equipos_grupo.pos = 1 
+                                      THEN 1 
+                                      ELSE 0 
+                                   END AS cmp'
+                          ),
+                          'gps.fase', 
+                          'gps.zona',
+                          'gps.completed', 
+                          'equipos_grupo.equipo_id',
+                          'equipos_grupo.j',
+                          'equipos_grupo.g',
+                          'equipos_grupo.e',
+                          'equipos_grupo.p',
+                          'equipos_grupo.gf',
+                          'equipos_grupo.gc',
+                          'equipos_grupo.gv',
+                          'equipos_grupo.d',
+                          'equipos_grupo.pts',
+                          'equipos_grupo.pos'
+                        )
+                ->join('grupos as gps', 'gps.id', 'equipos_grupo.grupo_id')
+                ->where('gps.copa', $copa)
+                ->groupBy('equipos_grupo.equipo_id', 'gps.fase')
+                ->get();
+
+    $eqs = [];
+                
+    foreach($rows as $eq){
+      $this->addEquipoRanking($eqs, $eq);
+    }
+
+
+    $this->sortByTabla($eqs);
+    
+    $ligas = Liga::with('colorA', 'colorB', 'colorC')->orderBy('id')
+                 ->get()
+                 ->map(function($l) use($eqs){
+                    $l->copas = 0;
+                    $l->pts = 0;
+                    foreach($eqs as $e){
+                      if($l->id == $e['liga_id']){
+                        if($e['cmp']){
+                          $l->copas += $e['cmp'];
+                        }
+                        $l->pts += $e['pts'];
+                      }
+                      
+                    }
+                    return $l;
+                 });
+    $eqs = json_encode($eqs);
+    $this->sortLigas($ligas);
+    return view('home.ranking', compact('eqs', 'copa', 'ligas'));
   }
 
 

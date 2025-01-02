@@ -108,8 +108,27 @@
     }
 
     .percent{
+      position: absolute;
+      top:50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
       border-radius: 5px;
       font-weight: bold;
+      font-size: 30px;
+    }
+
+    #progress-bar{
+      height: 100%;
+    }
+
+    .col-copa{
+      border-radius: 5px 0 0 5px;
+      overflow: hidden;
+    }
+
+    #box-rendimiento{
+/*      height: 50px;*/
     }
 
 </style>
@@ -167,12 +186,11 @@
     </ul>
   </div>
   <div id="box-progress" class="section col-12 flex-col-start-center mt-1 cristal">
-    <div class="col-12 flex-row-between-center bar-title p-1">
-      <b>progreso</b>
-      <div class="percent p-1"></div>
+    <div class="col-12 flex-row-between-center bar-title p-1 pgs">
+      progreso
     </div>
-    <div class="col-12 flex-row-between-center p-1">
-      <div id="fixed-anios" class="fase-anio flex-col-end-center cristal h-100 p-1">
+    <div class="col-12 flex-row-between-center p-1 pgs">
+      <div id="fixed-anios" class="fase-anio flex-col-end-center h-100 col-copa">
         <div class="col-12 fase flex-row-center-center">c</div>
         <div class="col-12 fase flex-row-center-center">final</div>
         <div class="col-12 fase flex-row-center-center">semis</div>
@@ -184,22 +202,11 @@
         <div class="col-12 fase flex-row-center-center">preliminar</div>
         <div class="col-12 fase flex-row-center-center">fase / anio</div>
       </div>
-      <div id="anios" class="flex-row-start-center">
-        @for($i = 0; $i < 10; $i++)
-          <div class="flex-col-end-center anio p-1">
-            <div class="col-12 fase flex-row-center-center">c</div>
-            <div class="col-12 fase flex-row-center-center">final</div>
-            <div class="col-12 fase flex-row-center-center">semis</div>
-            <div class="col-12 fase flex-row-center-center">cuartos</div>
-            <div class="col-12 fase flex-row-center-center">octavos</div>
-            <div class="col-12 fase flex-row-center-center">3ª fase</div>
-            <div class="col-12 fase flex-row-center-center">2ª fase</div>
-            <div class="col-12 fase flex-row-center-center">1ª fase</div>
-            <div class="col-12 fase flex-row-center-center">preliminar</div>
-            <div class="col-12 fase flex-row-center-center">2000</div>
-          </div>
-        @endfor
-      </div>
+      <div id="anios" class="flex-row-start-center"></div>
+    </div>
+    <div id="box-rendimiento" class="col-12 p-1 cristal">
+      <div class="percent"></div>
+      <div id="progress-bar"></div>
     </div>
   </div>
   <div id="menu-equipos" class="col-12 flex-col-start-center">
@@ -220,10 +227,11 @@
   var equipo = {!! $equipo !!},
       copa = '{{ $copa }}',
       copas = {!! $copas !!},
-      ligas = {!! $ligas !!}
+      ligas = {!! $ligas !!},
+      liga = getLiga(equipo.liga_id)
 
   log('copas', [copas])
-
+  log('liga', [liga])
   function getLiEquipo(eq){
     var li = $('<li class="equipo col-12 flex-row-between-center p-2 mb-1">\
                   <div class="col-12 flex-row-start-center">\
@@ -261,6 +269,9 @@
     }else{
       if(c.isJugada){
         text = c.fase == 'final' ? 'subcampeon' : 'eliminado en ' + c.fase
+        if(copa == 'afa'){
+          text += ' - zona ' + c.zona
+        }
         li.find('.icon').prop('src', ASSET + 'default/jugador.png')
       }else{
         text = 'no clasifico'
@@ -349,8 +360,8 @@
     return d
   }
   function setFases(copas){
-    bg($('.percent'), equipo.color_b.rgb)
-    setText($('.percent'), equipo.color_a, bcColor(equipo), .1)
+    
+    
     var fases = []
     switch(copa){
       case 'afa':
@@ -420,9 +431,30 @@
             totalPorcentaje += porcentajeanio;
         }
     })
+    let total = totalPorcentaje / copas.length
+    $('.percent').html(total.toFixed(2) + ' %')
+    setText($('.percent'), equipo.color_b, bcColor(equipo), .1)
+    $('#progress-bar').css({width: total + '%'})
+    setEquipoUI($('#progress-bar'), equipo, .1)
+    
+  }
 
-    $('.percent').html((totalPorcentaje / copas.length).toFixed(2) + ' %')
-}
+  function setProgress(){
+    
+    var h = 0,
+        totalH = $('.box-content').get(0).getBoundingClientRect().height
+    $('.section').each(function(){
+      let height = $(this).get(0).getBoundingClientRect().height
+      
+      h += height
+    })
+
+    h += 47
+    $('#box-rendimiento').css({height: (totalH - h) + 'px'})
+
+
+    
+  }
 
 
    $(function(){
@@ -467,10 +499,19 @@
         goBack(true)
     }))
 
+    footer.append(getBtnFooter('negro', liga.bandera, null, function(){
+        nextPage("{{ route('home') }}", ['home', 'equipos', liga.id], true)
+    }))
+
+
     setFases()
     setFases(copas)
 
     listarCopas('all')
       preload()
    })
+   setTimeout(function(){
+    setProgress()
+  }, 10)
+   
 </script>
