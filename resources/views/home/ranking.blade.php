@@ -24,11 +24,19 @@
     .equipo{
       border-radius: 10px;
       border:solid thin white;
-      font-size: 25px;
+      font-size: 20px;
     }
 
     .escudo, .jugador, .copa{
-      height: 40px;
+      height: 30px;
+    }
+
+    .equipo .pts{
+      width: 30px;
+      height: 30px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 100%;
     }
 </style>
 <div class="col-12 box-content p-1">
@@ -89,12 +97,15 @@
     
     li.data('id', liga.id).click(function(){
       var id = $(this).data('id')
-      
+      listarEquipos(id)
+      $('#menu-ligas').data('state', 'closed')
+      $('#menu-ligas').animate({bottom: '-1000px'}, 150)
     })
     return li
   }
 
   function setLigas(){
+    setCristal($('#menu-ligas'), col.a)
     $('#ligas').append(getLiLiga({
       id:0,
       bandera: 'default/conmebol.png',
@@ -113,7 +124,7 @@
                     <b class="name ml-1"></b>\
                   </div>\
                   <div class="col-2 flex-row-between-center">\
-                    <b class="pts"></b>\
+                    <div class="pts flex-row-center-center"></div>\
                     <b class="copas ml-2"></b>\
                   </div>\
               </li>'),
@@ -121,11 +132,16 @@
     //log('equipo', [equipo])
     li.find('.name').html(equipo.name)
     li.find('.pts').html(data.pts)
+
     li.find('.copas').html(data.cmp != 0 ? data.cmp : '')
     setImageEquipo(li.find('.escudo'), equipo, 'escudo')
     setImageEquipo(li.find('.jugador'), equipo, 'local')
     setEquipoUI(li, equipo)
     setText(li.find('.copas'), equipo.color_b, bcColor(equipo), .1)
+
+    bg(li.find('.pts'), equipo.color_b.rgb)
+    setText(li.find('.pts'), equipo.color_a, equipo.color_a, .1)
+    
     li.find('.copas').html(data.copas)
     
     
@@ -134,10 +150,19 @@
     return li
   }
 
-  function listarEquipos(){
+  function listarEquipos(liga_id){
     $('#list').empty()
     $.each(equipos, function(i, e){
-      $('#list').append(getLiEquipo(e))
+      var add = true
+      if(liga_id !== undefined){
+        if(e.liga_id != liga_id){
+          add = false
+        }
+      }
+      if(add){
+        $('#list').append(getLiEquipo(e))
+      }
+      
     })
   }
 
