@@ -390,7 +390,8 @@
           estadio = getEl(footer, 'estadio'),
           diahora = getEl(footer, 'dia-hora'),
           eloc = p.local,
-          evis = p.visitante
+          evis = p.visitante,
+          prefix = p.zona != null ? '_' + p.zona : ''
 
       setCristalRGB(footer, eloc.color_a)
 
@@ -405,14 +406,16 @@
       }else{
         grupofecha.html([(p.is_define ? 'llave ' : 'grupo ') + p.grupo.grupo, getNameFecha(p.fase, p.fecha)].join(' - '))
       }
-      
+
+      nameestadio.html('estadio ' + eloc.name)
+      diahora.html([getDia(p.dia), p.hora + 'hs.'].join(' - '))
 
       multiText([copafase, grupofecha, nameestadio, diahora], eloc.color_b, parseALT(eloc, 'c', 'b', 'a'), .05)
 
       setText(nameloc, eloc.color_b, parseALT(eloc, 'c', 'b', 'a'), .5)
       setText(namevis, evis.color_a, evis.color_b, .5)
 
-      setImageCopa(copa, p.copa)
+      setImageCopa(copa, p.copa + prefix)
 
       setImageFlag(flag, eloc.liga.bandera)
 

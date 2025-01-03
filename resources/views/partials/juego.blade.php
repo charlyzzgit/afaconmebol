@@ -7,7 +7,7 @@
      this.gv = 0
      this.ploc = null
      this.pvis = null
-     
+     this.festejoGol = getEl(el, 'festejo-gol', true)
      this.pause = true
      this.tiempo = 1
      this.alargue = false
@@ -146,7 +146,8 @@
   }
 
   this.endAnimation = function(){
-  	var parent = this
+  	var parent = this,
+        direction = 0
     if(parent.balon.offset().left > parent.maxRight){
       parent.rematesloc++
     	if(parent.isGol()){
@@ -159,6 +160,9 @@
 	      this.goal.animate({left: '-400px'}, 0)
 	      PAUSE = true
 	      this.setJugada(true, true)
+        this.festejoGol.animate({left:'100%'}, 0)
+        direction = -1
+        setImageEquipo(this.festejoGol.find('img'), loc, 'local')
 	    }else{
 	    	this.setJugada(true)
 	    }
@@ -175,6 +179,9 @@
 	      this.goal.animate({left: '400px'}, 0)
 	      PAUSE = true
 	      this.setJugada(false, true)
+        this.festejoGol.animate({left:'-100%'}, 0)
+        direction = 1
+        setImageEquipo(this.festejoGol.find('img'), vis, camvis)
 	    }else{
 	    	this.setJugada(false)
 	    }
@@ -187,6 +194,8 @@
   		parent.gol = false
 	    parent.gloc.html(this.gl)
 	    parent.gvis.html(this.gv)
+      parent.festejoGol.show()
+      parent.festejoGol.animate({left: direction > 0 ?  '100%' : '-100%'}, 6000)
 	    parent.setGol()
 	    parent.papelitos()
 	    parent.goal.animate({left:0, opacity:1}, 150)
@@ -202,12 +211,17 @@
       }
       
       setTimeout(function(){
+        
         parent.duelo.animate({left: parent.center + 'px'}, 2000)
+        setTimeout(function(){
+         
+        }, 2500)
       }, 2000)
 	    setTimeout(function(){
 	            PAUSE = false
               parent.golOf = 0
 	            parent.goal.animate({opacity:0}, 150)
+
 	     }, 3000)
   	}else{
   		PAUSE = false
@@ -224,7 +238,7 @@
   	if(isGol !== undefined){
   		getEl(j, 'jugada-gol').show()
   		getEl(j, 'lbl').html('gol')
-      this.sonar(this.sndgol, 8)
+      this.sonar(this.sndgol, 10)
   	}else{
   		if(r <= 5){
   			lbl = 'arquero'
@@ -875,7 +889,7 @@
   	switch(result){
 	  	case 'gol': 
 	  		img = 'logo.png'
-        this.sonar(this.sndgol, 8)
+        this.sonar(this.sndgol, 10)
 	  	break
 	  	case 'atajado': 
 	  		img = 'atajado.png'

@@ -5,6 +5,34 @@
     100% { top: 100vh; opacity: 0; }
   }
 
+  @keyframes festejo-gol-1 {
+    0% {
+      margin-top: 50px;
+    }
+
+    50%{
+      margin-top: 0;
+    }
+
+    100% {
+      margin-top: 50px;
+    }
+  }
+
+  @keyframes festejo-gol-2 {
+    0% {
+      margin-top: 0;
+    }
+
+    50% {
+      margin-top: 50px;
+    }
+
+    100% {
+      margin-top: 0;
+    }
+  }
+
     #fondo{
       background-repeat: no-repeat;
       background-position: center bottom;
@@ -31,6 +59,20 @@
       bottom: 200px;
       z-index: 100000;
       object-fit: cover;
+    }
+
+    .jugador-gol{
+      width: 100px;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .gol-1{
+      animation: festejo-gol-1 .5s infinite;
+    }
+
+    .gol-2{
+      animation: festejo-gol-2 .5s infinite;
     }
 
     #local{
@@ -330,7 +372,7 @@
       position: absolute;
       left: 0;
       bottom:300px;
-      z-index: 100000;
+      z-index: 2000000;
       opacity: 0;
       font-size: 22px;
     }
@@ -604,6 +646,17 @@
       border-radius: 5px;
     }
 
+    #festejo-gol{
+      position: absolute;
+      bottom:170px;
+      left: -100%;
+      z-index: 1000000;
+    }
+
+    .name-vis{
+      text-align: right;
+    }
+
 
 
 </style>
@@ -731,6 +784,11 @@
       <b class="gol-lbl ml-2 ml-2">gol de independiente medellin</b>
       <img class="gol-jug" src="{{ asset('resources/default/jugador.png') }}" height="50">
     </div>
+  </div>
+  <div id="festejo-gol" class="col-12 flex-row-center-center">
+    <img class="jugador-gol gol-1" src="{{ asset('resources/default/jugador.png') }}">
+    <img class="jugador-gol gol-2" src="{{ asset('resources/default/jugador.png') }}">
+    <img class="jugador-gol gol-1" src="{{ asset('resources/default/jugador.png') }}">
   </div>
   <div id="half-time" class="col-9 flex-row-between-center p-1 cristal">
     <img class="half-loc" src="{{ asset('resources/default/escudo.png') }}" height="30">
