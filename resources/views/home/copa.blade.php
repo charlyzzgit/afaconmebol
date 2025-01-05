@@ -342,6 +342,7 @@
 <script>
   //copa, fase, zona, grupos
   var grupos = {!! $grupos !!},
+      GRUPO_ID = '{{ $grupo_id }}',
       copa = '{{ $copa }}',
       fase = parseInt('{{ $fase }}'),
       zona = '{{ $zona }}',
@@ -419,7 +420,9 @@
       li.data('grupo', g.grupo)
     }
 
-    
+    li.attr('data-id', g.id)
+
+
 
     return li
   }
@@ -495,7 +498,7 @@
 
 
   function getLiEquipo(eg, index){
-    log('li equipo', [eg])
+    //log('li equipo', [eg])
     var li = $('<li class="equipo col-12 flex-col-start-center pl-1 pr-1 pt-3 pb-3 mb-1">\
                 <div class="col-12 flex-row-between-center">\
                   <div class="flex-row-start-center">\
@@ -667,6 +670,11 @@
             params = ['home', 'partidos-equipo-grupo', equipo_id, grupo_id],
             url = "{{ route('home') }}"
         nextPage(url, params, true)
+      })
+
+      li.find('.escudo').data('id', eg.equipo_id).click(function(){
+        var id = $(this).data('id')
+        nextPage("{{ route('home') }}", ['home', 'historial-equipo', id, copa], true)
       })
     }
     
@@ -936,6 +944,20 @@
       }
       ul.append(getLiGrupo(g))
     })
+   
+    if(GRUPO_ID != null){
+      var li = ul.find('li[data-id="' + GRUPO_ID + '"]'); // Encuentra el <li> con el data-id igual a GRUPO_ID
+log('grupo id', [GRUPO_ID, li])
+      if (li.length) {
+          // Obtén la posición relativa del <li> dentro del <ul>
+          var liOffsetTop = li.position().top;
+
+          // Ajusta el desplazamiento del <ul> para enfocar el <li>
+          ul.animate({
+              scrollTop: liOffsetTop
+          }, 150); // Animación suave (500ms)
+      } 
+    }
   }
 
 

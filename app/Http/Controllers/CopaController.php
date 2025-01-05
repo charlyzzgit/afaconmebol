@@ -45,7 +45,7 @@ class CopaController extends Controller
       }
       $keys = json_encode((new GrupoController())->llavero($copa, $zona));
     }
-    return view('home.copa', compact('copa', 'fase', 'zona', 'grupos', 'we', 'keys'));
+    return view('home.copa', compact('copa', 'fase', 'zona', 'grupos', 'we', 'keys', 'grupo_id'));
    }
 
 

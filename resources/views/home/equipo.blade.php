@@ -56,7 +56,8 @@
     @if($equipo->liga_id == 2)
     <div class="col-12 flex-row-center-center">
      <img id="afa" class="copa mr-2" src="{{ asset('resources/default/escudo_afa.png') }}" data-copa="afa">
-     <img id="argentina" class="copa ml-2" src="{{ asset('resources/default/argentina.png') }}" data-copa="argentina">
+     <img id="argentina" class="copa ml-2 mr-2" src="{{ asset('resources/default/argentina.png') }}" data-copa="argentina">
+     <img id="balance" class="ml-2" src="{{ asset('resources/default/conmebol.png') }}" height="100">
     </div>
     @endif
      <img id="sudamericana" class="copa" src="{{ asset('resources/default/sudamericana.png') }}" data-copa="sudamericana">
@@ -98,6 +99,10 @@
     $('.copa').click(function(){
       var copa = $(this).data('copa')
       nextPage("{{ route('home') }}", ['home', 'historial-equipo', equipo.id, copa], true)
+    })
+
+    $('#balance').click(function(){
+      nextPage("{{ route('home') }}", ['home', 'balance', equipo.id], true)
     })
 
       preload()

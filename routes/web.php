@@ -134,6 +134,8 @@ Route::prefix('home')->group(function(){
    Route::get('historial-equipo/{id}/{copa}/{zona?}', [App\Http\Controllers\GrupoController::class, 'historialEquipo'])->name('home.historial-equipo');
 
    Route::get('vs/{equipo_id}/{vs_id}/{copa}', [App\Http\Controllers\PartidoController::class, 'vs'])->name('home.vs');
+
+   Route::get('balance/{equipo_id}', [App\Http\Controllers\GrupoController::class, 'balanceGeneral'])->name('home.balance');
 });
 
 

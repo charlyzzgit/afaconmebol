@@ -133,8 +133,12 @@
 
   function setEquipo(i, row){
     var div = $('<div class="equipo flex-row-start-center p-2 filter-1"></div>')
-    setBgGradient(div, [row.a, row.b, row.c])
-    div.css({color: getRgb(row.b)}).html(row.name)
+    //setBgGradient(div, [row.a, row.b, row.c])
+
+    //div.css({color: getRgb(row.b)}).html(row.name)
+    setBgGradient(div, row.a, row.b, row.c)
+    div.css({color: getRgb(row.b)})
+    div.html(row.name)
     return getHtml(div)
   }
 

@@ -68,7 +68,7 @@ class TestCommand extends Command
       //$b = \App\Models\Equipo::where('name', 'velez sarsfield')->first();
       //dd($this->cambiar($a, $b));
       //(new LigaController())->autoFecha();
-      (new GrupoController())->ranking('libertadores');
+      (new GrupoController())->balanceGeneral(21);
     }
 
     private function updateStateGrupos($copa, $fase){

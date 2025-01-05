@@ -2099,5 +2099,171 @@ class GrupoController extends Controller
     return view('home.ranking', compact('eqs', 'copa', 'ligas'));
   }
 
+  private function hastaDonde($anio, $copa, $equipo_id){
+    $e = EquipoGrupo::select(
+                              'g.fase',
+                              'g.zona'
+                            )
+                            ->join('grupos as g', 'equipos_grupo.grupo_id', '=', 'g.id')
+                            ->where('g.anio', $anio)
+                            ->where('g.copa', $copa)
+                            ->where('equipos_grupo.equipo_id', $equipo_id)
+                            ->orderBy('fase', 'desc')
+                            ->first();
+    if(!$e){
+      return 'no compitio';
+    }
+
+    $cmp = $this->getCampeon($anio, $copa);
+
+    if($e->fase == 5){
+      return $cmp->equipo_id == $equipo_id ? 'campeon' : 'subcampeon';
+    }
+
+
+    return 'eliminado en '.getNameFase($copa, $e->fase);
+  }
+
+  private function balanceCopa($anio, $copa, $equipo_id){
+    if(!$this->isFinish($anio, $copa)){
+      return 0;
+    }
+    $total = 0;
+    
+
+    $e = EquipoGrupo::select(
+                                DB::raw("COALESCE(SUM(
+                                    CASE 
+                                        WHEN g.copa = 'afa' AND g.zona = 'A' THEN 15
+                                        WHEN g.copa = 'afa' AND g.zona = 'B' THEN 8
+                                        WHEN g.copa = 'afa' AND g.zona = 'C' THEN 7
+                                        WHEN g.copa = 'argentina' THEN 20
+                                        WHEN g.copa = 'sudamericana'  AND g.fase = 0 THEN 10
+                                        WHEN g.copa = 'sudamericana' AND g.fase <> 0 THEN 15
+                                        WHEN g.copa = 'libertadores' AND g.fase = 0 THEN 10
+                                        WHEN g.copa = 'libertadores' AND g.fase <> 0 THEN 15
+                                        WHEN g.copa = 'recopa' THEN 50
+                                        ELSE 0
+                                    END
+                                ), 0) AS total")
+                            )
+                            ->join('grupos as g', 'equipos_grupo.grupo_id', '=', 'g.id')
+                            ->where('g.anio', $anio)
+                            ->where('g.copa', $copa);
+
+    if($copa == 'afa'){
+      $e = $e->where('g.fase', '>', -2);
+    }
+    $e = $e->where('equipos_grupo.equipo_id', $equipo_id);
+    
+    $e = $e->first();
+    if(!$e){
+      return 0;
+    }
+
+    $total = $e->total;
+    //dump($total);
+    $cmp = $this->getCampeon($anio, $copa);
+
+    if($equipo_id == $cmp->equipo_id){
+      switch($copa){
+        case 'afa':
+          $total += $e->zona == 'A' ? 25 : ($e->zona == 'B' ? 19 : 8);
+        break;
+        case 'argentina':
+          $total += 25;
+        break;
+        case 'sudamericana':
+          $total += 10;
+        break;
+        case 'libertadores':
+          $total += 15;
+        break;
+      }
+    }
+
+    return $total;
+  }
+
+  private function isFinish($anio, $copa){
+    $g = Grupo::where('anio', $anio)
+              ->where('copa', $copa)
+              ->where('fase', 5)
+              ->where('completed', true)
+              ->count();
+    if($copa == 'afa'){
+      return $g == 3;
+    }
+
+    return $g == 1;
+  }
+
+  private function getBalance($b){
+    if($b <= 15){
+      return 'pesimo';
+    }
+
+    if($b <= 30){
+      return 'malisimo';
+    }
+
+    if($b <= 50){
+      return 'malo';
+    }
+
+    if($b < 100){
+      return 'pobre';
+    }
+
+    if($b < 200){
+      return 'regular';
+    }
+
+    if($b < 300){
+      return 'bueno';
+    }
+
+    return 'muy bueno';
+
+  }
+
+  public function balanceGeneral($equipo_id){
+    $m = getMain();
+    $anios = [];
+    for($a = 2000; $a <= $m->anio; $a++){
+      $afa = $this->balanceCopa($a, 'afa', $equipo_id);
+      $arg = $this->balanceCopa($a, 'argentina', $equipo_id);
+      $rec = $this->balanceCopa($a, 'recopa', $equipo_id);
+      $sud = $this->balanceCopa($a, 'sudamericana', $equipo_id);
+      $lib = $this->balanceCopa($a, 'libertadores', $equipo_id);
+      $nacional = $afa + $arg;
+      $internacional = $rec + $sud + $lib;
+      $anios[] = [
+                    'anio' => $a,
+                    'nacional' => $nacional,
+                    'internacional' => $internacional,
+                    'balance_nacional' => $this->getBalance($nacional),
+                    'balance_internacional' => $this->getBalance($internacional),
+                    'balance_general' => $this->getBalance($nacional + $internacional),
+                    'balance' => ($nacional + $internacional)/300*100,
+                    'copas' => [
+                                    ['copa' => 'afa', 'instancia' => $this->hastaDonde($a, 'afa', $equipo_id), 'total' => $afa],
+                                    ['copa' => 'argentina', 'instancia' => $this->hastaDonde($a, 'argentina', $equipo_id), 'total' => $arg],
+                                    ['copa' => 'recopa', 'instancia' => $this->hastaDonde($a, 'recopa', $equipo_id), 'total' => $rec],
+                                    ['copa' => 'sudamericana', 'instancia' => $this->hastaDonde($a, 'sudamericana', $equipo_id), 'total' => $sud],
+                                    ['copa' => 'libertadores', 'instancia' => $this->hastaDonde($a, 'libertadores', $equipo_id), 'total' => $lib]
+                                 ]
+                  ];
+    }
+    
+    $anios = json_encode($anios);
+
+    $equipo = Equipo::with(['colorA', 'colorB', 'colorC'])->find($equipo_id);
+
+    return view('home.balance', compact('anios', 'equipo'));
+    
+   
+  }
+
 
 }
